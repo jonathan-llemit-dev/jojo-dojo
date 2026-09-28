@@ -1,13 +1,46 @@
 @import "tailwindcss";
 
+@theme {
+  /* Dojo palette */
+  --color-dojo-bg: #0f0d0b;
+  --color-dojo-surface: #1a1613;
+  --color-dojo-border: #2b241e;
+  --color-dojo-ember: #f59e0b;
+  --color-dojo-ember-bright: #fbbf24;
+  --color-dojo-crimson: #dc2626;
+  --color-dojo-text: #f5f1ea;
+  --color-dojo-muted: #a89b8c;
+
+  --font-display: "Inter", system-ui, sans-serif;
+}
+
 :root {
   color-scheme: dark;
 }
 
 body {
-  @apply bg-neutral-950 text-neutral-100 antialiased;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+  background-color: var(--color-dojo-bg);
+  color: var(--color-dojo-text);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle grain / vignette for atmosphere */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(245, 158, 11, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(220, 38, 38, 0.05),
+      transparent 60%
+    );
+  z-index: 0;
 }
