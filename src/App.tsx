@@ -55,7 +55,7 @@ function App() {
             About
           </a>
           <a
-            href="https://vercel.com"
+            href="https://github.com/jonathan-llemit-dev/my-react-app"
             target="_blank"
             rel="noreferrer"
             className="px-3 py-1.5 rounded-md bg-dojo-ember text-black hover:bg-dojo-ember-bright transition font-medium"
