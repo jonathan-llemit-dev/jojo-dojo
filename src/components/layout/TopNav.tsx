@@ -1,0 +1,38 @@
+import { Link } from "react-router-dom";
+
+/**
+ * Shared top navigation bar. Appears on the landing page and inside the tutorial layout.
+ * "Enter Dojo" navigates to /dojo (internal) rather than opening GitHub.
+ */
+export function TopNav() {
+  return (
+    <nav className="sticky top-0 z-20 border-b border-dojo-border bg-dojo-bg/80 px-6 py-3 backdrop-blur">
+      <div className="flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2 font-semibold">
+          <span className="text-xl">🥋</span>
+          <span className="bg-gradient-to-r from-dojo-ember via-dojo-ember-bright to-dojo-crimson bg-clip-text text-transparent">
+            Jojo Dojo
+          </span>
+        </Link>
+
+        <div className="flex items-center gap-4 text-sm">
+          <Link
+            to="/dojo"
+            className="hidden rounded-md px-3 py-1.5 font-medium text-dojo-muted transition hover:text-dojo-ember sm:block"
+          >
+            Dojo
+          </Link>
+          <a
+            href="https://github.com/jonathan-llemit-dev/my-react-app"
+            target="_blank"
+            rel="noreferrer"
+            className="ml-2 rounded-md border border-dojo-border px-3 py-1.5 text-dojo-muted transition hover:border-dojo-ember hover:text-dojo-ember"
+            aria-label="GitHub repository"
+          >
+            GitHub
+          </a>
+        </div>
+      </div>
+    </nav>
+  );
+}
