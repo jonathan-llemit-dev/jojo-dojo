@@ -158,7 +158,7 @@ function App() {
 
           <div className="inline-flex items-center gap-6 p-6 rounded-xl border border-dojo-border bg-dojo-surface/60">
             <button
-              onClick={() => setCount((c) => c - 1)}
+              onClick={() => (count >= 1 && setCount(count - 1))}
               className="w-11 h-11 rounded-lg border border-dojo-border hover:border-dojo-crimson hover:bg-dojo-crimson/10 transition text-xl"
               aria-label="Decrease reps"
             >
