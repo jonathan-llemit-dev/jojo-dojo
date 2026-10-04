@@ -35,8 +35,8 @@ confirmed by code **and** a correct explanation.*
 
 *Scope note: deeper `useState` material — object and array state, lazy initialisers, and batching when
 one handler sets state twice — is tracked as its own roadmap item rather than kept as a caveat on the
-completed lesson. Every `useState` in the repo currently holds a number, which is why that surface has
-not been exercised yet.*
+completed lesson. Every `useState` in the repo currently holds a primitive (numbers, plus one boolean
+for the mobile menu), which is why that surface has not been exercised yet.*
 
 ### Quiz-passed — explained correctly, no dedicated code yet
 

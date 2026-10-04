@@ -13,7 +13,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] JSX — syntax, expressions, `className` — lesson live at `/dojo/topic/jsx`
 - [x] Components & props — passing data down — lesson live at `/dojo/topic/components-props`
 - [x] `useState` — stateful components / counters — lesson live at `/dojo/topic/use-state`
-- [ ] `useState` deep dive — object/array state (replace, don't mutate), lazy initialisers, and two setters in one handler — separate from the lesson above, which is complete. Nothing has exercised this yet: every `useState` in the repo holds a number.
+- [ ] `useState` deep dive — object/array state (replace, don't mutate), lazy initialisers, and two setters in one handler — separate from the lesson above, which is complete. Nothing has exercised this yet: every `useState` in the repo holds a primitive (numbers, and one boolean for the mobile menu).
 - [ ] Event handling — handlers, event objects, passing arguments — quiz-passed, needs a lesson
 - [x] Conditional rendering — `&&`, ternary, early return — lesson live at `/dojo/topic/conditional-rendering`
 - [ ] Lists & keys — `map()`, why keys matter — quiz-passed, needs a lesson

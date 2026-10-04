@@ -43,7 +43,7 @@ src/
 ├── components/
 │   ├── layout/
 │   │   ├── TutorialLayout.tsx  # <TopNav /> + <Sidebar /> + <Outlet />
-│   │   ├── Sidebar.tsx         # Topic list from registry; active highlight via useMatch
+│   │   ├── Sidebar.tsx         # Topic list; burger dropdown below md, vertical sidebar above
 │   │   └── TopNav.tsx          # Logo + "Dojo" link + GitHub external icon (tutorial shell only)
 │   ├── sandbox/                # Scratch components for experiments — NOT lessons, NOT real pages
 │   │   └── TestGreeting.tsx     # served at /test/:student/:name/:subjects from App.tsx
@@ -74,7 +74,7 @@ src/
 **Key patterns to maintain:**
 
 - **Styling**: Tailwind CSS v4 with `@theme` block in `src/index.css`. Custom design tokens (`--color-dojo-*`, `--font-display`) become real Tailwind utilities (e.g., `bg-dojo-bg`, `text-dojo-ember`). Match this approach when adding new custom tokens.
-- **Responsive by default**: mobile-first, using Tailwind's `sm:` (640px) and `md:` (768px) breakpoints. The tutorial shell stacks below `md` — the sidebar becomes a horizontally scrollable strip above the content (`w-full md:w-64 md:border-r`) — and switches to the side-by-side layout from `md` up. Both states use the *same* markup, so never duplicate a nav for mobile. Page padding goes `px-4 sm:px-6` and headings scale (`text-2xl md:text-3xl`). Check any new layout at ~375px wide before calling it done.
+- **Responsive by default**: mobile-first, using Tailwind's `sm:` (640px) and `md:` (768px) breakpoints. The tutorial shell stacks below `md` and goes side-by-side from `md` up, using the *same* markup — never duplicate a nav for mobile. Below `md` the topic list is a **burger dropdown** (`Sidebar.tsx`): a button that expands the list in place, capped at `70vh` with its own scroll, closing when a link is tapped. It expands in place rather than floating, because the shell's `overflow-hidden` would clip an absolutely-positioned panel. Page padding goes `px-4 sm:px-6` and headings scale (`text-2xl md:text-3xl`). Check any new layout at ~375px wide before calling it done.
 - **Belt colors live in exactly one place**: `src/topics/beltStyles.ts` exports `beltBadgeClass()` (bordered pill → border + text color) and `beltDotClass()` (filled circle → background color). The palette mapping is white/blue → `dojo-ember` (gold), black → `dojo-crimson` (red). Use these helpers instead of writing belt colors inline: a badge and a dot need *different* utilities, and giving a dot the badge classes renders an invisible dot (`text-*` colors text a dot does not have; `border-*` only sets a border color on an element with no border width).
 - **Long descriptions are rendered by `RichText`**: `src/components/topics/RichText.tsx` turns `topic.longDescription` into real elements, so code references show as code instead of raw backticks. It builds plain React nodes and never uses `dangerouslySetInnerHTML`, so a description cannot inject markup. The markup is deliberately tiny — four rules:
   - `` `like this` `` → **inline code**, styled to match the Sample Code panel. Use it for identifiers, keywords and short expressions (`useState`, `className`, `{reps && <p>…</p>}`).
@@ -219,6 +219,18 @@ Following the routing exercises and a five-question assessment, the reviewer's r
 5. **Verified mechanically**, since the reviewer cannot run the app: the same parse logic was re-run in Node against all four extracted description strings — correct block structure, both `components-props` snippets fenced, and **every backtick pair and fence balanced** (an unpaired backtick would render literally). Worth repeating whenever description content changes.
 6. **Documented the convention** under Key Patterns, including that `description` — the one-line summary in the sidebar and topic grid — is plain text and must stay markup-free.
 
+### Mobile nav — horizontal strip → burger dropdown
+
+The sidebar's phone layout was a horizontally scrolling strip of topic links. With four lessons that was already awkward; with the dozen the roadmap plans it would be unusable, because a horizontal scroller **hides** items rather than showing them.
+
+1. **Replaced with a burger dropdown** in `Sidebar.tsx`: a button reading `☰ Lessons` plus the current topic, expanding the list in place. `aria-expanded` / `aria-controls` are wired up and `aria-current="page"` is kept on the active link.
+2. **It expands in place instead of floating.** `TutorialLayout` wraps the shell in `overflow-hidden`, which would clip an absolutely-positioned panel — and pushing the content down is both simpler and perfectly good mobile behaviour.
+3. **Capped at `70vh` with its own scroll**, since the topic list will keep growing; the cap is lifted from `md` up so the desktop sidebar is untouched.
+4. **One topic list, two presentations** — no duplicated markup, matching the existing responsive rule.
+5. **Closes when a link is tapped**, so the panel never sits on top of the lesson you just opened.
+6. **Escape-to-close deliberately omitted.** It needs a keydown listener, which in React means `useEffect` — a hook the journal has not taught yet. That is noted in the file as a good first job for the topic, rather than smuggling the hook in early.
+7. Verified `tsc` / `npm run lint`. The mobile behaviour itself is the learner's to eyeball at ~375px.
+
 ### Earlier session — routing migration
 
 The repo was migrated from a **single-page landing app** (`App.tsx` = hero → techniques → training counter → about → footer, all in one file) into a **multi-page W3Schools-style tutorial site**:
@@ -234,7 +246,7 @@ The repo was migrated from a **single-page landing app** (`App.tsx` = hero → t
 ### Current project state
 - Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
 - **Four lessons populated, all four verified**: `jsx`, `components-props`, `useState` and `conditional-rendering` — all added through the registry, with no new routes written.
-- **Layout is mobile-responsive**, and now **confirmed by the learner at phone width**: the sidebar collapses to a swipeable strip below `md`, and the nav/padding/headings scale down. The reviewer cannot run `npm run dev`, so visual checks are the learner's to make.
+- **Layout is mobile-responsive**, confirmed by the learner at phone width: below `md` the topic list is a burger dropdown, and the nav/padding/headings scale down. The reviewer cannot run `npm run dev`, so visual checks are the learner's to make.
 - A scratch routing playground lives at `/test/:student/:name/:subjects` (`components/sandbox/TestGreeting.tsx`), kept deliberately as a labelled demonstration of the `:param` ↔ `useParams()` name contract.
 - The old single-page `App.tsx` is gone — replaced by the routes above. The 3 "technique cards" (Vite/Tailwind/Vercel) were dropped per your decision; the GitHub link survives in `TopNav`.
 - **The AI reviewer owns the Knowledge Snapshot in `NOTES.md` and the `ROADMAP.md` boxes** (see "Reviewer Responsibilities" above). Learner knowledge as of the last assessment is summarised there.
