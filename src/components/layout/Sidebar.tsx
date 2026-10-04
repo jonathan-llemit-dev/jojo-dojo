@@ -7,16 +7,20 @@ export function Sidebar() {
   const activeSlug = useMatch("/dojo/topic/:slug")?.params.slug ?? null;
 
   return (
-    <aside className="w-64 shrink-0 border-r border-dojo-border bg-dojo-surface/30 p-4">
-      <h2 className="mb-4 px-2 text-xs uppercase tracking-wider text-dojo-ember">
+    <aside className="w-full shrink-0 border-b border-dojo-border bg-dojo-surface/30 p-3 md:w-64 md:border-b-0 md:border-r md:p-4">
+      <h2 className="mb-3 hidden px-2 text-xs uppercase tracking-wider text-dojo-ember md:block">
         Lessons
       </h2>
-      <nav className="space-y-1">
+      {/* Phones: a horizontal, swipeable strip above the content.
+          md and up: the usual vertical list down the left.
+          Same markup and same topic list — only the layout direction changes. */}
+      <nav className="flex gap-2 overflow-x-auto pb-1 md:block md:space-y-1 md:overflow-visible md:pb-0">
         <Link
           to="/dojo"
-          className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition ${
+          aria-current={activeSlug === null ? "page" : undefined}
+          className={`flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm whitespace-nowrap transition md:px-2 ${
             activeSlug === null
-              ? "bg-dojo-surface/80 text-dojo-ember border-l-2 border-dojo-ember"
+              ? "bg-dojo-surface/80 font-medium text-dojo-ember md:border-l-2 md:border-dojo-ember"
               : "text-dojo-muted hover:bg-dojo-surface/60 hover:text-dojo-ember"
           }`}
         >
@@ -31,16 +35,16 @@ export function Sidebar() {
               key={topic.slug}
               to={`/dojo/topic/${topic.slug}`}
               aria-current={isActive ? "page" : undefined}
-              className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition ${
+              className={`flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm whitespace-nowrap transition md:px-2 md:whitespace-normal ${
                 isActive
-                  ? "bg-dojo-surface/80 font-medium text-dojo-ember border-l-2 border-dojo-ember"
+                  ? "bg-dojo-surface/80 font-medium text-dojo-ember md:border-l-2 md:border-dojo-ember"
                   : "text-dojo-muted hover:bg-dojo-surface/60 hover:text-dojo-ember"
               }`}
             >
               <span
                 className={`h-2 w-2 shrink-0 rounded-full ${beltDotClass(topic.belt)}`}
               />
-              <span className="truncate">{topic.title}</span>
+              <span className="md:truncate">{topic.title}</span>
             </Link>
           );
         })}

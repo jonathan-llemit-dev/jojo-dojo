@@ -10,11 +10,12 @@ import { TopNav } from "./TopNav";
  */
 export function TutorialLayout() {
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative flex min-h-screen flex-col">
       <TopNav />
-      <div className="flex flex-1 overflow-hidden">
+      {/* Phones: sidebar strip on top, content below. md and up: side by side. */}
+      <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto px-6 py-8">
+        <main className="flex-1 overflow-y-auto px-4 py-6 md:px-6 md:py-8">
           <Outlet />
         </main>
       </div>

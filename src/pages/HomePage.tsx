@@ -8,14 +8,14 @@ export function HomePage() {
   return (
     <div className="relative min-h-screen flex flex-col z-10">
       {/* Top nav — branding only on landing */}
-      <nav className="border-b border-dojo-border px-6 py-4 flex items-center justify-between backdrop-blur bg-dojo-bg/80 sticky top-0 z-20">
+      <nav className="border-b border-dojo-border px-4 py-4 flex items-center justify-between backdrop-blur bg-dojo-bg/80 sticky top-0 z-20 sm:px-6">
         <div className="flex items-center gap-2 font-semibold">
           <span className="text-xl">🥋</span>
           <span className="bg-gradient-to-r from-dojo-ember via-dojo-ember-bright to-dojo-crimson bg-clip-text text-transparent">
             Jojo Dojo
           </span>
         </div>
-        <div className="hidden sm:flex items-center gap-6 text-sm text-dojo-muted">
+        <div className="flex items-center gap-3 text-sm text-dojo-muted sm:gap-6">
           <a href="#about" className="hover:text-dojo-ember transition">
             About
           </a>
@@ -31,7 +31,7 @@ export function HomePage() {
       </nav>
 
       {/* Hero */}
-      <section className="flex-1 px-6 py-24 flex flex-col items-center text-center">
+      <section className="flex-1 px-4 py-16 flex flex-col items-center text-center sm:px-6 sm:py-24">
         <span className="mb-4 px-3 py-1 text-xs rounded-full border border-dojo-border text-dojo-muted">
           🥋 Welcome, student · v0.1.0
         </span>
@@ -39,7 +39,7 @@ export function HomePage() {
         <p className="text-dojo-ember tracking-[0.3em] uppercase text-sm mb-4">
           React Training Ground
         </p>
-        <h1 className="text-5xl md:text-7xl font-bold">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold">
           The{" "}
           <span className="bg-gradient-to-r from-dojo-ember via-dojo-ember-bright to-dojo-crimson bg-clip-text text-transparent">
             Jojo Dojo
@@ -75,7 +75,7 @@ export function HomePage() {
           Without an id="about" somewhere on the page those links do nothing. */}
       <section
         id="about"
-        className="border-t border-dojo-border px-6 py-16 text-center scroll-mt-20"
+        className="border-t border-dojo-border px-4 py-16 text-center scroll-mt-20 sm:px-6"
       >
         <h2 className="text-2xl font-bold mb-4">
           About the <span className="text-dojo-ember">Dojo</span>
@@ -85,13 +85,13 @@ export function HomePage() {
           lesson gets its own URL under{" "}
           <code className="text-dojo-ember">/dojo</code>: an explanation, a sample
           snippet, and a live component you can actually click. The study notes for
-          each topic are written up in{" "}
-          <code className="text-dojo-ember">NOTES.md</code> as I go.
+          each topic are kept in{" "}
+          <code className="text-dojo-ember">NOTES.md</code>.
         </p>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-dojo-border px-6 py-8 text-center text-sm text-dojo-muted">
+      <footer className="border-t border-dojo-border px-4 py-8 text-center text-sm text-dojo-muted sm:px-6">
         <p className="mb-2">
           Jojo Dojo ·{" "}
           <span className="text-dojo-ember">by Jonathan Llemit Jr.</span>

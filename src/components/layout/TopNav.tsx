@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
  */
 export function TopNav() {
   return (
-    <nav className="sticky top-0 z-20 border-b border-dojo-border bg-dojo-bg/80 px-6 py-3 backdrop-blur">
+    <nav className="sticky top-0 z-20 border-b border-dojo-border bg-dojo-bg/80 px-4 py-3 backdrop-blur sm:px-6">
       <div className="flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-semibold">
           <span className="text-xl">🥋</span>
@@ -20,10 +20,10 @@ export function TopNav() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex items-center gap-2 text-sm sm:gap-4">
           <Link
             to="/dojo"
-            className="hidden rounded-md px-3 py-1.5 font-medium text-dojo-muted transition hover:text-dojo-ember sm:block"
+            className="rounded-md px-2 py-1.5 font-medium text-dojo-muted transition hover:text-dojo-ember sm:px-3"
           >
             Dojo
           </Link>
@@ -31,7 +31,7 @@ export function TopNav() {
             href="https://github.com/jonathan-llemit-dev/my-react-app"
             target="_blank"
             rel="noreferrer"
-            className="ml-2 rounded-md border border-dojo-border px-3 py-1.5 text-dojo-muted transition hover:border-dojo-ember hover:text-dojo-ember"
+            className="rounded-md border border-dojo-border px-2 py-1.5 text-dojo-muted transition hover:border-dojo-ember hover:text-dojo-ember sm:px-3"
             aria-label="GitHub repository"
           >
             GitHub

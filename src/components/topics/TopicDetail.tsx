@@ -17,10 +17,10 @@ export function TopicDetail() {
 
   if (!topic) {
     return (
-      <div className="max-w-xl text-center">
+      <div className="mx-auto max-w-xl text-center">
         <h2 className="text-2xl font-bold mb-4">Topic not found</h2>
         <p className="text-dojo-muted mb-6">
-          No lesson is available for - &ldquo;{slug}&rdquo;.
+          No lesson is available for &ldquo;{slug}&rdquo;.
         </p>
         <Link
           to="/dojo"
@@ -47,7 +47,7 @@ export function TopicDetail() {
           ></span>
           {topic.belt} belt
         </span>
-        <h1 className="text-3xl font-bold mt-3">{topic.title}</h1>
+        <h1 className="text-2xl font-bold mt-3 md:text-3xl">{topic.title}</h1>
       </div>
 
       {/* Description */}
@@ -81,7 +81,7 @@ export function TopicDetail() {
         <h2 className="text-lg font-semibold mb-3 text-dojo-ember">
           Live Demo
         </h2>
-        <div className="rounded-xl border border-dojo-border bg-dojo-surface/30 p-6">
+        <div className="rounded-xl border border-dojo-border bg-dojo-surface/30 p-4 md:p-6">
           <Demo />
         </div>
       </section>
