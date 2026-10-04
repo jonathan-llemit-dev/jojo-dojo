@@ -1,6 +1,7 @@
 import type { Topic } from "./types";
 import { useStateTopic } from "./use-state";
 import { jsxTopic } from "./jsx";
+import { componentsPropsTopic } from "./components-props";
 
 /**
  * Aggregate topic registry — the single source of truth for both the sidebar
@@ -8,7 +9,11 @@ import { jsxTopic } from "./jsx";
  *
  * Import each new lesson's index.ts here as you add topics.
  */
-export const topicRegistry: Topic[] = [jsxTopic, useStateTopic];
+export const topicRegistry: Topic[] = [
+  jsxTopic,
+  componentsPropsTopic,
+  useStateTopic,
+];
 
 /**
  * Fast slug -> Topic lookup used by the TopicDetail page.

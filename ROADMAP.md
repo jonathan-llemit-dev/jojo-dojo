@@ -5,13 +5,13 @@ explanation from you, not just a right answer to a quiz question. The assessment
 Knowledge Snapshot at the top of `NOTES.md`, and marking these boxes is the reviewer's job, not
 yours. See "Reviewer responsibilities" in `CLAUDE.md`.
 
-Status markers used on unverified lines: `quiz-passed` = concept understood, needs a lesson ·
-`GAP` = answered wrong or never used.
+Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting the fix ·
+`quiz-passed` = concept understood, needs a lesson · `GAP` = answered wrong or never used.
 
 ## React Core Topics
 
 - [x] JSX — syntax, expressions, `className` — lesson live at `/dojo/topic/jsx`
-- [ ] Components & props — passing data down — **GAP, priority #1**: no component here accepts props yet
+- [x] Components & props — passing data down — lesson live at `/dojo/topic/components-props`
 - [x] `useState` — stateful components / counters — lesson live at `/dojo/topic/use-state`
 - [ ] Event handling — handlers, event objects, passing arguments — quiz-passed, needs a lesson
 - [ ] Conditional rendering — ternary, `&&`, early return — **GAP**: `{count && …}` renders a bare `0`
@@ -32,6 +32,7 @@ Status markers used on unverified lines: `quiz-passed` = concept understood, nee
 
 ## Project Features (from the README)
 
+- [x] Mobile-responsive layout — the sidebar collapses to a swipeable strip below `md`
 - [ ] Deploy v0.1.0 to Vercel
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle

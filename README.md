@@ -16,6 +16,7 @@ A dark, dojo-themed React learning journal forged with **Vite**, styled with **T
 - 🎨 **Tailwind CSS v4** — utility-first styling with a custom dojo theme
 - 🚀 **Vercel-ready** — push to `main`, deploy automatically
 - 🌑 **Dark theme** — warm ember accents on deep charcoal
+- 📱 **Mobile-ready** — the lesson sidebar collapses to a swipeable strip on small screens
 
 ---
 
@@ -75,6 +76,7 @@ my-react-app/
 │       ├── beltStyles.ts      # BeltRank -> Tailwind classes
 │       ├── registry.ts        # The list of lessons (source of truth)
 │       ├── jsx/               # One folder per lesson: demo.tsx + index.ts
+│       ├── components-props/  # One folder per lesson: demo.tsx + index.ts
 │       └── use-state/         # One folder per lesson: demo.tsx + index.ts
 ├── index.html                 # HTML shell
 ├── vite.config.ts             # Vite + Tailwind plugin config
@@ -138,6 +140,7 @@ This mirrors `ROADMAP.md`. That file is the one to edit — keep this list in st
 - [x] Personalized landing page (hero + about)
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug`
 - [x] First lesson: `useState` at `/dojo/topic/use-state`
+- [x] Mobile-responsive layout
 - [ ] Deploy v0.1.0 to Vercel
 - [ ] More lessons (topic list lives in `ROADMAP.md`)
 - [ ] Framer Motion animations

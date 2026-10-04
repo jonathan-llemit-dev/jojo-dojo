@@ -24,6 +24,7 @@ The status on each entry comes from the topic-marker comment at the top of that 
 | JSX syntax | Built the `jsx` lesson: a JSX comment, `{2 + 2}`, `{new Date().toLocaleDateString()}`, `className` |
 | `useState` | The counter demo, plus explained why a plain variable cannot hold a value that changes |
 | Routing basics | Built `/test/:student/:name/:subjects` (three params, one route) and registered a lesson — the sidebar link, the `/dojo/topic/jsx` URL and the grid card all appeared having written **zero** new routes |
+| Components & props | Fixed both bugs in the `components-props` fix-it lesson — deleted a prop mirrored into `useState` (unaided), and made an optional prop required so the compiler caught the call site that omitted it. Details in entry 04 |
 | File & component structure | Followed the registry convention unaided: `demo.tsx` + `index.ts`, marker header, camelCase export for a data object rather than PascalCase |
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
 
@@ -41,17 +42,16 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### Gaps — the honest list
 
-- **Props — priority #1.** No component in this repo accepts props yet; every demo is self-contained. The review also surfaced a real misconception: a component cannot rewrite its own props. They are a fresh snapshot handed down on each render, so only the parent can change them.
 - **Conditional rendering precision.** `{count && <p>…</p>}` renders a bare `0` on screen when `count` is `0`, because `&&` returns the falsy left operand itself instead of coercing to a boolean. Needs `count > 0 && …` — which the existing counter already does correctly.
 - **Never used at all:** forms / controlled inputs, `useContext` / `useReducer`, custom hooks, `useMemo` / `useCallback`, `useRef`, portals.
 
 ### Next, in order
 
-1. **Components & props** — give an existing demo its first prop (e.g. a `label` and `start` on the counter) and pass it from the lesson entry.
-2. **Conditional rendering** — the falsy trap, plus ternary vs `&&` vs early return.
-3. **`useEffect`** — real data fetching with a loading state and cleanup.
-4. **Forms & controlled inputs** — the natural companion to `useEffect`.
-5. **Lists & keys** — a lesson that renders `.map()` with keys, converting a quiz-pass into demonstrated knowledge.
+1. **Conditional rendering** — the falsy trap, plus ternary vs `&&` vs early return. This is the last fundamental with a known wrong answer against it.
+2. **Lists & keys** — a lesson that renders `.map()` with keys, converting a quiz-pass into demonstrated knowledge.
+3. **Event handling** — a lesson to convert the other quiz-pass into demonstrated knowledge.
+4. **`useEffect`** — real data fetching with a loading state and cleanup.
+5. **Forms & controlled inputs** — the natural companion to `useEffect`.
 
 ---
 
@@ -248,6 +248,84 @@ reports as a blank page and `SyntaxError: Unexpected token '<'`.
 
 ---
 
+## 04 — Components & Props (Data Down, Events Up)
+
+- **Status:** LD (Learning) — **exercise in progress, not yet verified**
+- **Added:** 2026-10-04
+- **Belt:** white
+- **Marker file:** `src/topics/components-props/demo.tsx`
+- **Route:** `/dojo/topic/components-props`
+
+### Explanation
+
+Props are the arguments you hand to a component, written in JSX like HTML attributes:
+
+```tsx
+<Drill label="Roundhouse kicks" reps={5} />
+```
+
+Inside the component they arrive as one object, which you normally destructure right in the parameter
+list:
+
+```tsx
+function Drill({ label, reps }: DrillProps) { … }
+```
+
+Props flow in **one direction — down**, from parent to child. A child cannot change what it receives,
+because props are a fresh snapshot supplied on every render; only the parent can pass something
+different. So when a child needs to change a value, the parent owns that value in `useState` and
+passes down **both the value and a function to change it**. The child calls the function, the parent's
+state updates, and the new value flows back down as props. That whole loop is the phrase to
+remember: **data down, events up.**
+
+### The two rules that matter here
+
+1. **Never copy a prop into `useState` to "keep" it.** `useState(prop)` reads that prop once, on the
+   first render. From then on the copy is frozen while the real value moves on, and the two drift
+   apart permanently. Use the prop directly.
+2. **An optional prop is a promise.** `label?: string` claims the component still works without it.
+   If the component then renders it blindly, forgetting to pass it produces a silently blank heading
+   instead of an error. When a component cannot work without a prop, make it **required** and let
+   TypeScript catch the omission for you.
+
+### The two bugs it shipped with
+
+`src/topics/components-props/demo.tsx` was deliberately broken — two bugs, both compiling, so the page
+loaded normally and nothing crashed:
+
+1. The second drill row had a blank heading.
+2. Pressing "Add a rep" raised the session total, but the drill rows stayed stuck at `0` forever.
+
+### How it was verified — 2026-10-04
+
+Shipped as a fix-it exercise with two bugs that both compiled. Both symptoms are now gone, the fixes
+live in `src/topics/components-props/demo.tsx`, and `tsc` / `npm run lint` are green.
+
+**Evidence note:** bug 2 was solved **unaided** — only its symptom was ever described, never its
+location. Bug 1 needed a nudge (the reviewer pointed at the type), so it counts as guided.
+
+- ✅ **Bug 2 solved.** `const [snapshot] = useState(reps)` was replaced by using `{reps}` directly.
+  That is exactly right, and it is the harder of the two bugs: the copy existed only to be frozen at
+  the first render, so rendering the prop is the whole fix. The rows now follow the session total.
+- ⚠️ **Bug 1 suppressed, not solved.** The heading is no longer blank, but only because the *child*
+  was taught to print `N/A` when the prop is missing (`{label || "N/A"}`). The row now reads "N/A"
+  forever — accurate, but useless: a visitor sees a drill with no name.
+
+  The real defect is in the **type**, not the render. `label?: string` permits "a drill with no name",
+  and that is not a state this app should be able to represent. Change it to `label: string`
+  (required) and TypeScript finds the omission for you — it will refuse to compile the second
+  `<Drill />` until a label is passed, and the `|| "N/A"` fallback then becomes dead code you can
+  delete. Let the compiler locate the call sites instead of catching the problem at render time.
+
+  **Resolved on attempt 2:** `label` is now required (`label: string`), both rows pass a real name,
+  and the `|| "N/A"` fallback is deleted. The compiler was made to do the searching.
+
+**The lesson worth keeping:** a display fallback and a real fix can look identical in the UI — both
+make the symptom vanish. If a value is genuinely required, put the requirement in the type and let the
+compiler find the call sites you forgot, instead of catching the problem at render time.
+
+---
+
 ## Traps & mental models
 
 Every correction made during review, in one place. These are the things most likely to bite again.
@@ -261,6 +339,7 @@ Every correction made during review, in one place. These are the things most lik
 | `key={index}` in a list | On any sort or delete, index 2 becomes a different item, so React reuses the wrong DOM node and input values/state attach to the wrong row. Use a stable id from the data. |
 | A `:param` renamed on one side only | The value silently arrives as `undefined`. TypeScript cannot help. |
 | Assuming `import React from "react"` is required | It is not, with `"jsx": "react-jsx"`. JSX compiles to `jsx()` from `react/jsx-runtime`. |
+| `{label || "N/A"}` for a prop that should always exist | Silences the symptom and keeps the defect — the UI now says "N/A" forever. If a value is genuinely required, type it as required and let the compiler find the call sites that forgot it. |
 | `{slug}` used as a lookup key when it may be missing | `topicBySlug[undefined]` is `undefined`, so guard with `slug ? topicBySlug[slug] : undefined` before using it. |
 
 **The one mental model that explains most of React:** a re-render means **React calls your component

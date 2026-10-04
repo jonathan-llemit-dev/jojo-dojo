@@ -59,6 +59,9 @@ src/
     ├── jsx/
     │   ├── demo.tsx            # JsxDemo — JSX comment, {2 + 2}, {new Date()...}
     │   └── index.ts            # Exports jsxTopic registry entry
+    ├── components-props/
+    │   ├── demo.tsx            # PropsDemo + Drill — props down; began as a fix-it exercise
+    │   └── index.ts            # Exports componentsPropsTopic registry entry
     └── use-state/
         ├── demo.tsx            # CounterDemo — the live useState working component
         └── index.ts            # Exports useStateTopic registry entry
@@ -67,6 +70,7 @@ src/
 **Key patterns to maintain:**
 
 - **Styling**: Tailwind CSS v4 with `@theme` block in `src/index.css`. Custom design tokens (`--color-dojo-*`, `--font-display`) become real Tailwind utilities (e.g., `bg-dojo-bg`, `text-dojo-ember`). Match this approach when adding new custom tokens.
+- **Responsive by default**: mobile-first, using Tailwind's `sm:` (640px) and `md:` (768px) breakpoints. The tutorial shell stacks below `md` — the sidebar becomes a horizontally scrollable strip above the content (`w-full md:w-64 md:border-r`) — and switches to the side-by-side layout from `md` up. Both states use the *same* markup, so never duplicate a nav for mobile. Page padding goes `px-4 sm:px-6` and headings scale (`text-2xl md:text-3xl`). Check any new layout at ~375px wide before calling it done.
 - **Belt colors live in exactly one place**: `src/topics/beltStyles.ts` exports `beltBadgeClass()` (bordered pill → border + text color) and `beltDotClass()` (filled circle → background color). The palette mapping is white/blue → `dojo-ember` (gold), black → `dojo-crimson` (red). Use these helpers instead of writing belt colors inline: a badge and a dot need *different* utilities, and giving a dot the badge classes renders an invisible dot (`text-*` colors text a dot does not have; `border-*` only sets a border color on an element with no border width).
 - **Topic registry is the source of truth**: `src/topics/registry.ts` powers both the sidebar navigation list and the topic content panel. New topics are added as a folder under `src/topics/<name>/` with `demo.tsx` (working component) and `index.ts` (registry entry). Register them in `registry.ts`.
 - **Component structure**: `App.tsx` is now just `<Routes>` — all page content lives in `pages/` and `components/`. Do not put section markup back into `App.tsx`.
@@ -87,6 +91,10 @@ The journal convention keeps every topic traceable for review and for AI reading
   // ─────────────────────────────────────────────
   ```
   (Statuses: `OK` = Mastered, `LD` = Learning, `RV` = Reviewing.)
+
+- **Sample code mirrors the live demo**: a topic's `codeExample` in `index.ts` should be a copy of that lesson's `demo.tsx`, so what the reader sees is exactly what runs and the two cannot drift apart. Write the template literal **flush against the left margin** — a template literal preserves indentation, so indenting it to match the surrounding code renders as ragged leading whitespace in the Sample Code panel. Actual state, verified by diffing each snippet against its demo: `components-props` is an exact mirror (46 lines, identical); `jsx` matches except for the leading `export` keyword; `use-state` is deliberately trimmed for readability (38 code lines down to 11) and is the one intentional exception. The reviewer should re-run that diff rather than eyeball it.
+
+- **Fix-it exercises**: a lesson may be shipped deliberately broken to teach a concept. The rules: the marker says `Status: LD`; the file's header comment lists the **observed symptoms only** — never the bug locations or the fix — so the learner has to diagnose; every planted bug must still compile, keeping `tsc` and `npm run lint` green; the roadmap line is marked `IN PROGRESS`; and `NOTES.md` explains the concept-level rules, not the answers. When the learner reports it fixed, re-assess, verify `tsc`/lint, then flip the roadmap box and rewrite the notes entry as verified. An exercise must **name its expected values** — otherwise a workaround is a reasonable answer, as happened when bug 1 never said what the second drill should be called.
 
 - **NOTES.md** (at repo root): the **reviewer-written** study record — the Knowledge Snapshot, a numbered entry per topic, and a traps cheat-sheet. **The learner does not write here.** Their hands-on work IS the exercise; this file is what they read between sessions. Notes are never a homework task, and "write your study note" must never be asked of them. The reviewer keeps this file current.
 
@@ -169,6 +177,14 @@ Following the routing exercises and a five-question assessment, the reviewer's r
 - Confirmed the `TestGreeting` `:subjects` / `teacher` mismatch is **intentional** — it reproduces the
   common routing bug on purpose and is documented as such in the file, the notes and the tree above.
 
+### Props lesson (fix-it exercise) + mobile responsive pass
+
+1. **New lesson `components-props`** at `/dojo/topic/components-props` — a third registry entry, added with no new routes.
+2. **Shipped deliberately broken, as a fix-it exercise.** Two bugs, both compiling: the parent omits an optional `label` prop (blank heading), and the child copies its `reps` prop into `useState`, so its number freezes at `0` while the parent's total climbs. The file header documents the **symptoms only**, never the locations, so the learner has to diagnose them. Confirmed `tsc` and `npm run lint` stay **green** — a fix-it exercise must still build.
+3. **Mobile responsive pass.** The tutorial shell was unusable on a phone: the fixed `w-64` sidebar left roughly 120px of content on a 375px screen. It now stacks below `md` — the sidebar becomes a horizontally scrollable strip (`w-full md:w-64`) — and returns to side-by-side from `md` up, using the *same* markup with no duplicated nav. Also made the landing and top-nav links visible on small screens instead of `hidden sm:*`, tightened padding (`px-4 sm:px-6`), scaled headings down (`text-2xl md:text-3xl`, hero `text-4xl sm:text-5xl md:text-7xl`), and added `min-w-0` / `shrink-0` to card headers so long titles wrap rather than squashing the belt badge.
+4. **Runtime still unverified**: the sandbox blocks `npm run dev`, so the responsive layout is reasoned, not seen. Needs a check at ~375px wide.
+5. **Verified and closed out (attempt 2).** Bug 2 was solved **unaided** — the prop copied into `useState` was deleted and the prop rendered directly. Bug 1 needed a nudge: attempt 1 printed `N/A` for the missing prop, which hid the defect rather than fixing it, so the reviewer pointed at the *type* instead of the render. Making `label` required turned a silent runtime bug into a compile error and forced the second call site to pass a real label; the fallback was then dead code. Closed out: `ROADMAP.md` box ticked, `NOTES.md` entry 04 rewritten as verified with an explicit note on which bug was unaided vs guided, a traps-table row added for the `|| "N/A"` mask, and the stale "deliberately broken" header plus the now-wrong `?`-comment in `demo.tsx` rewritten so the lesson is recorded in the code itself. **Process lesson:** bug 1 never specified what the second drill should be called, which made a fallback a reasonable inference — an exercise must name its expected values.
+
 ### Earlier session — routing migration
 
 The repo was migrated from a **single-page landing app** (`App.tsx` = hero → techniques → training counter → about → footer, all in one file) into a **multi-page W3Schools-style tutorial site**:
@@ -183,18 +199,20 @@ The repo was migrated from a **single-page landing app** (`App.tsx` = hero → t
 
 ### Current project state
 - Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
-- **Two lessons populated**: `useState` at `/dojo/topic/use-state` and `jsx` at `/dojo/topic/jsx` — both added through the registry, with no new routes written.
+- **Three lessons populated, all verified**: `jsx` at `/dojo/topic/jsx`, `components-props` at `/dojo/topic/components-props`, and `useState` at `/dojo/topic/use-state` — all added through the registry, with no new routes written.
+- **Layout is mobile-responsive**: the sidebar collapses to a swipeable strip below `md`, and the nav/padding/headings scale down. Reasoned rather than seen — the sandbox blocks `npm run dev`, so check it at ~375px wide yourself.
 - A scratch routing playground lives at `/test/:student/:name/:subjects` (`components/sandbox/TestGreeting.tsx`), kept deliberately as a labelled demonstration of the `:param` ↔ `useParams()` name contract.
 - The old single-page `App.tsx` is gone — replaced by the routes above. The 3 "technique cards" (Vite/Tailwind/Vercel) were dropped per your decision; the GitHub link survives in `TopNav`.
 - **The AI reviewer owns the Knowledge Snapshot in `NOTES.md` and the `ROADMAP.md` boxes** (see "Reviewer Responsibilities" above). Learner knowledge as of the last assessment is summarised there.
 - **Runtime was not verified in this session**: `npm run dev` and `npm run build` both need to write inside `node_modules`, which the AI sandbox blocks. Type-checking and linting passed; please eyeball the pages yourself with `npm run dev`.
 
 ### Next session objectives (priority order)
-1. **Components & props** — the verified gap. No component in this repo accepts props yet, so give an existing demo its first prop (e.g. `label` + `start` on the counter) and pass it from the lesson entry. This unblocks everything else.
-2. **Conditional rendering** — the falsy-value trap (`{count && …}` renders a bare `0`), plus ternary vs `&&` vs early return.
-3. **`useEffect`** — real data fetching with a loading state and cleanup. The concept is understood; it has never been written.
-4. **Forms & controlled inputs**, then **Lists & keys** as a lesson that renders `.map()` with keys — converting a `quiz-passed` into demonstrated knowledge.
-5. **Deploy v0.1.0 to Vercel** and confirm the SPA rewrite handles deep links like `/dojo/topic/jsx` on a real refresh.
+1. **Conditional rendering** — the falsy-value trap (`{count && …}` renders a bare `0`), plus ternary vs `&&` vs early return. The last fundamental with a wrong answer on record.
+2. **Lists & keys** — a lesson that renders `.map()` with keys, converting a `quiz-passed` into demonstrated knowledge.
+3. **Event handling** — a lesson to convert the other `quiz-passed` into demonstrated knowledge.
+4. **`useEffect`** — real data fetching with a loading state and cleanup. The concept is understood; it has never been written.
+5. **Forms & controlled inputs** — the natural companion to `useEffect`.
+6. **Deploy v0.1.0 to Vercel** and confirm the SPA rewrite handles deep links on a real refresh.
 
 ### Backlog (not yet prioritised)
 - "Featured Lessons" preview grid on the landing page, pulling from `topicRegistry`.
