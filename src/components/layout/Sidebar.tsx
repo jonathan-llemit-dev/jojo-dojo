@@ -1,16 +1,6 @@
 import { Link, useMatch } from "react-router-dom";
 import { topicRegistry } from "../../topics/registry";
-import type { BeltRank } from "../../topics/types";
-
-/** Color mapping for belt rank badges using the dojo palette. */
-function beltColor(belt: BeltRank) {
-  switch (belt) {
-    case "black":
-      return "text-dojo-crimson border-dojo-crimson";
-    default: // white | blue
-      return "text-dojo-ember border-dojo-ember";
-  }
-}
+import { beltDotClass } from "../../topics/beltStyles";
 
 /** Left sidebar listing all React lessons. Active topic highlights via URL match. */
 export function Sidebar() {
@@ -40,6 +30,7 @@ export function Sidebar() {
             <Link
               key={topic.slug}
               to={`/dojo/topic/${topic.slug}`}
+              aria-current={isActive ? "page" : undefined}
               className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition ${
                 isActive
                   ? "bg-dojo-surface/80 font-medium text-dojo-ember border-l-2 border-dojo-ember"
@@ -47,7 +38,7 @@ export function Sidebar() {
               }`}
             >
               <span
-                className={`h-2 w-2 shrink-0 rounded-full ${beltColor(topic.belt)}`}
+                className={`h-2 w-2 shrink-0 rounded-full ${beltDotClass(topic.belt)}`}
               />
               <span className="truncate">{topic.title}</span>
             </Link>

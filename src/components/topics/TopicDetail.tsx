@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { topicBySlug } from "../../topics/registry";
+import { beltBadgeClass, beltDotClass } from "../../topics/beltStyles";
 
 /**
  * Individual topic page rendered at `/dojo/topic/:slug`.
@@ -9,15 +10,17 @@ import { topicBySlug } from "../../topics/registry";
  * 3. Live working component demo
  */
 export function TopicDetail() {
-  const { slug } = useParams<{ slug: string }>() as { slug: string };
-  const topic = topicBySlug[slug];
+  // A URL param is always `string | undefined`, so read it first and only look it
+  // up when it exists. That keeps the "not found" branch below honest.
+  const { slug } = useParams();
+  const topic = slug ? topicBySlug[slug] : undefined;
 
   if (!topic) {
     return (
       <div className="max-w-xl text-center">
         <h2 className="text-2xl font-bold mb-4">Topic not found</h2>
         <p className="text-dojo-muted mb-6">
-          No lesson is available for the slug &ldquo;{slug}&rdquo;.
+          No lesson is available for - &ldquo;{slug}&rdquo;.
         </p>
         <Link
           to="/dojo"
@@ -37,10 +40,11 @@ export function TopicDetail() {
       {/* Header with belt badge */}
       <div className="mb-6">
         <span
-          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${beltColor(topic.belt)}`}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${beltBadgeClass(topic.belt)}`}
         >
           <span
-            className={`h-2 w-2 rounded-full ${beltColor(topic.belt)}`}></span>
+            className={`h-2 w-2 rounded-full ${beltDotClass(topic.belt)}`}
+          ></span>
           {topic.belt} belt
         </span>
         <h1 className="text-3xl font-bold mt-3">{topic.title}</h1>
@@ -83,14 +87,4 @@ export function TopicDetail() {
       </section>
     </div>
   );
-}
-
-/** Color mapping for belt rank indicators. */
-function beltColor(belt: string) {
-  switch (belt) {
-    case "black":
-      return "text-dojo-crimson border-dojo-crimson";
-    default:
-      return "text-dojo-ember border-dojo-ember";
-  }
 }

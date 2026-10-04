@@ -6,7 +6,7 @@ Trackable list of React topics and features to cover next. Check off a topic whe
 
 - [ ] JSX — syntax, expressions, rendering lists
 - [ ] Components & props — passing data down
-- [ ] `useState` — stateful components / counters (in progress)
+- [x] `useState` — stateful components / counters — note written, live at `/dojo/topic/use-state`
 - [ ] Event handling — handlers, event objects, passing arguments
 - [ ] Conditional rendering — ternary, `&&`, early return
 - [ ] Lists & keys — `map()`, why keys matter
@@ -21,7 +21,7 @@ Trackable list of React topics and features to cover next. Check off a topic whe
 ## Components to Build (reusable UI kit)
 
 - [ ] Cards, buttons, modals
-- [ ] Navbar / layout shell
+- [x] Navbar / layout shell — `TopNav` + `Sidebar` + `TutorialLayout`
 - [ ] Form components (Input, Select, Textarea)
 
 ## Project Features (from the README)
@@ -30,9 +30,9 @@ Trackable list of React topics and features to cover next. Check off a topic whe
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug` with nested layout route + sidebar
-- [ ] Social links (GitHub, LinkedIn)
+- [ ] Social links (GitHub, LinkedIn) — GitHub is in `TopNav` / `HomePage`; LinkedIn still to add
 - [ ] Custom domain
 
 ---
 
-*Last updated: 2026-10-01*
+*Last updated: 2026-10-04*

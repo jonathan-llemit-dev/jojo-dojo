@@ -1,3 +1,9 @@
+// ─────────────────────────────────────────────
+// Topic: useState — Stateful Components & Counters
+// Added: 2026-10-01 | Status: LD
+// ─────────────────────────────────────────────
+// (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
+
 import { useState } from "react";
 
 /**

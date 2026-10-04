@@ -1,8 +1,13 @@
 import { Link } from "react-router-dom";
 
 /**
- * Shared top navigation bar. Appears on the landing page and inside the tutorial layout.
- * "Enter Dojo" navigates to /dojo (internal) rather than opening GitHub.
+ * Top navigation for the tutorial shell — `/dojo` and every lesson page under it.
+ *
+ * Note: the landing page (`pages/HomePage.tsx`) renders its own smaller nav instead,
+ * because it links to `#about` and has no sidebar beside it. That duplicated markup is
+ * the place to start if the two ever need to share the same links.
+ *
+ * "Dojo" navigates to /dojo (internal) rather than opening GitHub.
  */
 export function TopNav() {
   return (

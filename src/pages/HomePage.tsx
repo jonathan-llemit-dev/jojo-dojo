@@ -71,6 +71,25 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* About — this is the element the #about links above and in the hero jump to.
+          Without an id="about" somewhere on the page those links do nothing. */}
+      <section
+        id="about"
+        className="border-t border-dojo-border px-6 py-16 text-center scroll-mt-20"
+      >
+        <h2 className="text-2xl font-bold mb-4">
+          About the <span className="text-dojo-ember">Dojo</span>
+        </h2>
+        <p className="mx-auto max-w-2xl text-dojo-muted leading-relaxed">
+          React Jojo Dojo is a personal training journal for learning React. Every
+          lesson gets its own URL under{" "}
+          <code className="text-dojo-ember">/dojo</code>: an explanation, a sample
+          snippet, and a live component you can actually click. The study notes for
+          each topic are written up in{" "}
+          <code className="text-dojo-ember">NOTES.md</code> as I go.
+        </p>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-dojo-border px-6 py-8 text-center text-sm text-dojo-muted">
         <p className="mb-2">

@@ -1,16 +1,6 @@
 import { Link } from "react-router-dom";
 import { topicRegistry } from "../topics/registry";
-import type { BeltRank } from "../topics/types";
-
-/** Color mapping for belt rank indicators. */
-function beltColor(belt: BeltRank) {
-  switch (belt) {
-    case "black":
-      return "text-dojo-crimson border-dojo-crimson";
-    default: // white | blue
-      return "text-dojo-ember border-dojo-ember";
-  }
-}
+import { beltBadgeClass, beltDotClass } from "../topics/beltStyles";
 
 /** Default content rendered at `/dojo` — welcome text + overview grid of all topics. */
 export function TopicIndex() {
@@ -33,9 +23,10 @@ export function TopicIndex() {
                 {topic.title}
               </h2>
               <span
-                className={`ml-3 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs ${beltColor(topic.belt)}`}
+                className={`ml-3 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs ${beltBadgeClass(topic.belt)}`}
               >
-                <span className={`h-1.5 w-1.5 rounded-full ${beltColor(topic.belt)}`}></span>
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${beltDotClass(topic.belt)}`}></span>
                 {topic.belt}
               </span>
             </div>
