@@ -8,7 +8,9 @@ it, and the code itself lives under `src/topics/`.
 **How to read it:** the Knowledge Snapshot first (what you know right now), then the numbered topic
 entries, then the traps cheat-sheet at the bottom.
 
-The status on each entry comes from the topic-marker comment at the top of that lesson's `demo.tsx`:
+For each lesson, the status comes from the topic-marker comment at the top of its `demo.tsx` (entry
+`03 — Routing` is the exception: it has no lesson component of its own, so its status is the reviewer's
+assessment rather than a marker):
 `OK` = Mastered, `LD` = Learning, `RV` = Reviewing. The marker format is documented in `CLAUDE.md`.
 
 ---
@@ -29,9 +31,10 @@ The status on each entry comes from the topic-marker comment at the top of that 
 | File & component structure | Followed the registry convention unaided: `demo.tsx` + `index.ts`, marker header, camelCase export for a data object rather than PascalCase |
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
 
-*Rigor note: JSX is recorded as verified on **code evidence alone** — it is written correctly across
-every file here, but there was no separate quiz question for it. Everything else in this table was
-confirmed by code **and** a correct explanation.*
+*Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
+originally recorded on code evidence alone, which contradicted the reviewer's own standard — a
+docs-audit question about why `jsx/demo.tsx` needs no `import React` (answer: JSX compiles to `jsx()`
+calls from `react/jsx-runtime`) closed that gap rather than the rule being relaxed.*
 
 *Scope note: deeper `useState` material — object and array state, lazy initialisers, and batching when
 one handler sets state twice — is tracked as its own roadmap item rather than kept as a caveat on the
@@ -353,8 +356,8 @@ most of the skill:
    shows), because nothing ties them together. If two states exist and one must always be visible, that is
    a ternary.
 
-The technique worth stealing from the sample code: give the condition a name (`const reachedMilestone =
-reps >= 10;`) and the boolean stays a boolean, so the `&&` can never print a stray number.
+The technique worth stealing from the demo: give the condition a name (`const isTraining = reps > 0;`)
+and the boolean stays a boolean, so the `&&` can never print a stray number.
 
 ### How it was verified — 2026-10-04
 

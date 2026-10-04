@@ -17,13 +17,13 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [ ] Event handling — handlers, event objects, passing arguments — quiz-passed, needs a lesson
 - [x] Conditional rendering — `&&`, ternary, early return — lesson live at `/dojo/topic/conditional-rendering`
 - [ ] Lists & keys — `map()`, why keys matter — quiz-passed, needs a lesson
-- [ ] Forms & controlled components — input state, validation
+- [ ] Forms & controlled components — input state, validation — **GAP**: never used
 - [ ] `useEffect` — side effects (data fetching, subscriptions, cleanup) — quiz-passed on timing, never written
-- [ ] `useContext` / `useReducer` — global state patterns
-- [ ] Custom hooks — extracting reusable logic
-- [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization
-- [ ] `useRef` — DOM access and mutable values
-- [ ] Portals — rendering outside the parent DOM hierarchy
+- [ ] `useContext` / `useReducer` — global state patterns — **GAP**: never used
+- [ ] Custom hooks — extracting reusable logic — **GAP**: never used
+- [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization — **GAP**: never used
+- [ ] `useRef` — DOM access and mutable values — **GAP**: never used
+- [ ] Portals — rendering outside the parent DOM hierarchy — **GAP**: never used
 
 ## Components to Build (reusable UI kit)
 
@@ -33,7 +33,10 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 
 ## Project Features (from the README)
 
-- [x] Mobile-responsive layout — the sidebar collapses to a swipeable strip below `md`
+- [x] Vite + React + TypeScript scaffold
+- [x] Tailwind CSS v4 with the custom dojo theme
+- [x] Landing page (hero + About + footer)
+- [x] Mobile-responsive layout — the topic list is a burger dropdown below `md`, and padding/headings scale
 - [ ] Deploy v0.1.0 to Vercel
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle

@@ -11,7 +11,7 @@ export interface Topic {
   title: string;
   /** Dojo belt rank — white (beginner) -> blue -> black (advanced). */
   belt: BeltRank;
-  /** One-line summary shown in the sidebar topic list. */
+  /** One-line summary rendered as plain text in the topic grid (`TopicIndex.tsx`). */
   description: string;
   /** Full lesson explanation rendered in the content panel (optional). */
   longDescription?: string;

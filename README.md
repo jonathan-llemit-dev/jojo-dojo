@@ -16,7 +16,7 @@ A dark, dojo-themed React learning journal forged with **Vite**, styled with **T
 - 🎨 **Tailwind CSS v4** — utility-first styling with a custom dojo theme
 - 🚀 **Vercel-ready** — push to `main`, deploy automatically
 - 🌑 **Dark theme** — warm ember accents on deep charcoal
-- 📱 **Mobile-ready** — the lesson sidebar collapses to a swipeable strip on small screens
+- 📱 **Mobile-ready** — the lesson list collapses into a burger menu on small screens
 
 ---
 
@@ -77,6 +77,7 @@ my-react-app/
 │       ├── registry.ts        # The list of lessons (source of truth)
 │       ├── jsx/               # One folder per lesson: demo.tsx + index.ts
 │       ├── components-props/  # One folder per lesson: demo.tsx + index.ts
+│       ├── conditional-rendering/  # One folder per lesson: demo.tsx + index.ts
 │       └── use-state/         # One folder per lesson: demo.tsx + index.ts
 ├── index.html                 # HTML shell
 ├── vite.config.ts             # Vite + Tailwind plugin config
@@ -133,16 +134,17 @@ Once connected, **every push to `main` auto-deploys to production**, and every P
 
 ## 🗺 Roadmap
 
-This mirrors `ROADMAP.md`. That file is the one to edit — keep this list in step with it.
+This is the visitor-facing summary. The **master checklist — every study topic included — is
+`ROADMAP.md`**, and that is the file to edit. Keep this list short and accurate.
 
 - [x] Vite + React + TypeScript scaffold
 - [x] Tailwind CSS v4 with custom dojo theme
-- [x] Personalized landing page (hero + about)
+- [x] Landing page (hero + about)
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug`
-- [x] First lesson: `useState` at `/dojo/topic/use-state`
-- [x] Mobile-responsive layout
+- [x] Mobile-responsive layout — burger topic menu below `md`
+- [x] Four lessons and counting — `useState`, JSX, components & props, conditional rendering
 - [ ] Deploy v0.1.0 to Vercel
-- [ ] More lessons (topic list lives in `ROADMAP.md`)
+- [ ] More lessons (the open topics are listed in `ROADMAP.md`)
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle
 - [ ] Social links (GitHub, LinkedIn)
