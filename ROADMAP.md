@@ -1,17 +1,23 @@
 # React Dojo — Roadmap
 
-Trackable list of React topics and features to cover next. Check off a topic when you add its note to `NOTES.md`.
+Tick a topic once the reviewer has **verified** it — that means working code here *and* a correct
+explanation from you, not just a right answer to a quiz question. The assessment lives in the
+Knowledge Snapshot at the top of `NOTES.md`, and marking these boxes is the reviewer's job, not
+yours. See "Reviewer responsibilities" in `CLAUDE.md`.
+
+Status markers used on unverified lines: `quiz-passed` = concept understood, needs a lesson ·
+`GAP` = answered wrong or never used.
 
 ## React Core Topics
 
-- [ ] JSX — syntax, expressions, rendering lists
-- [ ] Components & props — passing data down
-- [x] `useState` — stateful components / counters — note written, live at `/dojo/topic/use-state`
-- [ ] Event handling — handlers, event objects, passing arguments
-- [ ] Conditional rendering — ternary, `&&`, early return
-- [ ] Lists & keys — `map()`, why keys matter
+- [x] JSX — syntax, expressions, `className` — lesson live at `/dojo/topic/jsx`
+- [ ] Components & props — passing data down — **GAP, priority #1**: no component here accepts props yet
+- [x] `useState` — stateful components / counters — lesson live at `/dojo/topic/use-state`
+- [ ] Event handling — handlers, event objects, passing arguments — quiz-passed, needs a lesson
+- [ ] Conditional rendering — ternary, `&&`, early return — **GAP**: `{count && …}` renders a bare `0`
+- [ ] Lists & keys — `map()`, why keys matter — quiz-passed, needs a lesson
 - [ ] Forms & controlled components — input state, validation
-- [ ] `useEffect` — side effects (data fetching, subscriptions, cleanup)
+- [ ] `useEffect` — side effects (data fetching, subscriptions, cleanup) — quiz-passed on timing, never written
 - [ ] `useContext` / `useReducer` — global state patterns
 - [ ] Custom hooks — extracting reusable logic
 - [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization
@@ -35,4 +41,4 @@ Trackable list of React topics and features to cover next. Check off a topic whe
 
 ---
 
-*Last updated: 2026-10-04*
+_Last updated: 2026-10-04_

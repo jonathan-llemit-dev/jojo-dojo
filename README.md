@@ -59,19 +59,22 @@ Open [http://localhost:5173](http://localhost:5173) to see the dojo.
 
 ```
 my-react-app/
-├── public/                    # Static assets
+├── public/                    # Static assets served as-is
 ├── src/
 │   ├── main.tsx               # React entry point (<BrowserRouter> + <App />)
 │   ├── App.tsx                # Route table only — no page content lives here
 │   ├── index.css              # Tailwind import + custom @theme tokens
+│   ├── assets/                # Images/SVGs (currently unreferenced scaffold files)
 │   ├── components/
 │   │   ├── layout/            # TutorialLayout (the shell), Sidebar, TopNav
+│   │   ├── sandbox/           # Scratch components for experiments — not real pages
 │   │   └── topics/            # TopicDetail — the individual lesson page
 │   ├── pages/                 # HomePage (landing), TopicIndex (lesson grid)
 │   └── topics/                # The lessons themselves
 │       ├── types.ts           # BeltRank + Topic types
 │       ├── beltStyles.ts      # BeltRank -> Tailwind classes
 │       ├── registry.ts        # The list of lessons (source of truth)
+│       ├── jsx/               # One folder per lesson: demo.tsx + index.ts
 │       └── use-state/         # One folder per lesson: demo.tsx + index.ts
 ├── index.html                 # HTML shell
 ├── vite.config.ts             # Vite + Tailwind plugin config

@@ -45,6 +45,8 @@ src/
 │   │   ├── TutorialLayout.tsx  # <TopNav /> + <Sidebar /> + <Outlet />
 │   │   ├── Sidebar.tsx         # Topic list from registry; active highlight via useMatch
 │   │   └── TopNav.tsx          # Logo + "Dojo" link + GitHub external icon (tutorial shell only)
+│   ├── sandbox/                # Scratch components for experiments — NOT lessons, NOT real pages
+│   │   └── TestGreeting.tsx     # served at /test/:student/:name/:subjects from App.tsx
 │   └── topics/
 │       └── TopicDetail.tsx      # Reads useParams, looks up registry, renders demo
 ├── pages/
@@ -54,6 +56,9 @@ src/
     ├── types.ts                # BeltRank + Topic interface (single source of truth types)
     ├── beltStyles.ts           # BeltRank -> Tailwind classes (beltBadgeClass / beltDotClass)
     ├── registry.ts             # topicRegistry[] + topicBySlug lookup map
+    ├── jsx/
+    │   ├── demo.tsx            # JsxDemo — JSX comment, {2 + 2}, {new Date()...}
+    │   └── index.ts            # Exports jsxTopic registry entry
     └── use-state/
         ├── demo.tsx            # CounterDemo — the live useState working component
         └── index.ts            # Exports useStateTopic registry entry
@@ -68,7 +73,7 @@ src/
 - **TypeScript**: Two separate configs (`tsconfig.app.json` for `src`, `tsconfig.node.json` for `vite.config.ts`). Shared settings: `verbatimModuleSyntax`, `moduleDetection: force`, `noEmit: true`, `erasableSyntaxOnly`. Note: `verbatimModuleSyntax` requires type-only imports to use the `type` keyword (e.g., `import type { Topic } from "../types"`). `tsconfig.app.json` has `noUnusedLocals: true` / `noUnusedParameters: true` — clean up dangling imports when refactoring.
 - **Build tooling**: Vite 8 (built on rolldown) with `@vitejs/plugin-react` and `@tailwindcss/vite`. Vite 8 requires **Node 20.19+ or 22.12+**. The rolldown WASM native binding (`@rolldown/binding-wasm32-wasi`) is an optional dependency — if the build fails with "Cannot find native binding", reinstall with `npm install` (do not use `--omit=optional`). No SSR — `dist/` is a static SPA output.
 - **Sandbox / AI-agent note**: both `tsc -b` and `vite build` need to *write* inside `node_modules` (`node_modules/.tmp/*.tsbuildinfo` and `node_modules/.vite-temp`). If `node_modules` is read-only in a sandbox, `npm run build` fails with `EPERM` / "Access to the path is denied" even when the code is perfectly fine. To type-check without the build cache, use `npx tsc -p tsconfig.app.json --noEmit`; run the real build from a normal terminal.
-- **Docs to keep in sync**: four root files describe this project and they drift easily — `CLAUDE.md` (architecture, for AI assistants), `README.md` (public-facing: versions, install steps, structure), `NOTES.md` (per-topic study notes), `ROADMAP.md` (checklist). After changing a dependency version, a file path, or a route, update all four that mention it.
+- **Docs to keep in sync**: four root files describe this project and they drift easily — `CLAUDE.md` (architecture, for AI assistants), `README.md` (public-facing: versions, install steps, structure), `NOTES.md` (reviewer-written study record), `ROADMAP.md` (verified-progress checklist). After changing a dependency version, a file path, or a route, update all four that mention it.
 
 ## React Lesson Tracking Convention
 
@@ -83,11 +88,36 @@ The journal convention keeps every topic traceable for review and for AI reading
   ```
   (Statuses: `OK` = Mastered, `LD` = Learning, `RV` = Reviewing.)
 
-- **NOTES.md** (at repo root): per-topic **study notes**. Each entry has an explanation of the concept, the sample code you wrote, and a "Where Applied" reference pointing to the file + route in the app. This is the primary review document — read it first to see what's been covered.
+- **NOTES.md** (at repo root): the **reviewer-written** study record — the Knowledge Snapshot, a numbered entry per topic, and a traps cheat-sheet. **The learner does not write here.** Their hands-on work IS the exercise; this file is what they read between sessions. Notes are never a homework task, and "write your study note" must never be asked of them. The reviewer keeps this file current.
 
-- **ROADMAP.md** (at repo root): a clean checklist of React topics, components, and project features to cover next. Check off an item once its note is written in NOTES.md.
+- **ROADMAP.md** (at repo root): a clean checklist of React topics, components, and project features to cover next. Boxes are marked by the **reviewer**, from the Knowledge Snapshot — not merely because a note was written or a lesson file exists. See "Reviewer Responsibilities" below.
 
 - **Deploy note**: `vercel.json` holds a catch-all **`rewrites`** entry to `index.html` so client-side URLs like `/dojo/topic/use-state` resolve after deployment. Do not remove it. It is deliberately a rewrite and not a redirect: rewrites are applied *after* Vercel checks the filesystem, so real files such as `/assets/*.js` are still served as themselves. A catch-all `redirects` entry is evaluated before that check and can answer a JavaScript request with `index.html`, which shows up in the browser as a blank page and `SyntaxError: Unexpected token '<'`.
+
+## Reviewer Responsibilities (AI assistant)
+
+Jonathan is learning React. The AI assistant acts as the **reviewer and assessor** for this journal, and owns three things the learner should not do for themselves:
+
+1. **`NOTES.md` in full** — the Knowledge Snapshot (a dated, honest assessment of what is actually known), the numbered per-topic entries summarising each lesson, and the traps cheat-sheet. This is a reviewer-written document: the learner's hands-on code is the exercise, and their explanation comes out in conversation. Re-assess and update after each new lesson or review session.
+2. **The `ROADMAP.md` checkboxes** — mark them from that snapshot. Never tick a box merely because a lesson file exists.
+3. **The gap list.** This journal is only worth reading if the gaps are accurate. Do not soften a gap to be encouraging — state it plainly, then teach it.
+
+### Evidence standard for ticking a box
+
+A topic counts as verified only when **both** are true:
+
+- **Demonstrated** — working code exists in this repo that the learner wrote or directed, and it exercises the concept. Inherited scaffold code does not count.
+- **Explained** — the learner explained it correctly in their own words, or answered correctly *and* the answer was not guessable from the wording of the options.
+
+A correct multiple-choice answer on its own is **`quiz-passed`, not verified**: record it in the snapshot's "Quiz-passed" list and leave the box unticked. Watch for answers that reveal a misconception behind a plausible-sounding choice, and probe with a second question before recording a verdict.
+
+### How to check knowledge
+
+The interactive question tool renders one question at a time in the GUI and returns the answer immediately, so ask in small batches (2–3), give feedback on each before the next, and prefer questions about code the learner has actually written. A wall of questions at once is counter-productive and was explicitly rejected. Score only well-formed questions: if a question turns out ambiguous, say so and mark it void rather than counting it against the learner.
+
+### Division of labour
+
+The reviewer owns the written record: `NOTES.md` (snapshot, per-topic entries, traps cheat-sheet), the `ROADMAP.md` boxes, and mechanical plumbing such as renames, stale comments, factual errors and formatting. The learner's job is to **build** — write the lesson demos, do the exercises, and explain concepts in their own words when asked. Never assign note-writing as work; it was explicitly declined in favour of hands-on practice.
 
 ## Session Handoff — What We Did & Next Objectives
 
@@ -113,10 +143,31 @@ The journal convention keeps every topic traceable for review and for AI reading
 5. **Deploy config**: `vercel.json` switched from a catch-all `redirects` entry to `rewrites`
    (see the Deploy note above for the reasoning). Worth confirming on the first preview deploy.
 6. **Docs re-synced**: the README claimed React 18 (it is React 19), required Node 18 (Vite 8
-   needs 20.19+ / 22.12+), advertised an `src/assets/` folder that does not exist, and still
-   described the pre-router `App.tsx`. The README's own roadmap and `ROADMAP.md` also disagreed
-   with each other. All four docs were re-checked against the code.
+   needs 20.19+ / 22.12+), and still described the pre-router `App.tsx`. The README's own roadmap
+   and `ROADMAP.md` also disagreed with each other. All four docs were re-checked against the code.
+
+   *Correction to this entry:* it originally also claimed the README advertised an `src/assets/`
+   folder that does not exist. **That was wrong** — `src/assets/` does exist and holds three
+   unreferenced scaffold files (`hero.png`, `react.svg`, `vite.svg`). The reviewer had globbed only
+   `*.ts`/`*.tsx` and asserted the absence without verifying. The README structure has since been
+   corrected to list the folder. Lesson for the reviewer: an absence claim needs its own check.
+
 7. **Verified**: `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` both pass.
+
+### Learner-knowledge review + documentation model
+
+Following the routing exercises and a five-question assessment, the reviewer's role was formalised
+(see "Reviewer Responsibilities" above) and `NOTES.md` was restructured around it:
+
+- Added a **Knowledge Snapshot**: what is solid, what is `quiz-passed`, and the honest gap list.
+- Marked `ROADMAP.md` from that snapshot — only `JSX` and `useState` newly ticked. Quiz-correct topics
+  (lists & keys, event handlers, `useEffect`) deliberately stay unticked, because a correct
+  multiple-choice answer is weak evidence.
+- **Changed the notes model:** `NOTES.md` is reviewer-written. The learner declined note-writing in
+  favour of hands-on practice, so the reviewer now authors the snapshot, the per-topic entries and the
+  traps cheat-sheet. Added entries `02 — JSX`, `03 — Routing`, and the traps table.
+- Confirmed the `TestGreeting` `:subjects` / `teacher` mismatch is **intentional** — it reproduces the
+  common routing bug on purpose and is documented as such in the file, the notes and the tree above.
 
 ### Earlier session — routing migration
 
@@ -131,17 +182,25 @@ The repo was migrated from a **single-page landing app** (`App.tsx` = hero → t
 7. **Docs**: `CLAUDE.md` (arch guide), `NOTES.md` (study notes — layout fixed, ASCII-safe tables), `ROADMAP.md` (checklist), `vercel.json` (SPA deploy fallback).
 
 ### Current project state
-- Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links now scroll to the About section.
-- **One lesson populated**: `useState` at `/dojo/topic/use-state` (live counter demo working; belt dots now actually visible).
+- Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
+- **Two lessons populated**: `useState` at `/dojo/topic/use-state` and `jsx` at `/dojo/topic/jsx` — both added through the registry, with no new routes written.
+- A scratch routing playground lives at `/test/:student/:name/:subjects` (`components/sandbox/TestGreeting.tsx`), kept deliberately as a labelled demonstration of the `:param` ↔ `useParams()` name contract.
 - The old single-page `App.tsx` is gone — replaced by the routes above. The 3 "technique cards" (Vite/Tailwind/Vercel) were dropped per your decision; the GitHub link survives in `TopNav`.
+- **The AI reviewer owns the Knowledge Snapshot in `NOTES.md` and the `ROADMAP.md` boxes** (see "Reviewer Responsibilities" above). Learner knowledge as of the last assessment is summarised there.
 - **Runtime was not verified in this session**: `npm run dev` and `npm run build` both need to write inside `node_modules`, which the AI sandbox blocks. Type-checking and linting passed; please eyeball the pages yourself with `npm run dev`.
 
 ### Next session objectives (priority order)
-1. **Add the next React lesson** to the registry — e.g., `jsx` or `components-props`: create `src/topics/<name>/demo.tsx` + `index.ts`, register in `registry.ts`, write the study note in `NOTES.md`, check it off in `ROADMAP.md`. Keep the marker comment header convention.
-2. **Populate more topics** from ROADMAP.md (JSX, props, event handling, conditional rendering, lists & keys) so the sidebar isn't empty — each becomes a shareable `/dojo/topic/:slug` page for other devs.
-3. **Improve the landing page** if desired — still minimal (hero + About + footer). A "Featured Lessons" preview grid pulling from `topicRegistry` is the natural next step, and would show visitors what the dojo actually contains.
-4. **Consider unifying the two nav bars.** `HomePage.tsx` duplicates the logo/wordmark markup from `TopNav.tsx` because the landing nav links to `#about` while the tutorial nav links to `/dojo`. If they keep drifting, extract a `<Brand />` component used by both.
-5. **Add `@types/testing-library__react`/Vitest** when you're ready to write component tests (currently no test framework).
+1. **Components & props** — the verified gap. No component in this repo accepts props yet, so give an existing demo its first prop (e.g. `label` + `start` on the counter) and pass it from the lesson entry. This unblocks everything else.
+2. **Conditional rendering** — the falsy-value trap (`{count && …}` renders a bare `0`), plus ternary vs `&&` vs early return.
+3. **`useEffect`** — real data fetching with a loading state and cleanup. The concept is understood; it has never been written.
+4. **Forms & controlled inputs**, then **Lists & keys** as a lesson that renders `.map()` with keys — converting a `quiz-passed` into demonstrated knowledge.
+5. **Deploy v0.1.0 to Vercel** and confirm the SPA rewrite handles deep links like `/dojo/topic/jsx` on a real refresh.
+
+### Backlog (not yet prioritised)
+- "Featured Lessons" preview grid on the landing page, pulling from `topicRegistry`.
+- Extract a shared `<Brand />` component — `HomePage.tsx` duplicates the logo markup from `TopNav.tsx`.
+- Delete or actually use the unreferenced files in `src/assets/`.
+- Add Vitest + Testing Library when you want component tests (no test framework yet).
 
 ## ESLint
 

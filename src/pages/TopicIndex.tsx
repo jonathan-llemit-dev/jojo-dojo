@@ -8,7 +8,7 @@ export function TopicIndex() {
     <div className="max-w-4xl">
       <h1 className="text-3xl font-bold mb-2">Welcome to the Dojo</h1>
       <p className="text-dojo-muted mb-8">
-        Choose a topic from the sidebar above, or pick one below to start learning.
+        Choose a topic from the sidebar, or pick one below to start learning.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -26,7 +26,8 @@ export function TopicIndex() {
                 className={`ml-3 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs ${beltBadgeClass(topic.belt)}`}
               >
                 <span
-                  className={`h-1.5 w-1.5 rounded-full ${beltDotClass(topic.belt)}`}></span>
+                  className={`h-1.5 w-1.5 rounded-full ${beltDotClass(topic.belt)}`}
+                ></span>
                 {topic.belt}
               </span>
             </div>
