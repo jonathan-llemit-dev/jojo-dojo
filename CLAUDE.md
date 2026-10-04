@@ -62,6 +62,9 @@ src/
     ├── components-props/
     │   ├── demo.tsx            # PropsDemo + Drill — props down; began as a fix-it exercise
     │   └── index.ts            # Exports componentsPropsTopic registry entry
+    ├── conditional-rendering/
+    │   ├── demo.tsx            # ConditionalDemo + SummaryRow — named boolean + ternary; began as a fix-it exercise
+    │   └── index.ts            # Exports conditionalRenderingTopic registry entry
     └── use-state/
         ├── demo.tsx            # CounterDemo — the live useState working component
         └── index.ts            # Exports useStateTopic registry entry
@@ -92,9 +95,14 @@ The journal convention keeps every topic traceable for review and for AI reading
   ```
   (Statuses: `OK` = Mastered, `LD` = Learning, `RV` = Reviewing.)
 
-- **Sample code mirrors the live demo**: a topic's `codeExample` in `index.ts` should be a copy of that lesson's `demo.tsx`, so what the reader sees is exactly what runs and the two cannot drift apart. Write the template literal **flush against the left margin** — a template literal preserves indentation, so indenting it to match the surrounding code renders as ragged leading whitespace in the Sample Code panel. Actual state, verified by diffing each snippet against its demo: `components-props` is an exact mirror (46 lines, identical); `jsx` matches except for the leading `export` keyword; `use-state` is deliberately trimmed for readability (38 code lines down to 11) and is the one intentional exception. The reviewer should re-run that diff rather than eyeball it.
+- **Sample code mirrors the live demo**: a topic's `codeExample` in `index.ts` should be a copy of that lesson's `demo.tsx`, so what the reader sees is exactly what runs and the two cannot drift apart. Write the template literal **flush against the left margin** — a template literal preserves indentation, so indenting it to match the surrounding code renders as ragged leading whitespace in the Sample Code panel.
+  - **The import line is not decoration — it follows from the hooks used.** `jsx` correctly has none: it calls no hook, and React 19 needs no `import React`, so adding one would teach the wrong thing. `use-state` and `components-props` both open with `import { useState } from "react";`. Verified: every snippet's imports match its demo's exactly.
+  - Current parity, verified by diffing each snippet against its demo: `components-props` is byte-identical (46 lines); `conditional-rendering` is byte-identical (63 lines, escaped — see the next point); `jsx` matches except that the sample omits the leading `export` (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability (38 code lines down to 11).
+  - **If the demo contains its own template literal, escape it.** A bare backtick would terminate the sample's template literal early and `${` would be interpolated, so write `\`` and `\${` in `index.ts`, and make the parity check unescape before comparing. `conditional-rendering` is the worked example.
+  - Re-run that diff rather than eyeballing it.
+  - **Exception — fix-it exercises.** While a lesson ships deliberately broken, its snippet teaches the *correct* pattern instead of mirroring the buggy demo. Swap it for the real mirror once the exercise is fixed. No lesson is currently in that state.
 
-- **Fix-it exercises**: a lesson may be shipped deliberately broken to teach a concept. The rules: the marker says `Status: LD`; the file's header comment lists the **observed symptoms only** — never the bug locations or the fix — so the learner has to diagnose; every planted bug must still compile, keeping `tsc` and `npm run lint` green; the roadmap line is marked `IN PROGRESS`; and `NOTES.md` explains the concept-level rules, not the answers. When the learner reports it fixed, re-assess, verify `tsc`/lint, then flip the roadmap box and rewrite the notes entry as verified. An exercise must **name its expected values** — otherwise a workaround is a reasonable answer, as happened when bug 1 never said what the second drill should be called.
+- **Fix-it exercises**: a lesson may be shipped deliberately broken to teach a concept. The rules: the marker says `Status: LD`; the file's header comment lists the **observed symptoms only** — never the bug locations or the fix — so the learner has to diagnose; every planted bug must still compile, keeping `tsc` and `npm run lint` green; the roadmap line is marked `IN PROGRESS`; and `NOTES.md` explains the concept-level rules, not the answers. When the learner reports it fixed, re-assess, verify `tsc`/lint, then flip the roadmap box and rewrite the notes entry as verified. An exercise must **name its expected values** — otherwise a workaround is a reasonable answer, as happened when bug 1 never said what the second drill should be called. And **simulate a planted bug's symptoms, never describe them from reading the code**: the `conditional-rendering` header first claimed the badge was missing from 1–5 reps, until a five-line simulation showed the guards happen to render correctly in that range and the real symptom is a gap at 0 reps with an overlap from 6.
 
 - **NOTES.md** (at repo root): the **reviewer-written** study record — the Knowledge Snapshot, a numbered entry per topic, and a traps cheat-sheet. **The learner does not write here.** Their hands-on work IS the exercise; this file is what they read between sessions. Notes are never a homework task, and "write your study note" must never be asked of them. The reviewer keeps this file current.
 
@@ -182,8 +190,19 @@ Following the routing exercises and a five-question assessment, the reviewer's r
 1. **New lesson `components-props`** at `/dojo/topic/components-props` — a third registry entry, added with no new routes.
 2. **Shipped deliberately broken, as a fix-it exercise.** Two bugs, both compiling: the parent omits an optional `label` prop (blank heading), and the child copies its `reps` prop into `useState`, so its number freezes at `0` while the parent's total climbs. The file header documents the **symptoms only**, never the locations, so the learner has to diagnose them. Confirmed `tsc` and `npm run lint` stay **green** — a fix-it exercise must still build.
 3. **Mobile responsive pass.** The tutorial shell was unusable on a phone: the fixed `w-64` sidebar left roughly 120px of content on a 375px screen. It now stacks below `md` — the sidebar becomes a horizontally scrollable strip (`w-full md:w-64`) — and returns to side-by-side from `md` up, using the *same* markup with no duplicated nav. Also made the landing and top-nav links visible on small screens instead of `hidden sm:*`, tightened padding (`px-4 sm:px-6`), scaled headings down (`text-2xl md:text-3xl`, hero `text-4xl sm:text-5xl md:text-7xl`), and added `min-w-0` / `shrink-0` to card headers so long titles wrap rather than squashing the belt badge.
-4. **Runtime still unverified**: the sandbox blocks `npm run dev`, so the responsive layout is reasoned, not seen. Needs a check at ~375px wide.
+4. **Responsive layout verified visually by the learner** at phone width — the one thing the reviewer could not check, since the sandbox blocks `npm run dev`. Individual lesson demos are still only type-checked, never observed by the reviewer.
 5. **Verified and closed out (attempt 2).** Bug 2 was solved **unaided** — the prop copied into `useState` was deleted and the prop rendered directly. Bug 1 needed a nudge: attempt 1 printed `N/A` for the missing prop, which hid the defect rather than fixing it, so the reviewer pointed at the *type* instead of the render. Making `label` required turned a silent runtime bug into a compile error and forced the second call site to pass a real label; the fallback was then dead code. Closed out: `ROADMAP.md` box ticked, `NOTES.md` entry 04 rewritten as verified with an explicit note on which bug was unaided vs guided, a traps-table row added for the `|| "N/A"` mask, and the stale "deliberately broken" header plus the now-wrong `?`-comment in `demo.tsx` rewritten so the lesson is recorded in the code itself. **Process lesson:** bug 1 never specified what the second drill should be called, which made a fallback a reasonable inference — an exercise must name its expected values.
+
+### Conditional rendering lesson (second fix-it exercise)
+
+1. **New lesson `conditional-rendering`** at `/dojo/topic/conditional-rendering` — a fourth registry entry, added with no new routes, targeting the one fundamental with a wrong answer on record (the falsy-value trap).
+2. **Shipped deliberately broken, both bugs compiling.** A bare `0` printed by `{reps && <SummaryRow …/>}` — the trap itself — and two independent `&&` guards standing in for one ternary, which leave the badge blank at 0 reps and show **both** badges from 6 reps on. The header lists the symptoms *and* the expected behaviour, applying the process lesson from the props exercise: **name the expected values**, so a workaround cannot pass as a fix.
+3. **The snippet deliberately did not mirror the demo while it shipped broken.** Because the demo was broken, `codeExample` taught the correct patterns — a ternary for either/or, and a *named* boolean (`const reachedMilestone = reps >= 10;`) so the left side of `&&` can never be a number — instead of displaying the bug. That exception is now written into the mirror rule. (Superseded once fixed — see item 7.)
+4. **Reuses props on purpose**: the demo renders a `SummaryRow` child taking `label` and `value`, so the previous lesson's concept is reinforced rather than parked.
+5. Verified `tsc` and `npm run lint` stay green with both bugs in place.
+6. **Verified and closed out.** Both bugs fixed on the first attempt, after a framing hint, and the fix was better than the minimum: the condition was named once (`const isTraining = reps > 0;`) and then reused, so the badge collapsed to a single ternary and `&&` could never receive a number. Recorded as **guided** — the hint plus the named-boolean pattern being visible in the sample — so props bug 2 remains the only unaided fix on record. The learner also added a fatigue warning above 20 reps, which is beyond the exercise; every conditional it added keeps a real boolean on the left.
+7. **Sample code swapped for a real mirror** — 63/63 lines against the repaired demo. It is the first sample needing **escaping**: the demo contains its own template literal, so `\`` and `\${` are escaped in `index.ts` and the parity check unescapes before comparing. That rule is now part of the mirror convention.
+8. **Found and fixed a stale status line** in `NOTES.md` entry 04, which still read "exercise in progress, not yet verified" long after props was verified — the close-out had updated the evidence section but not the header. Worth checking the status line of any entry being closed out.
 
 ### Earlier session — routing migration
 
@@ -199,20 +218,19 @@ The repo was migrated from a **single-page landing app** (`App.tsx` = hero → t
 
 ### Current project state
 - Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
-- **Three lessons populated, all verified**: `jsx` at `/dojo/topic/jsx`, `components-props` at `/dojo/topic/components-props`, and `useState` at `/dojo/topic/use-state` — all added through the registry, with no new routes written.
-- **Layout is mobile-responsive**: the sidebar collapses to a swipeable strip below `md`, and the nav/padding/headings scale down. Reasoned rather than seen — the sandbox blocks `npm run dev`, so check it at ~375px wide yourself.
+- **Four lessons populated, all four verified**: `jsx`, `components-props`, `useState` and `conditional-rendering` — all added through the registry, with no new routes written.
+- **Layout is mobile-responsive**, and now **confirmed by the learner at phone width**: the sidebar collapses to a swipeable strip below `md`, and the nav/padding/headings scale down. The reviewer cannot run `npm run dev`, so visual checks are the learner's to make.
 - A scratch routing playground lives at `/test/:student/:name/:subjects` (`components/sandbox/TestGreeting.tsx`), kept deliberately as a labelled demonstration of the `:param` ↔ `useParams()` name contract.
 - The old single-page `App.tsx` is gone — replaced by the routes above. The 3 "technique cards" (Vite/Tailwind/Vercel) were dropped per your decision; the GitHub link survives in `TopNav`.
 - **The AI reviewer owns the Knowledge Snapshot in `NOTES.md` and the `ROADMAP.md` boxes** (see "Reviewer Responsibilities" above). Learner knowledge as of the last assessment is summarised there.
-- **Runtime was not verified in this session**: `npm run dev` and `npm run build` both need to write inside `node_modules`, which the AI sandbox blocks. Type-checking and linting passed; please eyeball the pages yourself with `npm run dev`.
+- **The reviewer cannot run `npm run dev` or `npm run build`**: both need to write inside `node_modules`, which the AI sandbox blocks. Type-checking and linting pass, and the responsive layout has been confirmed visually by the learner — but each lesson demo is still only type-checked, never observed by the reviewer.
 
 ### Next session objectives (priority order)
-1. **Conditional rendering** — the falsy-value trap (`{count && …}` renders a bare `0`), plus ternary vs `&&` vs early return. The last fundamental with a wrong answer on record.
-2. **Lists & keys** — a lesson that renders `.map()` with keys, converting a `quiz-passed` into demonstrated knowledge.
-3. **Event handling** — a lesson to convert the other `quiz-passed` into demonstrated knowledge.
-4. **`useEffect`** — real data fetching with a loading state and cleanup. The concept is understood; it has never been written.
-5. **Forms & controlled inputs** — the natural companion to `useEffect`.
-6. **Deploy v0.1.0 to Vercel** and confirm the SPA rewrite handles deep links on a real refresh.
+1. **Lists & keys** — a lesson that renders `.map()` with keys, converting a `quiz-passed` into demonstrated knowledge. The most natural next target: it is the only quiz-passed concept that a lesson already needs.
+2. **Event handling** — a lesson to convert the other `quiz-passed` into demonstrated knowledge.
+3. **`useEffect`** — real data fetching with a loading state and cleanup. The concept is understood; it has never been written.
+4. **Forms & controlled inputs** — the natural companion to `useEffect`.
+5. **Deploy v0.1.0 to Vercel** and confirm the SPA rewrite handles deep links on a real refresh.
 
 ### Backlog (not yet prioritised)
 - "Featured Lessons" preview grid on the landing page, pulling from `topicRegistry`.

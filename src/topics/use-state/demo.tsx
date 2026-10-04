@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // Topic: useState — Stateful Components & Counters
-// Added: 2026-10-01 | Status: LD
+// Added: 2026-10-01 | Status: OK
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 

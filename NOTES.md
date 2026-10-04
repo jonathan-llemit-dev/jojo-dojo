@@ -24,6 +24,7 @@ The status on each entry comes from the topic-marker comment at the top of that 
 | JSX syntax | Built the `jsx` lesson: a JSX comment, `{2 + 2}`, `{new Date().toLocaleDateString()}`, `className` |
 | `useState` | The counter demo, plus explained why a plain variable cannot hold a value that changes |
 | Routing basics | Built `/test/:student/:name/:subjects` (three params, one route) and registered a lesson — the sidebar link, the `/dojo/topic/jsx` URL and the grid card all appeared having written **zero** new routes |
+| Conditional rendering | Fixed both bugs in the `conditional-rendering` exercise, and went past the minimum: named the condition once instead of patching each guard. Guided — entry 05 |
 | Components & props | Fixed both bugs in the `components-props` fix-it lesson — deleted a prop mirrored into `useState` (unaided), and made an optional prop required so the compiler caught the call site that omitted it. Details in entry 04 |
 | File & component structure | Followed the registry convention unaided: `demo.tsx` + `index.ts`, marker header, camelCase export for a data object rather than PascalCase |
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
@@ -42,22 +43,21 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### Gaps — the honest list
 
-- **Conditional rendering precision.** `{count && <p>…</p>}` renders a bare `0` on screen when `count` is `0`, because `&&` returns the falsy left operand itself instead of coercing to a boolean. Needs `count > 0 && …` — which the existing counter already does correctly.
 - **Never used at all:** forms / controlled inputs, `useContext` / `useReducer`, custom hooks, `useMemo` / `useCallback`, `useRef`, portals.
 
 ### Next, in order
 
-1. **Conditional rendering** — the falsy trap, plus ternary vs `&&` vs early return. This is the last fundamental with a known wrong answer against it.
-2. **Lists & keys** — a lesson that renders `.map()` with keys, converting a quiz-pass into demonstrated knowledge.
-3. **Event handling** — a lesson to convert the other quiz-pass into demonstrated knowledge.
-4. **`useEffect`** — real data fetching with a loading state and cleanup.
-5. **Forms & controlled inputs** — the natural companion to `useEffect`.
+1. **Lists & keys** — a lesson that renders `.map()` with keys, converting a quiz-pass into demonstrated knowledge.
+2. **Event handling** — a lesson to convert the other quiz-pass into demonstrated knowledge.
+3. **`useEffect`** — real data fetching with a loading state and cleanup.
+4. **Forms & controlled inputs** — the natural companion to `useEffect`.
+5. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
 
 ---
 
 ## 01 — `useState` (Stateful Components / Counters)
 
-- **Status:** LD (Learning)
+- **Status:** OK (Mastered) — verified (the core: state vs plain variable, functional updates). Batching edge cases, lazy initialisers and object state are still ahead of you.
 - **Added:** 2026-10-01
 - **Belt:** white
 - **Marker file:** `src/topics/use-state/demo.tsx`
@@ -250,7 +250,7 @@ reports as a blank page and `SyntaxError: Unexpected token '<'`.
 
 ## 04 — Components & Props (Data Down, Events Up)
 
-- **Status:** LD (Learning) — **exercise in progress, not yet verified**
+- **Status:** OK (Mastered) — verified
 - **Added:** 2026-10-04
 - **Belt:** white
 - **Marker file:** `src/topics/components-props/demo.tsx`
@@ -298,31 +298,85 @@ loaded normally and nothing crashed:
 
 ### How it was verified — 2026-10-04
 
-Shipped as a fix-it exercise with two bugs that both compiled. Both symptoms are now gone, the fixes
-live in `src/topics/components-props/demo.tsx`, and `tsc` / `npm run lint` are green.
+Two rounds: attempt 1 fixed one bug properly and worked around the other; attempt 2 closed it out.
 
-**Evidence note:** bug 2 was solved **unaided** — only its symptom was ever described, never its
-location. Bug 1 needed a nudge (the reviewer pointed at the type), so it counts as guided.
+**Bug 2 — solved unaided (attempt 1).** `const [snapshot] = useState(reps)` was replaced by using
+`{reps}` directly. That is exactly right, and it is the harder of the two: the copy existed only to be
+frozen at the first render, so rendering the prop is the whole fix. The rows now follow the session
+total. Only the symptom was ever described to the learner, never the location.
 
-- ✅ **Bug 2 solved.** `const [snapshot] = useState(reps)` was replaced by using `{reps}` directly.
-  That is exactly right, and it is the harder of the two bugs: the copy existed only to be frozen at
-  the first render, so rendering the prop is the whole fix. The rows now follow the session total.
-- ⚠️ **Bug 1 suppressed, not solved.** The heading is no longer blank, but only because the *child*
-  was taught to print `N/A` when the prop is missing (`{label || "N/A"}`). The row now reads "N/A"
-  forever — accurate, but useless: a visitor sees a drill with no name.
+**Bug 1 — worked around, then solved (attempt 2).** Attempt 1 made the *child* print `N/A` when the prop
+was missing (`{label || "N/A"}`), which silenced the symptom and kept the defect: the row read "N/A"
+forever. The real problem was the **type**, not the render — `label?: string` permits "a drill with no
+name", and that is not a state this app should be able to represent. Making it `label: string` forced
+TypeScript to reject the call site that omitted it, so the compiler did the searching and the fallback
+became dead code. This one needed a nudge (the reviewer pointed at the type), so it counts as guided.
 
-  The real defect is in the **type**, not the render. `label?: string` permits "a drill with no name",
-  and that is not a state this app should be able to represent. Change it to `label: string`
-  (required) and TypeScript finds the omission for you — it will refuse to compile the second
-  `<Drill />` until a label is passed, and the `|| "N/A"` fallback then becomes dead code you can
-  delete. Let the compiler locate the call sites instead of catching the problem at render time.
-
-  **Resolved on attempt 2:** `label` is now required (`label: string`), both rows pass a real name,
-  and the `|| "N/A"` fallback is deleted. The compiler was made to do the searching.
-
-**The lesson worth keeping:** a display fallback and a real fix can look identical in the UI — both
-make the symptom vanish. If a value is genuinely required, put the requirement in the type and let the
+**The lesson worth keeping:** a display fallback and a real fix can look identical in the UI — both make
+the symptom vanish. If a value is genuinely required, put the requirement in the type and let the
 compiler find the call sites you forgot, instead of catching the problem at render time.
+
+---
+
+## 05 — Conditional Rendering (`&&`, Ternary, Early Return)
+
+- **Status:** OK (Mastered) — verified
+- **Added:** 2026-10-04
+- **Belt:** white
+- **Marker file:** `src/topics/conditional-rendering/demo.tsx`
+- **Route:** `/dojo/topic/conditional-rendering`
+
+### Explanation
+
+Conditional rendering is not a React feature — it is plain JavaScript deciding what to return. JSX has no
+`if` statement of its own, so you use an expression. There are three tools, and picking the right one is
+most of the skill:
+
+| Tool | Reach for it when |
+| --- | --- |
+| `condition && <Thing />` | Show Thing, or show nothing. There is no "else". |
+| `condition ? <A /> : <B />` | Both outcomes are real — a ternary cannot leave a gap. |
+| `if (!data) return <Empty />` early | The *whole component* differs, not just one line of it. |
+
+### The two traps this lesson is built on
+
+1. **`&&` does not coerce to a boolean.** It returns the *left operand itself* when that operand is falsy,
+   and React renders numbers. So `{reps && <p>…</p>}` prints a bare `0` on the page. A comparison fixes it
+   — `{reps > 0 && …}` — because `reps > 0` genuinely is `true` or `false`. React renders nothing for
+   `false`, `null`, `undefined` and `true`; everything else, `0` and `NaN` included, reaches the screen.
+2. **Two `&&`s are not an either/or.** Independent guards can overlap (both show) or leave a gap (neither
+   shows), because nothing ties them together. If two states exist and one must always be visible, that is
+   a ternary.
+
+The technique worth stealing from the sample code: give the condition a name (`const reachedMilestone =
+reps >= 10;`) and the boolean stays a boolean, so the `&&` can never print a stray number.
+
+### How it was verified — 2026-10-04
+
+`src/topics/conditional-rendering/demo.tsx` shipped as a fix-it exercise with two bugs that both
+compiled — a stray `0` from `{reps && …}`, and two independent `&&` guards where one ternary belonged
+(they left the badge blank at 0 reps and showed **both** badges from 6 reps on). Both are now fixed,
+and the remedy was better than the minimum: instead of patching each guard, the condition was
+**named once** and reused —
+
+```tsx
+const isTraining = reps > 0;
+```
+
+— so the badge became a single ternary (exactly one branch, always) and `&&` received a real boolean it
+can never print. The card also grew a fatigue warning above 20 reps, and every conditional it added
+keeps a real boolean on the left.
+
+**Evidence note:** this counts as **guided**, not unaided. The reviewer had offered a framing hint ("an
+expression that returns a value is being used where you wanted a condition") and the lesson's own sample
+code already showed the named-boolean pattern. Props bug 2 remains the only unaided fix on record.
+
+### Why the snippet escapes its backticks
+
+The demo contains its own template literal (`` value={`${reps} reps in the bank`} ``). A bare backtick
+would end the sample's template literal early, and `${` would be interpolated, so both are escaped in
+`index.ts` — which means the parity check has to unescape before comparing. Verified that way: **63 of
+63 lines identical**.
 
 ---
 

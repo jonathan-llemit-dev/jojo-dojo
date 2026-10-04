@@ -14,7 +14,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] Components & props — passing data down — lesson live at `/dojo/topic/components-props`
 - [x] `useState` — stateful components / counters — lesson live at `/dojo/topic/use-state`
 - [ ] Event handling — handlers, event objects, passing arguments — quiz-passed, needs a lesson
-- [ ] Conditional rendering — ternary, `&&`, early return — **GAP**: `{count && …}` renders a bare `0`
+- [x] Conditional rendering — `&&`, ternary, early return — lesson live at `/dojo/topic/conditional-rendering`
 - [ ] Lists & keys — `map()`, why keys matter — quiz-passed, needs a lesson
 - [ ] Forms & controlled components — input state, validation
 - [ ] `useEffect` — side effects (data fetching, subscriptions, cleanup) — quiz-passed on timing, never written
