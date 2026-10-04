@@ -69,7 +69,7 @@ my-react-app/
 │   ├── components/
 │   │   ├── layout/            # TutorialLayout (the shell), Sidebar, TopNav
 │   │   ├── sandbox/           # Scratch components for experiments — not real pages
-│   │   └── topics/            # TopicDetail — the individual lesson page
+│   │   └── topics/            # TopicDetail (the lesson page) + RichText (the write-up)
 │   ├── pages/                 # HomePage (landing), TopicIndex (lesson grid)
 │   └── topics/                # The lessons themselves
 │       ├── types.ts           # BeltRank + Topic types

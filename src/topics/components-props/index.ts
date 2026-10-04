@@ -9,17 +9,19 @@ export const componentsPropsTopic: Topic = {
   description:
     "Pass data into a component with props, and learn why props are read-only snapshots you must never copy into state.",
   longDescription:
-    "Props are the arguments you hand to a component, written in JSX like HTML attributes: " +
-    '<Drill label="Roundhouse kicks" reps={5} />. Inside the component they arrive as one object, ' +
-    "which you normally destructure right in the parameter list: function Drill({ label, reps }) { … }.\n\n" +
+    "Props are the arguments you hand to a component, written in JSX like HTML attributes:\n\n" +
+    '```\n<Drill label="Roundhouse kicks" reps={5} />\n```\n\n' +
+    "Inside the component they arrive as one object, which you normally destructure right in the " +
+    "parameter list:\n\n" +
+    "```\nfunction Drill({ label, reps }: DrillProps) { … }\n```\n\n" +
     "Props flow in ONE direction — down, from parent to child. A child cannot change the props it " +
     "receives, because they are a fresh snapshot handed to it on every render; only the parent can " +
     "pass something different. So when a child needs to change a value, the parent owns that value in " +
-    "useState and passes down BOTH the value and a function to change it. The child calls the " +
+    "`useState` and passes down BOTH the value and a function to change it. The child calls the " +
     "function, the parent's state updates, and the new value flows back down as props. That is the " +
     "entire loop: data down, events up.\n\n" +
     "Two rules worth burning in:\n" +
-    '- Never copy a prop into useState to "keep" it. useState(prop) reads that prop only on the ' +
+    '- Never copy a prop into `useState` to "keep" it. `useState(prop)` reads that prop only on the ' +
     "FIRST render; from then on the copy is frozen while the real value moves on, and the two drift " +
     "apart forever. Use the prop directly.\n" +
     "- An optional prop (`label?: string`) is a promise that the component still works without it. " +

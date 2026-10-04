@@ -33,6 +33,11 @@ The status on each entry comes from the topic-marker comment at the top of that 
 every file here, but there was no separate quiz question for it. Everything else in this table was
 confirmed by code **and** a correct explanation.*
 
+*Scope note: deeper `useState` material — object and array state, lazy initialisers, and batching when
+one handler sets state twice — is tracked as its own roadmap item rather than kept as a caveat on the
+completed lesson. Every `useState` in the repo currently holds a number, which is why that surface has
+not been exercised yet.*
+
 ### Quiz-passed — explained correctly, no dedicated code yet
 
 Understood as *concepts*, not yet *demonstrated as skills*. A single correct multiple-choice answer is weak evidence, so these stay unticked until a lesson exercises them.
@@ -57,7 +62,7 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ## 01 — `useState` (Stateful Components / Counters)
 
-- **Status:** OK (Mastered) — verified (the core: state vs plain variable, functional updates). Batching edge cases, lazy initialisers and object state are still ahead of you.
+- **Status:** OK (Mastered) — verified
 - **Added:** 2026-10-01
 - **Belt:** white
 - **Marker file:** `src/topics/use-state/demo.tsx`

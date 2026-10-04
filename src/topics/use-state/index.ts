@@ -11,14 +11,14 @@ export const useStateTopic: Topic = {
   description:
     "Add state to a function component with the useState Hook and build a live counter.",
   longDescription:
-    "useState is a React Hook that lets you add state to a function component. " +
+    "`useState` is a React Hook that lets you add state to a function component. " +
     "It returns a stateful value and a function to update it. The state persists " +
     "across renders — when the updater function is called, React re-renders the " +
     "component so the UI stays in sync with the latest state.\n\n" +
     "Key rules:\n" +
     "- Call it at the top level of your component (not inside loops, conditions, or nested functions).\n" +
     "- Updates may be asynchronous — React batches them, so rely on the functional updater form " +
-    "(setCount(c => c + 1)) when the new state depends on the previous state.\n" +
+    "`setCount(c => c + 1)` when the new state depends on the previous state.\n" +
     "- You can store any primitive or object shape as state; for objects, replace rather than mutate.",
   // A template literal keeps this snippet readable: what you see here is what
   // renders in the "Sample Code" panel, indentation and line breaks included.

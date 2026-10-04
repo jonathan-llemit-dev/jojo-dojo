@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { topicBySlug } from "../../topics/registry";
 import { beltBadgeClass, beltDotClass } from "../../topics/beltStyles";
+import { RichText } from "./RichText";
 
 /**
  * Individual topic page rendered at `/dojo/topic/:slug`.
@@ -56,9 +57,9 @@ export function TopicDetail() {
           <h2 className="text-lg font-semibold mb-3 text-dojo-ember">
             Description
           </h2>
-          <p className="text-dojo-muted leading-relaxed whitespace-pre-line">
-            {topic.longDescription}
-          </p>
+          {/* RichText understands `inline code`, ``` blocks, "- " bullets and
+              blank-line paragraphs — see the convention in CLAUDE.md. */}
+          <RichText text={topic.longDescription} />
         </section>
       )}
 

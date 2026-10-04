@@ -48,7 +48,8 @@ src/
 │   ├── sandbox/                # Scratch components for experiments — NOT lessons, NOT real pages
 │   │   └── TestGreeting.tsx     # served at /test/:student/:name/:subjects from App.tsx
 │   └── topics/
-│       └── TopicDetail.tsx      # Reads useParams, looks up registry, renders demo
+│       ├── TopicDetail.tsx      # Reads useParams, looks up registry, renders demo
+│       └── RichText.tsx         # longDescription -> paragraphs, bullets, inline + block code
 ├── pages/
 │   ├── HomePage.tsx            # Landing hero + About section (has its own small nav)
 │   └── TopicIndex.tsx          # Default content at /dojo (topic overview grid)
@@ -75,7 +76,12 @@ src/
 - **Styling**: Tailwind CSS v4 with `@theme` block in `src/index.css`. Custom design tokens (`--color-dojo-*`, `--font-display`) become real Tailwind utilities (e.g., `bg-dojo-bg`, `text-dojo-ember`). Match this approach when adding new custom tokens.
 - **Responsive by default**: mobile-first, using Tailwind's `sm:` (640px) and `md:` (768px) breakpoints. The tutorial shell stacks below `md` — the sidebar becomes a horizontally scrollable strip above the content (`w-full md:w-64 md:border-r`) — and switches to the side-by-side layout from `md` up. Both states use the *same* markup, so never duplicate a nav for mobile. Page padding goes `px-4 sm:px-6` and headings scale (`text-2xl md:text-3xl`). Check any new layout at ~375px wide before calling it done.
 - **Belt colors live in exactly one place**: `src/topics/beltStyles.ts` exports `beltBadgeClass()` (bordered pill → border + text color) and `beltDotClass()` (filled circle → background color). The palette mapping is white/blue → `dojo-ember` (gold), black → `dojo-crimson` (red). Use these helpers instead of writing belt colors inline: a badge and a dot need *different* utilities, and giving a dot the badge classes renders an invisible dot (`text-*` colors text a dot does not have; `border-*` only sets a border color on an element with no border width).
-- **Topic registry is the source of truth**: `src/topics/registry.ts` powers both the sidebar navigation list and the topic content panel. New topics are added as a folder under `src/topics/<name>/` with `demo.tsx` (working component) and `index.ts` (registry entry). Register them in `registry.ts`.
+- **Long descriptions are rendered by `RichText`**: `src/components/topics/RichText.tsx` turns `topic.longDescription` into real elements, so code references show as code instead of raw backticks. It builds plain React nodes and never uses `dangerouslySetInnerHTML`, so a description cannot inject markup. The markup is deliberately tiny — four rules:
+  - `` `like this` `` → **inline code**, styled to match the Sample Code panel. Use it for identifiers, keywords and short expressions (`useState`, `className`, `{reps && <p>…</p>}`).
+  - three backticks alone on a line → a fenced **code block**. Use this for anything that is a snippet or a usage example, rather than inline code.
+  - `- ` at the start of a line → a bullet; a plain line following one continues that bullet, so long bullets can wrap in the source.
+  - a blank line separates paragraphs.
+  Every description must therefore have **balanced backticks** — an unpaired one renders literally. `description` (the one-line summary shown in the sidebar and topic grid) is plain text and is *not* parsed, so keep that one markup-free.
 - **Component structure**: `App.tsx` is now just `<Routes>` — all page content lives in `pages/` and `components/`. Do not put section markup back into `App.tsx`.
 - **TypeScript**: Two separate configs (`tsconfig.app.json` for `src`, `tsconfig.node.json` for `vite.config.ts`). Shared settings: `verbatimModuleSyntax`, `moduleDetection: force`, `noEmit: true`, `erasableSyntaxOnly`. Note: `verbatimModuleSyntax` requires type-only imports to use the `type` keyword (e.g., `import type { Topic } from "../types"`). `tsconfig.app.json` has `noUnusedLocals: true` / `noUnusedParameters: true` — clean up dangling imports when refactoring.
 - **Build tooling**: Vite 8 (built on rolldown) with `@vitejs/plugin-react` and `@tailwindcss/vite`. Vite 8 requires **Node 20.19+ or 22.12+**. The rolldown WASM native binding (`@rolldown/binding-wasm32-wasi`) is an optional dependency — if the build fails with "Cannot find native binding", reinstall with `npm install` (do not use `--omit=optional`). No SSR — `dist/` is a static SPA output.
@@ -203,6 +209,15 @@ Following the routing exercises and a five-question assessment, the reviewer's r
 6. **Verified and closed out.** Both bugs fixed on the first attempt, after a framing hint, and the fix was better than the minimum: the condition was named once (`const isTraining = reps > 0;`) and then reused, so the badge collapsed to a single ternary and `&&` could never receive a number. Recorded as **guided** — the hint plus the named-boolean pattern being visible in the sample — so props bug 2 remains the only unaided fix on record. The learner also added a fatigue warning above 20 reps, which is beyond the exercise; every conditional it added keeps a real boolean on the left.
 7. **Sample code swapped for a real mirror** — 63/63 lines against the repaired demo. It is the first sample needing **escaping**: the demo contains its own template literal, so `\`` and `\${` are escaped in `index.ts` and the parity check unescapes before comparing. That rule is now part of the mirror convention.
 8. **Found and fixed a stale status line** in `NOTES.md` entry 04, which still read "exercise in progress, not yet verified" long after props was verified — the close-out had updated the evidence section but not the header. Worth checking the status line of any entry being closed out.
+
+### UI convention — code in descriptions now renders as code
+
+1. **Fixed a real defect, not just polish.** `topic.longDescription` was rendered as a single `<p>` with `whitespace-pre-line`, so every backtick and bullet dash the content already contained was appearing **literally** on the lesson pages: readers saw `` `useState` `` complete with backticks, and `- ` lists as run-on prose.
+2. **Added `src/components/topics/RichText.tsx`** — a small renderer that turns the string into paragraphs, bullets, inline `<code>` and fenced `<pre><code>` blocks. It builds ordinary React nodes and never uses `dangerouslySetInnerHTML`, so description text can never inject markup. Hand-rolled instead of adding a Markdown dependency: four documented rules, nothing to install, and short enough to actually read.
+3. **Wired into `TopicDetail`**, replacing that `<p>`.
+4. **Marked up the existing content.** `components-props` had two snippets sitting in prose (`<Drill … />` and `function Drill({ … })`), now proper code blocks; `use-state` had `(setCount(c => c + 1))` and a bare `useState`; `jsx` had three unmarked brace expressions. `conditional-rendering` was already well marked up.
+5. **Verified mechanically**, since the reviewer cannot run the app: the same parse logic was re-run in Node against all four extracted description strings — correct block structure, both `components-props` snippets fenced, and **every backtick pair and fence balanced** (an unpaired backtick would render literally). Worth repeating whenever description content changes.
+6. **Documented the convention** under Key Patterns, including that `description` — the one-line summary in the sidebar and topic grid — is plain text and must stay markup-free.
 
 ### Earlier session — routing migration
 

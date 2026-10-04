@@ -14,7 +14,8 @@ export const jsxTopic: Topic = {
     "JSX makes it easier to visualize the structure of your UI and allows you to embed expressions and components seamlessly.\n\n" +
     "Key points:\n" +
     "- You write `className`, not `class`. React maps it to the DOM's real class attribute for you.\n" +
-    "- You can embed any JavaScript expression inside curly braces: {2 + 2}, {new Date().toLocaleDateString()}, {user.name}.\n" +
+    "- You can embed any JavaScript expression inside curly braces: `{2 + 2}`, " +
+    "`{new Date().toLocaleDateString()}`, `{user.name}`.\n" +
     "- Components can be defined as functions or classes and can accept props to customize their behavior.\n" +
     "- JSX allows for conditional rendering and dynamic content based on state or props.",
   // A template literal keeps this snippet readable: what you see here is what
