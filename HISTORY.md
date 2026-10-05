@@ -10,6 +10,59 @@ Newest first.
 
 ## Session log
 
+8. **Verified and closed out — by quiz, not by repair.** Event handling had no hands-on exercise to fix, so
+   clearance for the box came from three questions, asked one at a time with feedback between each. All
+   three correct, and none guessable from the wording of the options:
+   - **What the gates object to** in `onClick={handleReset()}` — answered that the handler runs while
+     rendering and `onClick` receives its return value instead of the function. That is the fact both `tsc`
+     and ESLint point at, from different angles.
+   - **Reading four differently-wired buttons** — identified the one correct wiring. The question planted
+     two *different* mistakes, and the feedback separated them: calling during render is **loud** (both
+     gates stop you), while failing to supply the argument a handler needs is **silent** (nothing stops
+     you; the click passes the event object where an id was expected).
+   - **Choosing the form** for a Rename button needing that row's id — picked the arrow wrapper and gave the
+     right reason. The "read the id off the event object" option was offered and would have been **accepted**
+     as a real pattern; it is the one answer that requires the event object this lesson deferred.
+   
+   `ROADMAP.md` ticked, `NOTES.md` entry 07 rewritten as verified with the quiz recorded, the marker flipped
+   to `Status: OK`, and Event handling moved into the snapshot's "Solid" table. **Six lessons, six verified;
+   `useEffect` is now the only `quiz-passed` topic left.**
+
+### Event handling — a fix-it exercise that turned out to be impossible
+
+1. **The plan was a fix-it exercise, and the plan was wrong.** The mistake this topic exists to teach —
+   `onClick={handler()}` instead of `onClick={handler}` — cannot be shipped as a planted bug in this
+   project. A throwaway probe (four wirings in one throwaway file, both gates run against it) showed:
+   `tsc` rejects it with *Type 'void' is not assignable to type `MouseEventHandler<HTMLButtonElement>`*,
+   and ESLint's `react-hooks/set-state-in-render` rule rejects the same line independently. The fix-it
+   convention requires every planted bug to compile and lint clean, so there was nothing to plant.
+2. **Two failed attempts before the probe, worth recording because they show why the obvious workarounds
+   do not work.** The first version used `handleAddRep` with `reps + 1`; a render-phase call re-rendered,
+   which called it again — a genuine infinite loop (26 passes and climbing), which would have frozen the
+   lesson page. The second made the handler idempotent by *setting* rather than incrementing, which fixed
+   the loop, but the mis-wired Remove then emptied the whole panel on mount and left nothing to click.
+   Both were caught by simulation before shipping. The lesson: **check that a candidate bug survives
+   `tsc` and lint before designing an exercise around it** — now written into the fix-it convention in
+   `CLAUDE.md`.
+3. **So it shipped as an explainer instead**, at `/dojo/topic/event-handling`. The Live Demo shows all
+   three wirings at once: an inline arrow closing over a row's id, a named handler passed by reference
+   (`Reset`), and a named handler taking an argument through an arrow (`Remove`, `Focus`). This is the
+   first file in the journal with **named handler functions** — every one of the previous 12 handlers was
+   an inline arrow.
+4. **The description earns its place by showing the compiler's real message.** The lesson text includes
+   the actual `tsc` error for the wrong wiring, so the "you get this right while typing" point is
+   demonstrated rather than asserted. Four fenced code blocks, verified to render through `RichText`.
+5. **The event object was deliberately left out** — `preventDefault`, `target`, and typing an event
+   parameter (`React.MouseEvent<HTMLButtonElement>`) belong with Forms, where they have a real job. Noted
+   as deferred, not forgotten.
+6. **Verified**: exact mirror between `demo.tsx` and `codeExample` at **105 of 105** lines (the first
+   lesson to hit exact parity with no residue lines, by keeping JSX comments out of the demo), `tsc` and
+   `npm run lint` green, and the description parsed through the `RichText` logic to confirm four code
+   blocks and no stray emphasis.
+7. **Box left unticked.** The demonstrated half is satisfied by code that already exists; the explanation
+   half is outstanding, and `ROADMAP.md` marks the line `IN PROGRESS` with the reason recorded below the
+   checklists.
+
 ### Lists & keys — fixed, explained, and verified
 
 1. **The learner fixed it in one change**: `key={index}` became `key={exercise.id}` at the `.map()`. Nothing

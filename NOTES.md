@@ -30,6 +30,7 @@ assessment rather than a marker):
 | Components & props | Fixed both bugs in the `components-props` fix-it lesson — deleted a prop mirrored into `useState` (unaided), and made an optional prop required so the compiler caught the call site that omitted it. Details in entry 04 |
 | File & component structure | Followed the registry convention unaided: `demo.tsx` + `index.ts`, marker header, camelCase export for a data object rather than PascalCase |
 | Lists & keys | Fixed the `lists-and-keys` exercise unaided — changed `key={index}` to `key={exercise.id}` and nothing else — then explained why: React **reuses the row component and the tick lives inside that reused component**, so a key that names a slot glues the state to the slot. Entry 06 |
+| Event handling | Built the `event-handling` lesson and scored **3/3** on its quiz, including reading four differently-wired buttons and picking the one arrow form that both defers the call and supplies the argument. Entry 07 |
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
 
 *Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
@@ -46,10 +47,9 @@ for the mobile menu), which is why that surface has not been exercised yet.*
 
 Understood as *concepts*, not yet *demonstrated as skills*. A single correct multiple-choice answer is weak evidence, so these stay unticked until a lesson exercises them.
 
-- **Event handlers** — knows `onClick={fn}` passes a reference while `onClick={fn()}` calls it immediately during render.
 - **`useEffect`** — knows it runs after render and re-runs when a dependency changes. Has never written one.
 
-*(**Lists & keys** was on this list. As of 2026-10-04 it is verified — entry 06 — so it has moved to the "Solid" table above and its roadmap box is ticked.)*
+*(**Lists & keys** and **Event handlers** were both on this list, and both are now verified — entries 06 and 07. `useEffect` is the last one left.)*
 
 ### Gaps — the honest list
 
@@ -57,16 +57,15 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### Next, in order
 
-1. **Event handling** — a lesson to convert the remaining quiz-pass into demonstrated knowledge.
-2. **`useEffect`** — real data fetching with a loading state and cleanup.
-3. **Forms & controlled inputs** — the natural companion to `useEffect`.
-4. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
+1. **`useEffect`** — real data fetching with a loading state and cleanup. The last `quiz-passed`.
+2. **Forms & controlled inputs** — the natural companion to `useEffect`, and the home for the event object that event handling deferred.
+3. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
 
 ---
 
 ## 01 — `useState` (Stateful Components / Counters)
 
-- **Status:** OK (Mastered) — verified
+- **Status:** OK (Mastered) — verified 2026-10-01
 - **Added:** 2026-10-01
 - **Belt:** white
 - **Marker file:** `src/topics/use-state/demo.tsx`
@@ -137,7 +136,7 @@ old one. That guard is what stops the counter from going below zero.
 
 ## 02 — JSX (Syntax, Expressions & Rendering)
 
-- **Status:** OK (Mastered) — verified
+- **Status:** OK (Mastered) — verified 2026-10-04
 - **Added:** 2026-10-04
 - **Belt:** white
 - **Marker file:** `src/topics/jsx/demo.tsx`
@@ -190,7 +189,7 @@ instead, which is where that old habit comes from.)
 
 ## 03 — Routing (React Router v7)
 
-- **Status:** OK (Mastered) — verified
+- **Status:** OK (Mastered) — verified 2026-10-04
 - **Added:** 2026-10-04
 - **Where:** `src/App.tsx`, `src/main.tsx`, `src/components/layout/TutorialLayout.tsx`,
   `src/components/topics/TopicDetail.tsx`, `src/components/sandbox/TestGreeting.tsx`
@@ -266,7 +265,7 @@ reports as a blank page and `SyntaxError: Unexpected token '<'`.
 
 ## 04 — Components & Props (Data Down, Events Up)
 
-- **Status:** OK (Mastered) — verified
+- **Status:** OK (Mastered) — verified 2026-10-04
 - **Added:** 2026-10-04
 - **Belt:** white
 - **Marker file:** `src/topics/components-props/demo.tsx`
@@ -336,7 +335,7 @@ compiler find the call sites you forgot, instead of catching the problem at rend
 
 ## 05 — Conditional Rendering (`&&`, Ternary, Early Return)
 
-- **Status:** OK (Mastered) — verified
+- **Status:** OK (Mastered) — verified 2026-10-04
 - **Added:** 2026-10-04
 - **Belt:** white
 - **Marker file:** `src/topics/conditional-rendering/demo.tsx`
@@ -476,6 +475,91 @@ is fine on the index.
 
 ---
 
+## 07 — Event Handling (Handler References, Named Handlers & Arguments)
+
+- **Status:** OK (Mastered) — verified 2026-10-04
+- **Added:** 2026-10-04
+- **Belt:** white
+- **Marker file:** `src/topics/event-handling/demo.tsx`
+- **Route:** `/dojo/topic/event-handling`
+
+### Explanation
+
+A handler is a function you give React to call later. Two forms, both correct:
+
+| Form | Looks like | Reach for it when |
+| --- | --- | --- |
+| Inline arrow | `onClick={() => setReps((r) => r + 1)}` | the body is one expression and can close over what is in scope |
+| Named function | `onClick={handleReset}` | the body is more than a line, it is reused, or it is handed down as a prop |
+
+**Naming convention worth keeping:** a prop carrying a callback is `onSomething` (`onLogRep`,
+`onRemove`); the function it points at is named for what it does (`handleRemoveExercise`). The `on`/`handle`
+split is what makes a component's API readable at a glance.
+
+**The rule that matters** — what you put in `onClick` must be a **function**, not the result of calling one:
+
+```tsx
+<button onClick={handleReset}>    {/* a reference — React calls it on click */}
+<button onClick={handleReset()}>  {/* CALLED now, during render */}
+```
+
+`handleReset()` runs while the component renders and passes whatever it returns (usually `undefined`) to
+`onClick`, so nothing is left for the click to run. The test to apply: **would this expression do anything
+if the component never re-rendered?**
+
+**When the handler needs an argument**, the fix is not fewer parentheses, it is one more layer — an arrow
+that *is* the handler:
+
+```tsx
+<button onClick={() => handleRemoveExercise(exercise.id)}>Remove</button>
+```
+
+Now `onClick` receives a function, and the id is supplied when React calls it. This is the third wiring, and
+it is the one that catches people.
+
+**Why this topic has no fix-it exercise.** Every other `LD` lesson in the journal ships a planted bug that
+compiles. This bug cannot: `tsc` rejects `onClick={handleReset()}` with *Type 'void' is not assignable to
+type 'MouseEventHandler<HTMLButtonElement>'*, and ESLint's `react-hooks/set-state-in-render` rule rejects
+the same line independently. Verified with a throwaway probe rather than assumed. The lesson is therefore an
+explainer, and the Live Demo is a working reference showing all three wirings at once.
+
+**Out of scope here, deliberately:** the event object — `event.target`, `event.preventDefault()` — and
+typing an event parameter (`React.MouseEvent<HTMLButtonElement>`). It belongs with Forms, where it has an
+actual job to do.
+
+### How it was verified — 2026-10-04
+
+This topic had no hands-on exercise to fix, so the **explained** half was established by a three-question
+quiz instead. All three were answered correctly, and none was guessable from the wording of the options.
+
+**Q1 — what the gates object to.** Shown `onClick={handleReset()}`, the answer was that *"handleReset runs
+while rendering, and onClick receives its return value instead of the function"*. That is the fact both
+`tsc` (void is not assignable to `MouseEventHandler`) and ESLint (`set-state-in-render`) are pointing at.
+The follow-up named the danger the linter exists for: a handler that increments would re-render, call
+itself again, and loop — which is exactly what happened while this lesson was being built, before the
+handler was made idempotent.
+
+**Q2 — reading four wirings.** Given four buttons using one named handler that takes an `id`, the answer
+identified the single correct one: the arrow that supplies the argument. Two distinct mistakes were planted
+in the list, and the write-up separated them, because they fail very differently:
+
+| Wiring | Caught by | Failure mode |
+| --- | --- | --- |
+| `onClick={handleRemoveExercise("k1")}` | `tsc` + ESLint | loud — called during render |
+| `onClick={() => handleRemoveExercise("k2")}` | nothing | **correct** |
+| `onClick={handleRemoveExercise}` | nothing | silent — a click passes the event, so `id` is an event, not an id |
+| `onClick={() => handleRemoveExercise}` | nothing | silent — the arrow never supplies an argument |
+
+**Q3 — choosing the form.** For a Rename button needing that row's id, the answer was the arrow wrapper,
+with the reason given as the handler needing this row's id. The option of reading the id off the event
+object was offered and **would have been accepted** — it is a real pattern — but it is the answer that
+requires the event object, which this lesson deliberately deferred to Forms.
+
+**Verdict:** verified. The demonstrated half is covered by the Live Demo exercising all three wirings; the
+explained half is above.
+
+---
+
 ## Traps & mental models
 
 Every correction made during review, in one place. These are the things most likely to bite again.
@@ -485,7 +569,8 @@ Every correction made during review, in one place. These are the things most lik
 | `{count && <p>…</p>}` when `count` is `0` | Renders a bare **`0`** on the page. `&&` returns the falsy *left operand itself* — it does not coerce to a boolean the way an `if` does. React ignores `false`, `null`, `undefined` and `true`, but happily renders the number `0`. Use `count > 0 && …`. |
 | Reassigning a prop inside the component | Does nothing useful. Props are a fresh snapshot each render; only the parent can change them. No re-render is triggered and your edit is overwritten next render. |
 | `let count = 0` for a value that changes | Re-created from scratch on every render, so it can never accumulate. A changing value that must update the UI belongs in `useState`. |
-| `onClick={handleClick()}` | Calls the function **immediately, during render** — and if it sets state, that is an infinite render loop. `onClick={handleClick}` passes a reference for React to call later. |
+| `onClick={handleClick()}` | Calls the function **immediately, during render** — and if it sets state, that is an infinite render loop. `onClick={handleClick}` passes a reference for React to call later. In this project the mistake never reaches the browser: `tsc` and ESLint's `set-state-in-render` rule both reject it. |
+| `onClick={handleClick(id)}` with an argument | Same mistake, one argument later. Wrap it: `onClick={() => handleClick(id)}`. The rule for both: what goes in `onClick` must be a function, not the result of calling one. |
 | `key={index}` in a list | An index names a **slot**, not an item. Reorder the list and React reuses the instance that used to be in that slot, so the row's own state (`useState`, an uncontrolled input) stays with the position while the data moves past it. Appending at the *end* is the harmless case — every existing index is unchanged. Use a stable id from the data. |
 | A `:param` renamed on one side only | The value silently arrives as `undefined`. TypeScript cannot help. |
 | Assuming `import React from "react"` is required | It is not, with `"jsx": "react-jsx"`. JSX compiles to `jsx()` from `react/jsx-runtime`. |

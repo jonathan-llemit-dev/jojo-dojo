@@ -14,7 +14,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] Components & props — passing data down — lesson live at `/dojo/topic/components-props`
 - [x] `useState` — stateful components / counters — lesson live at `/dojo/topic/use-state`
 - [ ] `useState` deep dive — object/array state (replace, don't mutate), lazy initialisers, and two setters in one handler — separate from the lesson above, which is complete. Nothing has exercised this yet: every `useState` in the repo holds a primitive (numbers, and one boolean for the mobile menu).
-- [ ] Event handling — handlers, event objects, passing arguments — quiz-passed, needs a lesson
+- [x] Event handling — handlers, references, passing arguments — lesson live at `/dojo/topic/event-handling`; verified by a 3/3 quiz (the event object is deferred to Forms)
 - [x] Conditional rendering — `&&`, ternary, early return — lesson live at `/dojo/topic/conditional-rendering`
 - [x] Lists & keys — `map()`, why keys matter — lesson live at `/dojo/topic/lists-and-keys`; fixed and explained (entry 06)
 - [ ] Forms & controlled components — input state, validation — **GAP**: never used
@@ -46,4 +46,12 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 
 ---
 
-_Last updated: 2026-10-04 (Lists & keys verified and ticked)_
+_Last updated: 2026-10-04 (Event handling verified and ticked; six lessons done)_
+
+**Why event handling was an explainer, not a fix-it exercise.** Its central mistake —
+`onClick={handler()}` instead of `onClick={handler}` — cannot be shipped as a planted bug in
+this project. TypeScript rejects it (`Type 'void' is not assignable to type
+'MouseEventHandler<HTMLButtonElement>'`) and ESLint's `react-hooks/set-state-in-render` rule
+rejects it, so it never reaches runtime. A fix-it exercise must compile and lint clean, which
+leaves nothing to plant. Verified with a throwaway probe, not assumed. Clearance for the box
+came from a three-question quiz instead of a repair.
