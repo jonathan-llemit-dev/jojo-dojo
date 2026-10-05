@@ -70,6 +70,9 @@ src/
     ├── conditional-rendering/
     │   ├── demo.tsx            # ConditionalDemo + SummaryRow — named boolean + ternary; began as a fix-it exercise
     │   └── index.ts            # Exports conditionalRenderingTopic registry entry
+    ├── lists-and-keys/
+    │   ├── demo.tsx            # ListsKeysDemo + ExerciseRow — keyed by exercise.id; fix-it exercise, fixed & verified
+    │   └── index.ts            # Exports listsKeysTopic registry entry
     └── use-state/
         ├── demo.tsx            # CounterDemo — the live useState working component
         └── index.ts            # Exports useStateTopic registry entry
@@ -109,9 +112,9 @@ The journal convention keeps every topic traceable for review and for AI reading
   - Write the template literal **flush against the left margin**. A template literal preserves indentation, so indenting it to match the surrounding code renders as ragged leading whitespace in the Sample Code panel.
   - **If the demo contains its own template literal, escape it.** A bare backtick would terminate the sample's template literal early and `${` would be interpolated, so write `` \` `` and `\${` in `index.ts`, and make the parity check unescape before comparing. `conditional-rendering` is the worked example.
 - **The import line is not decoration — it follows from the hooks used.** `jsx` correctly has none: it calls no hook, and React 19 needs no `import React`, so adding one would teach the wrong thing. `use-state`, `components-props` and `conditional-rendering` all open with `import { useState } from "react";`. Verified: every snippet's imports match its demo's exactly.
-- **Current parity**, verified by diffing each snippet against its demo after stripping comments and blank lines: `components-props` matches at 46 code lines; `conditional-rendering` matches at 63 (its backticks escaped — see above); `jsx` matches at 9 except that the sample omits the leading `export` keyword (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability, 38 code lines down to 11.
+- **Current parity**, re-verified by diffing each snippet against its demo after stripping comments and blank lines: `components-props` matches at 46 of 46 code lines; `conditional-rendering` matches at **63 of 63** (its backticks escaped — see above; the demo's stripped JSX comment leaves one extra empty `{}` line, so compare against the demo with that line removed); `jsx` matches at 9 except that the sample omits the leading `export` keyword (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability, 38 code lines down to 11. **`NOTES.md` quotes the same snippets** — when a snippet changes, the notes' copy of it is part of the mirror and has drifted before.
 - **Re-run that diff rather than eyeballing it.**
-- **Exception — fix-it exercises.** While a lesson ships deliberately broken, its snippet teaches the *correct* pattern instead of mirroring the buggy demo. Swap it for the real mirror once the exercise is fixed. No lesson is currently in that state.
+- **Exception — fix-it exercises.** While a lesson ships deliberately broken, its snippet teaches the *correct* pattern instead of mirroring the buggy demo. Swap it for the real mirror once the exercise is fixed. No lesson is currently in that state — `lists-and-keys` was the last one and became a real mirror when its exercise was fixed.
 
 - **Fix-it exercises**: a lesson may be shipped deliberately broken to teach a concept. The rules: the marker says `Status: LD`; the file's header comment lists the **observed symptoms only** — never the bug locations or the fix — so the learner has to diagnose; every planted bug must still compile, keeping `tsc` and `npm run lint` green; the roadmap line is marked `IN PROGRESS`; and `NOTES.md` explains the concept-level rules, not the answers. When the learner reports it fixed, re-assess, verify `tsc`/lint, then flip the roadmap box and rewrite the notes entry as verified. Two hard-won rules: an exercise must **name its expected values** (otherwise a workaround is a reasonable answer), and its symptoms must be **simulated, never described from reading the code** (the first `conditional-rendering` header claimed the badge was missing from 1–5 reps, until a five-line simulation showed the real symptom is a gap at 0 reps with an overlap from 6).
 
@@ -155,19 +158,18 @@ stands and what comes next.
 
 ### Current project state
 - Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
-- **Four lessons populated, all four verified**: `jsx`, `components-props`, `useState` and `conditional-rendering` — all added through the registry, with no new routes written.
+- **Five lessons registered, all five verified**: `jsx`, `components-props`, `useState`, `conditional-rendering` and `lists-and-keys` — all added through the registry, with no new routes written.
 - **Layout is mobile-responsive**, confirmed by the learner at phone width: below `md` the topic list is a burger dropdown, and the nav/padding/headings scale down. The reviewer cannot run `npm run dev`, so visual checks are the learner's to make.
 - A scratch routing playground lives at `/test/:student/:name/:subjects` (`components/sandbox/TestGreeting.tsx`), kept deliberately as a labelled demonstration of the `:param` ↔ `useParams()` name contract.
 - The old single-page `App.tsx` is gone — replaced by the routes above. The 3 "technique cards" (Vite/Tailwind/Vercel) were dropped per your decision; the GitHub link survives in `TopNav`.
 - **The AI reviewer owns the Knowledge Snapshot in `NOTES.md` and the `ROADMAP.md` boxes** (see "Reviewer Responsibilities" above). Learner knowledge as of the last assessment is summarised there.
-- **The reviewer cannot run `npm run dev` or `npm run build`**: both need to write inside `node_modules`, which the AI sandbox blocks. Type-checking and linting pass, and the responsive layout has been confirmed visually by the learner — but each lesson demo is still only type-checked, never observed by the reviewer.
+- **The reviewer cannot run `npm run dev` or `npm run build`**: both need to write inside `node_modules`, which the AI sandbox blocks. `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` both pass (re-verified this session — lint had been failing on an editor worktree under `.kilo`, now ignored), and the responsive layout has been confirmed visually by the learner — but each lesson demo is still only type-checked, never observed by the reviewer.
 
 ### Next session objectives (priority order)
-1. **Lists & keys** — a lesson that renders `.map()` with keys, converting a `quiz-passed` into demonstrated knowledge. No lesson demo uses `.map()` yet, so this is the largest untouched fundamental.
-2. **Event handling** — a lesson to convert the other `quiz-passed` into demonstrated knowledge. Note that event handlers already appear in every demo, so this one is about naming and explaining the pattern rather than encountering it for the first time.
-3. **`useEffect`** — real data fetching with a loading state and cleanup. The concept is understood; it has never been written.
-4. **Forms & controlled inputs** — the natural companion to `useEffect`.
-5. **Deploy v0.1.0 to Vercel** and confirm the SPA rewrite handles deep links on a real refresh.
+1. **Event handling** — a lesson to convert the remaining `quiz-passed` into demonstrated knowledge. Note that event handlers already appear in every demo, so this one is about naming and explaining the pattern rather than encountering it for the first time.
+2. **`useEffect`** — real data fetching with a loading state and cleanup. The concept is understood; it has never been written.
+3. **Forms & controlled inputs** — the natural companion to `useEffect`.
+4. **Deploy v0.1.0 to Vercel** and confirm the SPA rewrite handles deep links on a real refresh.
 
 ### Backlog (not yet prioritised)
 - "Featured Lessons" preview grid on the landing page, pulling from `topicRegistry`.
@@ -177,4 +179,6 @@ stands and what comes next.
 
 ## ESLint
 
-Flat config (`eslint.config.js`) using `typescript-eslint`, `eslint-plugin-react-hooks`, and `eslint-plugin-react-refresh` (Vite-optimized rules). Ignore `dist/`.
+Flat config (`eslint.config.js`) using `typescript-eslint`, `eslint-plugin-react-hooks`, and `eslint-plugin-react-refresh` (Vite-optimized rules). Ignore `dist/` and `.kilo/`.
+
+**Why `.kilo/` is ignored:** that folder holds editor-agent git worktrees — complete copies of this project, each with its own `tsconfig.json`. Because `npm run lint` is `eslint .`, ESLint walked into the worktree, `typescript-eslint` saw two candidate `tsconfigRootDir` values, and it refused to parse **every** file in both trees: 44 parse errors with nothing wrong with the code. Adding the folder to `globalIgnores` is the fix. If a future tool drops another full checkout inside the repo, expect the same failure and ignore it the same way.

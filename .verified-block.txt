@@ -1,0 +1,25 @@
+### Verified — 2026-10-04
+
+**The fix (unaided).** One change: `key={index}` became `key={exercise.id}` at the `.map()`. Nothing else in
+the component moved — no restructuring, no conditionals, no patching of the symptom. Verified by re-running
+the reconciliation simulation against the component's real Rotate logic
+(`[...current.slice(1), current[0]]`): tick Front kicks, rotate three times, the tick is still on Front
+kicks. `tsc` and `npm run lint` green.
+
+**The explanation (own words).** Asked why the index key moved the tick, the learner said the index "uses
+the exact order of each rendered component… the value will remain on that specific location order", and that
+to persist a value on the intended component the key must be "the actual unique id of the given data". Asked
+what React does with the row when Rotate is pressed, the answer was the mechanism itself: **React reuses the
+row component, and the tick lives inside that reused component.** That is the whole bug in one sentence —
+the key decides *which instance* is reused, so a key that names a position glues the row's state to the
+position while the data moves on.
+
+**The rule (and where it is conservative).** The learner's rule: `key={index}` is unsafe "if there's any
+addition, removal, and reordering of data". That is a good rule to write code by, and it is *stricter* than
+the underlying truth — appending at the end preserves every existing index, so React reuses each instance
+against the same data and nothing moves or is lost. The learner called that case safe when asked directly,
+which is correct. Also correct: what decides whether a changed list actually breaks is **row-level state**
+(`useState` or an uncontrolled input). Reordering is the worst case because it reuses the wrong instance and
+the state *misplaces*; insertion or removal elsewhere loses or shifts state; a list with no row state and no
+reordering is fine on the index.
+

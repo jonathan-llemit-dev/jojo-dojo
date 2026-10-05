@@ -29,6 +29,7 @@ assessment rather than a marker):
 | Conditional rendering | Fixed both bugs in the `conditional-rendering` exercise, and went past the minimum: named the condition once instead of patching each guard. Guided — entry 05 |
 | Components & props | Fixed both bugs in the `components-props` fix-it lesson — deleted a prop mirrored into `useState` (unaided), and made an optional prop required so the compiler caught the call site that omitted it. Details in entry 04 |
 | File & component structure | Followed the registry convention unaided: `demo.tsx` + `index.ts`, marker header, camelCase export for a data object rather than PascalCase |
+| Lists & keys | Fixed the `lists-and-keys` exercise unaided — changed `key={index}` to `key={exercise.id}` and nothing else — then explained why: React **reuses the row component and the tick lives inside that reused component**, so a key that names a slot glues the state to the slot. Entry 06 |
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
 
 *Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
@@ -45,9 +46,10 @@ for the mobile menu), which is why that surface has not been exercised yet.*
 
 Understood as *concepts*, not yet *demonstrated as skills*. A single correct multiple-choice answer is weak evidence, so these stay unticked until a lesson exercises them.
 
-- **Lists & keys** — knows `key` is identity across renders (so React reuses the right DOM node and keeps its state), not a CSS id.
 - **Event handlers** — knows `onClick={fn}` passes a reference while `onClick={fn()}` calls it immediately during render.
 - **`useEffect`** — knows it runs after render and re-runs when a dependency changes. Has never written one.
+
+*(**Lists & keys** was on this list. As of 2026-10-04 it is verified — entry 06 — so it has moved to the "Solid" table above and its roadmap box is ticked.)*
 
 ### Gaps — the honest list
 
@@ -55,11 +57,10 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### Next, in order
 
-1. **Lists & keys** — a lesson that renders `.map()` with keys, converting a quiz-pass into demonstrated knowledge.
-2. **Event handling** — a lesson to convert the other quiz-pass into demonstrated knowledge.
-3. **`useEffect`** — real data fetching with a loading state and cleanup.
-4. **Forms & controlled inputs** — the natural companion to `useEffect`.
-5. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
+1. **Event handling** — a lesson to convert the remaining quiz-pass into demonstrated knowledge.
+2. **`useEffect`** — real data fetching with a loading state and cleanup.
+3. **Forms & controlled inputs** — the natural companion to `useEffect`.
+4. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
 
 ---
 
@@ -81,8 +82,9 @@ Key rules:
 
 ### Sample Code
 
-This is the same logic as the lesson component, with the `className="..."` styling trimmed so
-the shape is easier to read. The styled original lives in the file listed under "Where Applied".
+This is the lesson's actual sample snippet — the same logic as the component, with the
+`className="..."` styling trimmed so the shape is easier to read. The styled original lives in
+the file listed under "Where Applied".
 
 ```tsx
 import { useState } from "react";
@@ -91,22 +93,27 @@ function CounterDemo() {
   const [count, setCount] = useState(0);
 
   return (
-    <div>
+    <div className="inline-flex items-center gap-6">
       <button onClick={() => setCount((c) => Math.max(0, c - 1))}>−</button>
-      <span>{count}</span>
+      <span className="text-4xl font-mono">{count}</span>
       <button onClick={() => setCount((c) => c + 1)}>+</button>
-
-      {count > 0 && (
-        <p>
-          {count < 5 && "🌱 Warming up…"}
-          {count >= 5 && count < 20 && "🔥 Getting stronger."}
-          {count >= 20 && count < 50 && "💪 Serious training."}
-          {count >= 50 && "🥋 Master level."}
-        </p>
-      )}
     </div>
   );
 }
+```
+
+The live component goes one step further and prints a milestone line under the counter, which is
+where the conditional rendering shows up in this lesson:
+
+```tsx
+{count > 0 && (
+  <p>
+    {count < 5 && "🌱 Warming up…"}
+    {count >= 5 && count < 20 && "🔥 Getting stronger."}
+    {count >= 20 && count < 50 && "💪 Serious training."}
+    {count >= 50 && "🥋 Master level."}
+  </p>
+)}
 ```
 
 Worth noticing: the updater receives the *previous* value as `c`, so `Math.max(0, c - 1)` is a
@@ -118,7 +125,7 @@ old one. That guard is what stops the counter from going below zero.
 - **File:** `src/topics/use-state/demo.tsx` (the `CounterDemo` component)
 - **Route:** `/dojo/topic/use-state` → "Live Demo" panel
 - **What it demonstrates:** A controlled counter using `useState` with functional updates (`setCount(c => c ± 1)`), a `Math.max(0, c - 1)` guard to keep count non-negative, conditional rendering driven by the state value, and event handlers wired to button clicks.
-- **Keep in sync:** if you edit `demo.tsx`, update the snippet above too. The two had already drifted once — the notes showed `c - 1` while the component used `Math.max(0, c - 1)`.
+- **Keep in sync:** if you edit `demo.tsx`, update the snippet above too. The two have drifted twice — once the notes showed `c - 1` while the component used `Math.max(0, c - 1)`, and once the notes carried a hand-written 19-line counter while the lesson's own snippet was a different 11-line one. The snippet above is now the lesson's real one.
 
 ### Key Takeaways
 
@@ -161,9 +168,10 @@ instead, which is where that old habit comes from.)
 
 - **`className`, not `class`.** React maps it to the DOM's real `class` attribute; `class` is a
   reserved word in JavaScript, which is the historical reason for the difference.
-- **`{ }` embeds a JavaScript *expression***: `{2 + 2}` renders `4`, `{new Date().toLocaleDateString()}`
-  renders today's date, `{user.name}` renders a property. An expression, not a statement — no `if` or
-  `for` inside the braces.
+- **`{ }` embeds a JavaScript *expression***: `{2 + 2}` renders `4`,
+  `{new Date().toLocaleDateString()}` renders today's date **as a locale-formatted string**
+  (`10/4/2026` in en-US), `{user.name}` renders a property. An expression, not a statement — no `if`
+  or `for` inside the braces.
 - **Comments are `{/* … */}`.** A bare `//` or `/* */` is a JavaScript comment and simply won't appear.
 - **One root element.** A component returns a single element; wrap siblings in a `<div>` or a
   fragment `<>…</>`.
@@ -384,7 +392,87 @@ code already showed the named-boolean pattern. Props bug 2 remains the only unai
 The demo contains its own template literal (`` value={`${reps} reps in the bank`} ``). A bare backtick
 would end the sample's template literal early, and `${` would be interpolated, so both are escaped in
 `index.ts` — which means the parity check has to unescape before comparing. Verified that way: **63 of
-63 lines identical**.
+63 lines identical**, once the empty `{}` left behind by the demo's stripped JSX comment is removed
+(the demo is 64 stripped lines, the sample 63; the sample's 63 all match).
+
+---
+
+## 06 — Lists & Keys (`map()`, and what a key is for)
+
+- **Status:** OK (Mastered) — verified 2026-10-04
+- **Added:** 2026-10-04
+- **Belt:** white
+- **Marker file:** `src/topics/lists-and-keys/demo.tsx`
+- **Route:** `/dojo/topic/lists-and-keys`
+
+### Explanation
+
+A list in React is just an array that you turn into elements with `map()`. The `key` you put on each
+element is **not** a CSS id, a DOM attribute, or anything the user ever sees — it is the answer to the
+one question React asks on every re-render:
+
+> which element in the new list is the *same thing* as which element in the old one?
+
+That question matters because React reuses rows between renders, and a reused row **keeps its own state** —
+a `useState` inside the row, the text in an uncontrolled input. The key is what decides which state goes
+with which row.
+
+Two properties make a key usable. It needs **both**:
+
+| Property | Means | What breaks it |
+| --- | --- | --- |
+| **Stable** | the same data item keeps the same key across renders | `key={index}` — after a sort, rotate, filter or remove, index 1 is a *different* item, so row 1's state is handed to whichever item landed there |
+| **Unique** among siblings | no two siblings share a key | `key={entry.name}` — real data repeats names, and React warns in the console rather than guessing which is which |
+
+**The safe default:** a key that comes from the data and identifies the *thing*, not the *position* —
+`key={exercise.id}`. Putting ids on your data is normal and worth doing.
+
+**When `key={index}` is acceptable:** only for a list that is genuinely static — never re-ordered, never
+added to, never removed from. A list you rotate, sort or delete from is not it.
+
+**The tell that you got it wrong:** the *data* moves but the *state* does not. A tick, a note, an input
+value — anything a row owns — stays on the same spot on screen while the rows rearrange around it. If a
+row's own state ever disagrees with the row's props, the key is the first thing to check.
+
+### The exercise
+
+`src/topics/lists-and-keys/demo.tsx` is deliberately small: one list of three exercises, one "Rotate"
+button, and one "Done" toggle per row. Each row owns that toggle in its own `useState`.
+
+It shipped broken by keying the rows on the array index. Press Done on a row, press Rotate, and the tick
+appeared on a different exercise — an index names a **slot**, so React treated "the row in slot 1" as the
+same row across renders and kept its state there, while the exercise that used to be in slot 1 moved away.
+
+**Fixed 2026-10-04** by keying on `exercise.id`, so the key identifies the *exercise* and its state follows
+it. Verified by re-running the reconciliation simulation against the component's real Rotate logic
+(`[...current.slice(1), current[0]]`): tick Front kicks, rotate three times, the tick is still on Front
+kicks. The fix is two lines, and the Sample Code panel is now a true mirror of the demo.
+
+### How it was verified — 2026-10-04
+
+**The fix (unaided).** One change: `key={index}` became `key={exercise.id}` at the `.map()`. Nothing else in
+the component moved — no restructuring, no conditionals, no patching of the symptom. Verified by re-running
+the reconciliation simulation against the component's real Rotate logic
+(`[...current.slice(1), current[0]]`): tick Front kicks, rotate three times, the tick is still on Front
+kicks. `tsc` and `npm run lint` green.
+
+**The explanation (their own words).** Asked why the index key moved the tick, the answer was that the index
+"uses the exact order of each rendered component… the value will remain on that specific location order",
+and that to persist a value on the intended component the key must be "the actual unique id of the given
+data". Asked what React does with the row when Rotate is pressed, the answer was the mechanism itself:
+**React reuses the row component, and the tick lives inside that reused component.** That is the whole bug in
+one sentence — the key decides *which instance* is reused, so a key that names a position glues the row's
+state to the position while the data moves on.
+
+**Their rule, and where it is conservative.** The rule offered was that `key={index}` is unsafe "if there's
+any addition, removal, and reordering of data". That is a good rule to write code by, and it is *stricter*
+than the underlying truth: appending at the end preserves every existing index, so React reuses each instance
+against the same data and nothing moves or is lost. Put to that case directly, the answer was that it is
+safe — which is correct, and the reviewer would have been wrong to mark it down. Also correct, and asked for
+separately: what decides whether a changed list actually *breaks* is **row-level state** (`useState` or an
+uncontrolled input). Reordering is the worst case because it reuses the wrong instance and the state
+misplaces; insertion or removal elsewhere loses or shifts state; a list with no row state and no reordering
+is fine on the index.
 
 ---
 
@@ -398,16 +486,21 @@ Every correction made during review, in one place. These are the things most lik
 | Reassigning a prop inside the component | Does nothing useful. Props are a fresh snapshot each render; only the parent can change them. No re-render is triggered and your edit is overwritten next render. |
 | `let count = 0` for a value that changes | Re-created from scratch on every render, so it can never accumulate. A changing value that must update the UI belongs in `useState`. |
 | `onClick={handleClick()}` | Calls the function **immediately, during render** — and if it sets state, that is an infinite render loop. `onClick={handleClick}` passes a reference for React to call later. |
-| `key={index}` in a list | On any sort or delete, index 2 becomes a different item, so React reuses the wrong DOM node and input values/state attach to the wrong row. Use a stable id from the data. |
+| `key={index}` in a list | An index names a **slot**, not an item. Reorder the list and React reuses the instance that used to be in that slot, so the row's own state (`useState`, an uncontrolled input) stays with the position while the data moves past it. Appending at the *end* is the harmless case — every existing index is unchanged. Use a stable id from the data. |
 | A `:param` renamed on one side only | The value silently arrives as `undefined`. TypeScript cannot help. |
 | Assuming `import React from "react"` is required | It is not, with `"jsx": "react-jsx"`. JSX compiles to `jsx()` from `react/jsx-runtime`. |
 | `{label || "N/A"}` for a prop that should always exist | Silences the symptom and keeps the defect — the UI now says "N/A" forever. If a value is genuinely required, type it as required and let the compiler find the call sites that forgot it. |
 | `{slug}` used as a lookup key when it may be missing | `topicBySlug[undefined]` is `undefined`, so guard with `slug ? topicBySlug[slug] : undefined` before using it. |
+| Two siblings sharing a key | React warns in the console and cannot tell them apart, so one row's state is reused for the other and the other's state is discarded. Ids from the data are unique; names are not. |
 
 **The one mental model that explains most of React:** a re-render means **React calls your component
 function again**, with fresh arguments. State persists across those calls, plain variables do not, and
 props *are* the arguments. When something "doesn't update", ask which of those three you are actually
 relying on.
+
+**And the follow-up question a list adds:** when the arguments change *and the list is re-ordered*, which
+of those rows is the same row as before? That is what `key` answers, and it is why a wrong key shows up as
+state sitting on the wrong row rather than as data being wrong.
 
 ---
 

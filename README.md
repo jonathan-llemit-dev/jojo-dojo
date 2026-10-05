@@ -78,6 +78,7 @@ my-react-app/
 │       ├── jsx/               # One folder per lesson: demo.tsx + index.ts
 │       ├── components-props/  # One folder per lesson: demo.tsx + index.ts
 │       ├── conditional-rendering/  # One folder per lesson: demo.tsx + index.ts
+│       ├── lists-and-keys/    # One folder per lesson: demo.tsx + index.ts (fix-it exercise, fixed)
 │       └── use-state/         # One folder per lesson: demo.tsx + index.ts
 ├── index.html                 # HTML shell
 ├── vite.config.ts             # Vite + Tailwind plugin config
@@ -142,7 +143,7 @@ This is the visitor-facing summary. The **master checklist — every study topic
 - [x] Landing page (hero + about)
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug`
 - [x] Mobile-responsive layout — burger topic menu below `md`
-- [x] Four lessons and counting — `useState`, JSX, components & props, conditional rendering
+- [x] Five lessons verified and counting — `useState`, JSX, components & props, conditional rendering, lists & keys
 - [ ] Deploy v0.1.0 to Vercel
 - [ ] More lessons (the open topics are listed in `ROADMAP.md`)
 - [ ] Framer Motion animations

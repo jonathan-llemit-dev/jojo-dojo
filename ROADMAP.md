@@ -16,7 +16,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [ ] `useState` deep dive — object/array state (replace, don't mutate), lazy initialisers, and two setters in one handler — separate from the lesson above, which is complete. Nothing has exercised this yet: every `useState` in the repo holds a primitive (numbers, and one boolean for the mobile menu).
 - [ ] Event handling — handlers, event objects, passing arguments — quiz-passed, needs a lesson
 - [x] Conditional rendering — `&&`, ternary, early return — lesson live at `/dojo/topic/conditional-rendering`
-- [ ] Lists & keys — `map()`, why keys matter — quiz-passed, needs a lesson
+- [x] Lists & keys — `map()`, why keys matter — lesson live at `/dojo/topic/lists-and-keys`; fixed and explained (entry 06)
 - [ ] Forms & controlled components — input state, validation — **GAP**: never used
 - [ ] `useEffect` — side effects (data fetching, subscriptions, cleanup) — quiz-passed on timing, never written
 - [ ] `useContext` / `useReducer` — global state patterns — **GAP**: never used
@@ -46,4 +46,4 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 
 ---
 
-_Last updated: 2026-10-04_
+_Last updated: 2026-10-04 (Lists & keys verified and ticked)_

@@ -3,6 +3,7 @@ import { useStateTopic } from "./use-state";
 import { jsxTopic } from "./jsx";
 import { componentsPropsTopic } from "./components-props";
 import { conditionalRenderingTopic } from "./conditional-rendering";
+import { listsKeysTopic } from "./lists-and-keys";
 
 /**
  * Aggregate topic registry — the single source of truth for both the sidebar
@@ -15,6 +16,7 @@ export const topicRegistry: Topic[] = [
   componentsPropsTopic,
   useStateTopic,
   conditionalRenderingTopic,
+  listsKeysTopic,
 ];
 
 /**
