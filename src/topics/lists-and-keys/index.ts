@@ -5,6 +5,7 @@ import { ListsKeysDemo } from "./demo";
 export const listsKeysTopic: Topic = {
   slug: "lists-and-keys",
   title: "Lists & Keys — Rendering Arrays with map()",
+  shortTitle: "Lists & Keys",
   belt: "white",
   description:
     "Render an array with map() and give every row a key that is stable and unique — never the array index.",

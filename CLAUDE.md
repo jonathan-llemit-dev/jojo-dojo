@@ -75,16 +75,16 @@ src/
 ├── components/
 │   ├── layout/
 │   │   ├── TutorialLayout.tsx  # <TopNav /> + <Sidebar /> + <Outlet />
-│   │   ├── Sidebar.tsx         # Topic list; burger dropdown below md, vertical sidebar above
+│   │   ├── Sidebar.tsx         # Numbered topic list; burger dropdown below md, vertical sidebar above
 │   │   └── TopNav.tsx          # Logo + "Dojo" link + GitHub external icon (tutorial shell only)
 │   ├── sandbox/                # Scratch components for experiments — NOT lessons, NOT real pages
 │   │   └── TestGreeting.tsx     # served at /test/:student/:name/:subjects from App.tsx
 │   └── topics/
-│       ├── TopicDetail.tsx      # Reads useParams, looks up registry, renders demo
+│       ├── TopicDetail.tsx      # Reads useParams, looks up registry, renders demo + lesson breadcrumb
 │       └── RichText.tsx         # longDescription -> paragraphs, bullets, inline + block code
 ├── pages/
 │   ├── HomePage.tsx            # Landing hero + About section (has its own small nav)
-│   └── TopicIndex.tsx          # Default content at /dojo (topic overview grid)
+│   └── TopicIndex.tsx          # Default content at /dojo (numbered topic overview grid)
 └── topics/
     ├── types.ts                # BeltRank + Topic interface (single source of truth types)
     ├── beltStyles.ts           # BeltRank -> Tailwind classes (beltBadgeClass / beltDotClass)
@@ -120,12 +120,13 @@ src/
 - **Styling**: Tailwind CSS v4 with `@theme` block in `src/index.css`. Custom design tokens (`--color-dojo-*`, `--font-display`) become real Tailwind utilities (e.g., `bg-dojo-bg`, `text-dojo-ember`). Match this approach when adding new custom tokens.
 - **Responsive by default**: mobile-first, using Tailwind's `sm:` (640px) and `md:` (768px) breakpoints. The tutorial shell stacks below `md` and goes side-by-side from `md` up, using the *same* markup — never duplicate a nav for mobile. Below `md` the topic list is a **burger dropdown** (`Sidebar.tsx`): a button that expands the list in place, capped at `70vh` with its own scroll, closing when a link is tapped. It expands in place rather than floating, because the shell's `overflow-hidden` would clip an absolutely-positioned panel. Page padding goes `px-4 sm:px-6` and headings scale (`text-2xl md:text-3xl`). Check any new layout at ~375px wide before calling it done.
 - **Belt colors live in exactly one place**: `src/topics/beltStyles.ts` exports `beltBadgeClass()` (bordered pill → border + text color) and `beltDotClass()` (filled circle → background color). The palette mapping is white/blue → `dojo-ember` (gold), black → `dojo-crimson` (red). Use these helpers instead of writing belt colors inline: a badge and a dot need *different* utilities, and giving a dot the badge classes renders an invisible dot (`text-*` colors text a dot does not have; `border-*` only sets a border color on an element with no border width).
+- **The registry array is the reading order**: the sidebar rows, the index cards and the `Lesson NN of NN` breadcrumb all take their number from an item's position in `topicRegistry`, so the order the reader sees lives in exactly one place. Never hardcode a lesson number — reorder the array instead. Sidebar rows and the mobile burger show `topic.shortTitle` (compact, one or two words); the page `<h1>` and the index cards show the full `topic.title`.
 - **Long descriptions are rendered by `RichText`**: `src/components/topics/RichText.tsx` turns `topic.longDescription` into real elements, so code references show as code instead of raw backticks. It builds plain React nodes and never uses `dangerouslySetInnerHTML`, so a description cannot inject markup. The markup is deliberately tiny — four rules:
   - `` `like this` `` → **inline code**, styled to match the Sample Code panel. Use it for identifiers, keywords and short expressions (`useState`, `className`, `{reps && <p>…</p>}`).
   - three backticks alone on a line → a fenced **code block**. Use this for anything that is a snippet or a usage example, rather than inline code.
   - `- ` at the start of a line → a bullet; a plain line following one continues that bullet, so long bullets can wrap in the source.
   - a blank line separates paragraphs.
-  Every description must therefore have **balanced backticks** — an unpaired one renders literally. `description` reaches the reader only as plain text in the topic grid (`TopicIndex.tsx`); the sidebar and the mobile burger show `title` instead. So keep `description` markup-free.
+  Every description must therefore have **balanced backticks** — an unpaired one renders literally. `description` reaches the reader only as plain text in the topic grid (`TopicIndex.tsx`); the sidebar and the mobile burger show `shortTitle` instead. So keep `description` markup-free.
 - **Component structure**: `App.tsx` is now just `<Routes>` — all page content lives in `pages/` and `components/`. Do not put section markup back into `App.tsx`.
 - **TypeScript**: Two separate configs (`tsconfig.app.json` for `src`, `tsconfig.node.json` for `vite.config.ts`). Shared settings: `verbatimModuleSyntax`, `moduleDetection: force`, `noEmit: true`, `erasableSyntaxOnly`. Note: `verbatimModuleSyntax` requires type-only imports to use the `type` keyword (e.g., `import type { Topic } from "../types"`). `tsconfig.app.json` has `noUnusedLocals: true` / `noUnusedParameters: true` — clean up dangling imports when refactoring.
 - **Build tooling**: Vite 8 (built on rolldown) with `@vitejs/plugin-react` and `@tailwindcss/vite`. Vite 8 requires **Node 20.19+ or 22.12+**. Rolldown ships one native binary per platform as an *optional* dependency (here `@rolldown/binding-win32-x64-msvc`) — installing with `--omit=optional` strips it and the build then fails with "Cannot find native binding". Always use a plain `npm install`. No SSR — `dist/` is a static SPA output.
@@ -144,7 +145,7 @@ hit most often. Do them in this order:
 | # | Where | What |
 | - | ----- | ---- |
 | 1 | `src/topics/<slug>/demo.tsx` | The live component, opening with the **topic marker** header. |
-| 2 | `src/topics/<slug>/index.ts` | The registry entry: `slug`, `title`, `belt`, `description`, `longDescription`, `codeExample`, `component`. |
+| 2 | `src/topics/<slug>/index.ts` | The registry entry: `slug`, `title`, `shortTitle`, `belt`, `description`, `longDescription`, `codeExample`, `component`. |
 | 3 | `src/topics/registry.ts` | Import it and add it to `topicRegistry`. **This is the only wiring needed** — the sidebar link, the `/dojo/topic/<slug>` route and the index-grid card all follow from it. No route is ever written by hand. |
 | 4 | `CLAUDE.md` | Add the folder to the "Key files" tree, and update "Current project state" (the lesson count). |
 | 5 | `package.json` + `HomePage.tsx` | Bump the **version** by one topic step — see "Versioning" below — and match the badge in `HomePage.tsx`. |

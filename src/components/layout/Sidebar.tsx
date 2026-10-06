@@ -20,6 +20,11 @@ import { beltDotClass } from "../../topics/beltStyles";
  * 3. Tapping a link closes the menu, so the panel never stays open on top of the lesson
  *    you just opened.
  *
+ * Rows show `topic.shortTitle` rather than `topic.title`: the full titles are
+ * "Concept — subtitle" strings and were being truncated to "Components & Props — Dat…",
+ * which made the list unscannable. A two-digit lesson number leads each row so the
+ * sidebar reads as an ordered path rather than an unordered bag of links.
+ *
  * There is deliberately **no Escape-to-close**: that needs a keydown listener, which in
  * React means `useEffect`. Leaving it out keeps this file free of a hook the journal has
  * not taught yet — it is a good first job for `useEffect` when that topic comes up.
@@ -29,7 +34,7 @@ export function Sidebar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const activeTopic = topicRegistry.find((topic) => topic.slug === activeSlug);
-  const currentLabel = activeTopic?.title ?? "All Topics";
+  const currentLabel = activeTopic?.shortTitle ?? "All Topics";
 
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -80,11 +85,12 @@ export function Sidebar() {
               : "text-dojo-muted hover:bg-dojo-surface/60 hover:text-dojo-ember"
           }`}
         >
+          <span className="w-5 shrink-0" aria-hidden="true" />
           <span className="h-2 w-2 shrink-0 rounded-full bg-dojo-ember" />
           All Topics
         </Link>
 
-        {topicRegistry.map((topic) => {
+        {topicRegistry.map((topic, index) => {
           const isActive = topic.slug === activeSlug;
           return (
             <Link
@@ -98,10 +104,13 @@ export function Sidebar() {
                   : "text-dojo-muted hover:bg-dojo-surface/60 hover:text-dojo-ember"
               }`}
             >
+              <span className="w-5 shrink-0 font-mono text-[11px] tabular-nums text-dojo-muted/70">
+                {String(index + 1).padStart(2, "0")}
+              </span>
               <span
                 className={`h-2 w-2 shrink-0 rounded-full ${beltDotClass(topic.belt)}`}
               />
-              <span className="truncate">{topic.title}</span>
+              <span className="min-w-0 truncate">{topic.shortTitle}</span>
             </Link>
           );
         })}

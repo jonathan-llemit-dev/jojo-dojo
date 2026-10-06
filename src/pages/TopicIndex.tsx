@@ -2,39 +2,58 @@ import { Link } from "react-router-dom";
 import { topicRegistry } from "../topics/registry";
 import { beltBadgeClass, beltDotClass } from "../topics/beltStyles";
 
-/** Default content rendered at `/dojo` — welcome text + overview grid of all topics. */
+/**
+ * Default content rendered at `/dojo` — welcome text + overview grid of all topics.
+ *
+ * The grid is an ordered list on purpose: the lessons build on each other, so the
+ * number on each card is the recommended reading path, not decoration. Both the
+ * number and the order come from `topicRegistry` — reordering that array reorders
+ * the sidebar and these cards together, with nothing to keep in step by hand.
+ */
 export function TopicIndex() {
   return (
     <div className="max-w-4xl">
       <h1 className="text-2xl font-bold mb-2 md:text-3xl">Welcome to the Dojo</h1>
-      <p className="text-dojo-muted mb-8">
-        Choose a topic from the sidebar, or pick one below to start learning.
+      <p className="text-dojo-muted mb-8 max-w-prose">
+        The lessons build on each other, so the cards below are numbered in the order
+        they are meant to be read. Any topic can also be opened straight from the
+        sidebar.
       </p>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {topicRegistry.map((topic) => (
-          <Link
-            key={topic.slug}
-            to={`/dojo/topic/${topic.slug}`}
-            className="group block rounded-xl border border-dojo-border bg-dojo-surface/60 p-5 hover:border-dojo-ember transition"
-          >
-            <div className="flex items-start justify-between gap-3 mb-2">
-              <h2 className="min-w-0 font-semibold text-lg group-hover:text-dojo-ember transition">
-                {topic.title}
-              </h2>
+      <ol className="grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2">
+        {topicRegistry.map((topic, index) => (
+          <li key={topic.slug}>
+            <Link
+              to={`/dojo/topic/${topic.slug}`}
+              className="group flex h-full items-start gap-4 rounded-xl border border-dojo-border bg-dojo-surface/60 p-5 transition hover:border-dojo-ember"
+            >
               <span
-                className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs ${beltBadgeClass(topic.belt)}`}
+                aria-hidden="true"
+                className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-dojo-border bg-dojo-bg/60 font-mono text-xs tabular-nums text-dojo-ember"
               >
-                <span
-                  className={`h-1.5 w-1.5 rounded-full ${beltDotClass(topic.belt)}`}
-                ></span>
-                {topic.belt}
+                {String(index + 1).padStart(2, "0")}
               </span>
-            </div>
-            <p className="text-sm text-dojo-muted">{topic.description}</p>
-          </Link>
+
+              <div className="min-w-0 flex-1">
+                <div className="mb-2 flex items-start justify-between gap-3">
+                  <h2 className="min-w-0 text-lg font-semibold transition group-hover:text-dojo-ember">
+                    {topic.title}
+                  </h2>
+                  <span
+                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs ${beltBadgeClass(topic.belt)}`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${beltDotClass(topic.belt)}`}
+                    />
+                    {topic.belt}
+                  </span>
+                </div>
+                <p className="text-sm text-dojo-muted">{topic.description}</p>
+              </div>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ol>
     </div>
   );
 }

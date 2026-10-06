@@ -5,6 +5,7 @@ import { CounterDemo } from "./demo";
 export const useStateTopic: Topic = {
   slug: "use-state",
   title: "useState — Stateful Components & Counters",
+  shortTitle: "useState",
   // No `as BeltRank` needed here — the `: Topic` annotation above already
   // constrains this to one of the three belt values.
   belt: "white",

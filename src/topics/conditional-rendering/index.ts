@@ -5,6 +5,7 @@ import { ConditionalDemo } from "./demo";
 export const conditionalRenderingTopic: Topic = {
   slug: "conditional-rendering",
   title: "Conditional Rendering — &&, Ternary & Early Return",
+  shortTitle: "Conditional Rendering",
   belt: "white",
   description:
     "Pick between &&, a ternary and an early return — and avoid the falsy-value trap that prints a stray 0.",

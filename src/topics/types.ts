@@ -7,8 +7,14 @@ export type BeltRank = "white" | "blue" | "black";
 export interface Topic {
   /** URL-friendly identifier, e.g. "use-state" -> /dojo/topic/use-state */
   slug: string;
-  /** Shown in the sidebar list and as the topic heading. */
+  /** Full topic heading — the page `<h1>` and the index-card title. */
   title: string;
+  /**
+   * Compact label for the sidebar list. The full `title` is a "Concept — subtitle"
+   * string that gets truncated in a 16rem sidebar, so navigation shows this instead:
+   * the concept alone, short enough to scan at a glance.
+   */
+  shortTitle: string;
   /** Dojo belt rank — white (beginner) -> blue -> black (advanced). */
   belt: BeltRank;
   /** One-line summary rendered as plain text in the topic grid (`TopicIndex.tsx`). */

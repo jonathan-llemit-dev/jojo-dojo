@@ -5,6 +5,7 @@ import { JsxDemo } from "./demo";
 export const jsxTopic: Topic = {
   slug: "jsx",
   title: "JSX — Syntax, Expressions & Rendering",
+  shortTitle: "JSX",
   belt: "white",
   description:
     "JSX is a syntax extension for JavaScript that allows you to write HTML-like code within your React components.",

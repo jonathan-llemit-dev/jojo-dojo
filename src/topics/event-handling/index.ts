@@ -5,6 +5,7 @@ import { EventHandlingDemo } from "./demo";
 export const eventHandlingTopic: Topic = {
   slug: "event-handling",
   title: "Event Handling — Handler References & Arguments",
+  shortTitle: "Event Handling",
   belt: "white",
   description:
     "Name your handlers, pass them by reference, and wrap them in an arrow when they need an argument.",

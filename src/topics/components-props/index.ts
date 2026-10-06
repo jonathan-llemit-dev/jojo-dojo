@@ -5,6 +5,7 @@ import { PropsDemo } from "./demo";
 export const componentsPropsTopic: Topic = {
   slug: "components-props",
   title: "Components & Props — Data Down, Events Up",
+  shortTitle: "Components & Props",
   belt: "white",
   description:
     "Pass data into a component with props, and learn why props are read-only snapshots you must never copy into state.",

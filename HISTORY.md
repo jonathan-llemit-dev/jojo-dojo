@@ -10,6 +10,28 @@ Newest first.
 
 ## Session log
 
+### UI readability pass — numbered path, scannable sidebar, readable prose
+
+Requested before starting the next topic: make the sidebar and the main panel easier to read, and give the
+topic cards a clear order.
+
+1. **The sidebar was showing truncated titles.** Rows rendered `topic.title`, and every title is a
+   "Concept — subtitle" string, so a 16rem column clipped them to "Components & Props — Dat…" and
+   "Conditional Rendering — &…". Added **`shortTitle`** to the `Topic` type — required, so the compiler
+   forces every lesson to supply one — and the sidebar shows that instead: "Components & Props",
+   "Conditional Rendering", and so on. The full `title` is untouched on the page `<h1>` and the cards.
+2. **The order is now visible everywhere.** A two-digit lesson number leads each sidebar row and each
+   index card, and the topic page carries a breadcrumb reading "All Topics / Lesson 08 of 08". All three
+   derive the number from the item's position in `topicRegistry`, so the reading order lives in exactly
+   one place — reordering that array reorders the sidebar, the cards and the breadcrumb together. The
+   index grid also became a real `<ol>`, which is what it had always been semantically.
+3. **The detail prose was 896px wide** — roughly 120 characters a line, well past the 60–75 that reads
+   comfortably. `RichText` now caps paragraphs and bullets at `max-w-prose` (65ch) with `leading-7`,
+   while fenced code blocks keep the full width, since code wants the room. Section spacing went from
+   `mb-8` to `mb-10`, and the header gained a rule separating it from the body.
+4. **Verified**: `tsc` and `npm run lint` green. The visual result is the learner's to confirm — the
+   reviewer still cannot run `npm run dev`.
+
 ### Forms — fixed, explained, and verified
 
 1. **Both bugs fixed.** The learner's `forms` demo now reads the typed value

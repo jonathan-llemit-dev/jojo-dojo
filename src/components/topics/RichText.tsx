@@ -160,7 +160,7 @@ export function RichText({ text }: { text: string }) {
           return (
             <ul
               key={`block-${index}`}
-              className="my-3 flex list-disc flex-col gap-2 pl-5 leading-relaxed"
+              className="my-4 flex max-w-prose list-disc flex-col gap-2 pl-5 leading-7"
             >
               {block.items.map((item, itemIndex) => (
                 <li key={`item-${itemIndex}`}>
@@ -172,7 +172,7 @@ export function RichText({ text }: { text: string }) {
         }
 
         return (
-          <p key={`block-${index}`} className="my-3 leading-relaxed first:mt-0">
+          <p key={`block-${index}`} className="my-4 max-w-prose leading-7 first:mt-0">
             {withInlineCode(block.text, `block-${index}`)}
           </p>
         );

@@ -5,6 +5,7 @@ import { UseEffectDemo } from "./demo";
 export const useEffectTopic: Topic = {
   slug: "use-effect",
   title: "useEffect — Dependencies, Cleanup & When Not To",
+  shortTitle: "useEffect",
   belt: "white",
   description:
     "Run code after render to talk to something outside React — with an honest dependency array and a cleanup that undoes it.",

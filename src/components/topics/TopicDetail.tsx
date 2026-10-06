@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { topicBySlug } from "../../topics/registry";
+import { topicBySlug, topicRegistry } from "../../topics/registry";
 import { beltBadgeClass, beltDotClass } from "../../topics/beltStyles";
 import { RichText } from "./RichText";
 
@@ -36,10 +36,29 @@ export function TopicDetail() {
   // Dynamic component rendering from the registry reference.
   const Demo = topic.component;
 
+  // Position in the recommended reading path — the same order the sidebar numbers,
+  // derived from the registry so it can never disagree with it.
+  const lessonNumber = topicRegistry.findIndex((item) => item.slug === topic.slug) + 1;
+  const lessonTotal = topicRegistry.length;
+
   return (
     <div className="max-w-4xl">
-      {/* Header with belt badge */}
-      <div className="mb-6">
+      {/* Header — where you are in the path, then the belt, then the heading. */}
+      <header className="mb-8 border-b border-dojo-border pb-6">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-3 flex flex-wrap items-center gap-2 text-xs text-dojo-muted"
+        >
+          <Link to="/dojo" className="transition hover:text-dojo-ember">
+            All Topics
+          </Link>
+          <span aria-hidden="true">/</span>
+          <span className="font-mono tabular-nums">
+            Lesson {String(lessonNumber).padStart(2, "0")} of{" "}
+            {String(lessonTotal).padStart(2, "0")}
+          </span>
+        </nav>
+
         <span
           className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${beltBadgeClass(topic.belt)}`}
         >
@@ -49,11 +68,11 @@ export function TopicDetail() {
           {topic.belt} belt
         </span>
         <h1 className="text-2xl font-bold mt-3 md:text-3xl">{topic.title}</h1>
-      </div>
+      </header>
 
       {/* Description */}
       {topic.longDescription && (
-        <section className="mb-8">
+        <section className="mb-10">
           <h2 className="text-lg font-semibold mb-3 text-dojo-ember">
             Description
           </h2>
@@ -65,7 +84,7 @@ export function TopicDetail() {
 
       {/* Sample code */}
       {topic.codeExample && (
-        <section className="mb-8">
+        <section className="mb-10">
           <h2 className="text-lg font-semibold mb-3 text-dojo-ember">
             Sample Code
           </h2>
