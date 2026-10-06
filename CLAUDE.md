@@ -8,7 +8,7 @@ current state of play.
 
 ## Project Overview
 
-**React Jojo Dojo** — a personal React skill journal and training ground by Jonathan Llemit Jr. It is a **multi-page tutorial site** (W3Schools-style): a public landing page at `/` with an "Enter Dojo" CTA that navigates to the dojo at `/dojo`, where each React lesson lives behind a sidebar navigation. Clicking a topic shows its description, sample code, and a live working component in a main content panel.
+**React Jojo Dojo** — a React skill journal and training ground by Jonathan Llemit Jr., begun as a personal practice space and since opened up to anyone learning React or revising the fundamentals. It is a **multi-page tutorial site** (W3Schools-style): a public landing page at `/` with an "Enter Dojo" CTA that navigates to the dojo at `/dojo`, where each React lesson lives behind a sidebar navigation. Clicking a topic shows its description, sample code, and a live working component in a main content panel.
 
 The **learning journal** is the primary goal — deploy-ability is secondary. The site is Vercel-ready (see `vercel.json`).
 
@@ -162,24 +162,28 @@ hit most often. Do them in this order:
 
 ### Versioning — one step per topic
 
-The version tracks **how many lessons the dojo holds**. The learner's rule:
+The learner's rule: **every new topic adds `0.01` to whatever the version currently is**.
 
 ```
-initial page = 0.01        each new topic = +0.01
+new topic = current version + 0.01
 ```
 
-So with eight topics the version is **0.09** — the initial page plus eight steps. `package.json` is the
-source of truth (`0.09.0`; the third digit stays `0`), and three things must move together whenever a topic
-is added or the count changes:
+The version is therefore a **running number, not a formula**. It is *not* computed from the topic count, and
+the learner may also adjust it deliberately — a milestone, a deploy, a fresh start. What is fixed is the step:
+one new lesson, one `+0.01`. At the time of writing the project is at **`0.10.0`** with eight topics.
+
+Three artefacts must move together whenever the version changes:
 
 1. `"version"` in `package.json` — and the **two** `"version"` entries at the top of `package-lock.json`
    (the root one and the `packages[""]` one). Never hand-edit dependency versions in the lock.
-2. The badge in `src/pages/HomePage.tsx`, which shows the short form: `v0.09`.
-3. The lesson count sentence in "Current project state" below.
+2. The badge in `src/pages/HomePage.tsx`, which shows the short form: `v0.10`.
+3. The version sentence in "Current project state" below.
 
-*History note: the pre-convention target was a hand-picked `v0.1.0` that never shipped, while `package.json`
-sat at `0.0.0` — which is why the HomePage badge once advertised a release that did not exist. The rule above
-replaces that guesswork: the version is derived from the topic count, so it is never invented.*
+*History note: this section used to claim the version was "derived from the topic count, so it is never
+invented" — the reviewer's misreading, which made `0.09` the only legal value for eight topics and turned a
+deliberate `0.10` into a contradiction. The rule is the running `+0.01` step above. The older story still
+stands as the reason the three artefacts must stay in step: a hand-picked `v0.1.0` once shipped while
+`package.json` said `0.0.0`, advertising a release that did not exist.*
 
 ### The conventions themselves
 
@@ -245,7 +249,7 @@ stands and what comes next.
 
 ### Current project state
 - Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
-- **Version `0.09.0`**, derived from the topic count — `0.01` for the initial page plus one step per topic. It is not hand-picked; see "Versioning" below. The badge in `HomePage.tsx` shows the short form `v0.09`.
+- **Version `0.10.0`** — a running number, advanced by `0.01` for each new topic and adjustable deliberately. See "Versioning" below. The badge in `HomePage.tsx` shows the short form `v0.10`.
 - **Eight lessons registered, all eight verified**: `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys`, `event-handling`, `use-effect` and `forms` — all added through the registry, with no new routes written. No `IN PROGRESS`, `quiz-passed` or `GAP` line remains among them.
 - **Two lessons are lectures rather than fix-it exercises** — `event-handling` and `use-effect` — because their characteristic mistakes cannot be shipped as compiling, lint-clean bugs. Both were cleared by quiz, and both are recorded in the fix-it convention below, which now requires checking a candidate bug against both gates before designing an exercise around it.
 - **Layout is mobile-responsive**, confirmed by the learner at phone width: below `md` the topic list is a burger dropdown, and the nav/padding/headings scale down. The reviewer cannot run `npm run dev`, so visual checks are the learner's to make.
@@ -262,7 +266,7 @@ fetch demo would have to fake its data. The remaining open lines, in priority or
 
 1. **`useState` deep dive** — object/array state, lazy initialisers, two setters in one handler. Still a `GAP`: every `useState` in the repo holds a primitive.
 2. **`useRef`** — the next hook with an obvious use: `Sidebar.tsx` deliberately has no Escape-to-close, and the keydown listener it needs is a natural `useEffect` + `useRef` job.
-3. **Deploy to Vercel** — the current version is `0.09.0` (see "Versioning" above; it moves one step per topic, so re-check it before deploying). Confirm the SPA rewrite handles deep links on a real refresh.
+3. **Deploy to Vercel** — the current version is `0.10.0` (see "Versioning" above; add `0.01` for each new topic and keep the badge in step). Confirm the SPA rewrite handles deep links on a real refresh.
 
 ### Backlog (not yet prioritised)
 - "Featured Lessons" preview grid on the landing page, pulling from `topicRegistry`.

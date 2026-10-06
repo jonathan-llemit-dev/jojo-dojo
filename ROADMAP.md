@@ -37,7 +37,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] Tailwind CSS v4 with the custom dojo theme
 - [x] Landing page (hero + About + footer)
 - [x] Mobile-responsive layout — the topic list is a burger dropdown below `md`, and padding/headings scale
-- [ ] Deploy to Vercel — the version is derived from the topic count (`0.01` initial + `0.01` per topic), so it is currently **`0.09.0`** with eight topics; re-check it against the count before deploying and match the `HomePage` badge
+- [ ] Deploy to Vercel — the version is a running number (**`0.10.0`** today): add `0.01` for each new topic, and match the `HomePage` badge before deploying
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug` with nested layout route + sidebar

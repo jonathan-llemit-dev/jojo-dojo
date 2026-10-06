@@ -63,7 +63,7 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 1. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
 2. **`useState` deep dive** — object/array state, lazy initialisers, two setters in one handler.
-3. **Deploy to Vercel** — the current version is **`0.09.0`**: `0.01` for the initial page plus `0.01` per topic, so it moves one step every time a lesson is added. Re-check it against the topic count before deploying, and keep the `HomePage` badge (`v0.09`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
+3. **Deploy to Vercel** — the current version is **`0.10.0`**: a running number that gains `0.01` with every new topic (and can be adjusted deliberately). Keep the `HomePage` badge (`v0.10`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
 
 ---
 

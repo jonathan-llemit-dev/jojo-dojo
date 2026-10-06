@@ -10,6 +10,55 @@ Newest first.
 
 ## Session log
 
+### Version rule corrected — a running `+0.01`, not a formula
+
+The learner asked for `0.10` before committing, and the reviewer pushed back: the Versioning section said the
+version was "derived from the topic count, so it is never invented", which made `0.09` the only legal value for
+eight topics. The learner's actual rule turned out to be different, and simpler:
+
+> the version is not based on the number of topics — every time there's a new topic, add `0.01` to whatever the
+> version is. I can also deliberately adjust the version to any number I want. The only constant is `+0.01` on
+> every new topic.
+
+So the version is a **running number, not a formula**. `0.10.0` is legal with eight topics because the learner
+advanced it deliberately; the ninth topic will make `0.11.0`.
+
+1. **Bumped `0.09.0` → `0.10.0`** across `package.json`, both `package-lock.json` entries, and the `HomePage`
+   badge (`v0.10`).
+2. **Rewrote the "Versioning" section of `CLAUDE.md`** around the real rule, with a history note naming the
+   reviewer's misreading as the source of the old wording. The three artefacts that must move together are
+   unchanged, and the older `v0.1.0`-that-never-shipped story still stands as the reason.
+3. **Swept the claim out of the other docs.** `README.md`, `ROADMAP.md` and `NOTES.md` all asserted the version
+   was derived from the topic count and told the reader to "re-check it against the count" — now "add `0.01`
+   per new topic". The lesson-adding checklist's step 5 was already correct and needed no change.
+4. **Verified**: `tsc` and `npm run lint` green.
+
+### Landing page — shorter copy, and why the dojo exists
+
+The landing page described the *stack* ("forged with Vite, styled with Tailwind, ready for Vercel") but never
+said who the site was for or why it exists. Rewritten around the mission, and kept short:
+
+1. **The hero is one line now**: "Short lessons on React fundamentals, each ending in a live example." The
+   Vite/Tailwind/Vercel line is gone from the hero — that is build trivia, and the README still carries it.
+2. **About carries the origin story in the author's words**: started as a personal training ground to keep the
+   fundamentals sharp, then opened up for anyone learning React or revisiting the topics that matter — because
+   strong fundamentals are a must. Two short paragraphs, followed by a three-item strip (Short lessons · Live
+   examples · Fundamentals first) for a reader who only skims.
+3. **The count and the range come from `topicRegistry`** — "8 lessons · JSX to Forms & Inputs", with the number
+   and both endpoints read from the array, so adding a lesson updates the landing page with nothing to
+   remember. The same single-source-of-truth rule as the sidebar numbering. *(Removed again — see item 5.)*
+4. **Two corrections after the first pass.** The tagline had claimed "a live example you can click", which is
+   not true of every lesson: `jsx` renders expressions and carries no controls, so the clickability claim was
+   dropped rather than the demo being bent to fit it. The tagline also wrapped with "click." orphaned on its
+   own line — the hero line now uses `text-balance`, and the About paragraphs use `text-pretty`.
+5. **Then the hero was cut back to the name.** The explanatory tagline went first: "React Training Ground" over
+   "The Jojo Dojo" already says what this is, and the About section says the rest. The lesson-count line went
+   the same way — the dojo index already lists the lessons, numbered, so the landing page had no reason to
+   advertise the total, and the `topicRegistry` import it needed went with it. What is left is the eyebrow, the
+   name, the byline and the two buttons. (The About strip's third point changed from "Fundamentals first" to
+   "Sample Code", which names something the lessons actually contain.)
+6. **Verified**: `tsc` and `npm run lint` green. The look is the learner's to confirm.
+
 ### UI readability pass — numbered path, scannable sidebar, readable prose
 
 Requested before starting the next topic: make the sidebar and the main panel easier to read, and give the
@@ -118,6 +167,11 @@ topic cards a clear order.
 5. **One judgement call recorded:** the roadmap's `useState` deep dive is not a topic folder, so it does not
    advance the version. It is a gap *within* a verified topic. Routing, by contrast, has a notes entry but no
    lesson folder — either way the count that matters is the seven `src/topics/` folders.
+
+*Correction to this entry:* the rule it records is wrong. The learner's rule is a **running `+0.01` per new
+topic from whatever the current version is**, with deliberate adjustments allowed — not a value derived from
+the topic count. That wording made `0.10` look illegal for eight topics, and it was caught when the learner
+asked for `0.10.0` before committing. See the newest entry at the top of this log.
 
 ### Sync pass — making the record readable by a cold session
 

@@ -1,8 +1,16 @@
 import { Link } from "react-router-dom";
 
+/** Three one-line answers to "what is this?" — a scannable strip under the About copy. */
+const ABOUT_POINTS = ["Short lessons", "Live examples", "Sample Code"];
+
 /**
  * Landing page served at `/`.
- * Extracted from the original single-page App.tsx hero section.
+ *
+ * The copy is deliberately short. The hero is only the eyebrow, the name, the byline and
+ * the buttons — "React Training Ground" above "The Jojo Dojo" already says what this is,
+ * and the dojo index shows the lessons themselves, so there is no count to advertise.
+ * The About section carries the one long-form paragraph: why it exists, in the author's
+ * own words.
  */
 export function HomePage() {
   return (
@@ -33,7 +41,7 @@ export function HomePage() {
       {/* Hero */}
       <section className="flex-1 px-4 py-16 flex flex-col items-center text-center sm:px-6 sm:py-24">
         <span className="mb-4 px-3 py-1 text-xs rounded-full border border-dojo-border text-dojo-muted">
-          🥋 Welcome, student · v0.09
+          🥋 Welcome, student · v0.10
         </span>
 
         <p className="text-dojo-ember tracking-[0.3em] uppercase text-sm mb-4">
@@ -46,12 +54,7 @@ export function HomePage() {
           </span>
         </h1>
 
-        <p className="mt-6 text-lg text-dojo-muted max-w-xl">
-          A personal dojo for building modern React apps — forged with Vite,
-          styled with Tailwind, and ready for Vercel.
-        </p>
-
-        <p className="mt-4 text-sm uppercase tracking-[0.25em] text-dojo-ember">
+        <p className="mt-6 text-sm uppercase tracking-[0.25em] text-dojo-ember">
           by Jonathan Llemit Jr.
         </p>
 
@@ -77,17 +80,36 @@ export function HomePage() {
         id="about"
         className="border-t border-dojo-border px-4 py-16 text-center scroll-mt-20 sm:px-6"
       >
-        <h2 className="text-2xl font-bold mb-4">
+        <h2 className="text-2xl font-bold mb-5">
           About the <span className="text-dojo-ember">Dojo</span>
         </h2>
-        <p className="mx-auto max-w-2xl text-dojo-muted leading-relaxed">
-          React Jojo Dojo is a personal training journal for learning React. Every
-          lesson gets its own URL under{" "}
-          <code className="text-dojo-ember">/dojo</code>: an explanation, a sample
-          snippet, and a live component you can actually click. The study notes for
-          each topic are kept in{" "}
-          <code className="text-dojo-ember">NOTES.md</code>.
-        </p>
+
+        <div className="mx-auto max-w-2xl space-y-4 text-pretty text-dojo-muted leading-relaxed">
+          <p>
+            I started this as my own training ground — somewhere to practise React and
+            keep the fundamentals sharp. Then I opened it up: it is now for anyone
+            learning React, or revisiting the topics that matter, to work through lesson
+            by lesson.
+          </p>
+          <p>
+            Strong fundamentals are a must, so the lessons stay short — an explanation, a
+            sample snippet, and a live example you can click and break.
+          </p>
+        </div>
+
+        <ul className="mx-auto mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
+          {ABOUT_POINTS.map((point) => (
+            <li
+              key={point}
+              className="flex items-center justify-center gap-2 rounded-lg border border-dojo-border bg-dojo-surface/60 px-4 py-3 text-sm"
+            >
+              <span aria-hidden="true" className="text-dojo-ember">
+                ✓
+              </span>
+              <span className="text-dojo-muted">{point}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Footer */}

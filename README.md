@@ -1,11 +1,11 @@
 # 🥋 React Jojo Dojo
 
-> **React Training Ground** — a personal dojo for building modern React apps.
+> **React Training Ground** — short lessons on React fundamentals, each with a live example you can click.
 > By [Jonathan Llemit Jr.](https://github.com/jonathan-llemit-dev)
 
 A dark, dojo-themed React learning journal forged with **Vite**, styled with **Tailwind CSS v4**, and ready to deploy on **Vercel**. The landing page is at `/`; every React lesson then lives at its own URL under `/dojo`. Every commit is a rep. Every deploy is a rank up.
 
-**Version `0.09.0`** — the version tracks how many lessons the dojo holds: `0.01` for the initial page, plus `0.01` for each topic added. Eight topics, so `0.09`. It is derived, never hand-picked.
+**Version `0.10.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
 
 ---
 
@@ -149,7 +149,7 @@ This is the visitor-facing summary. The **master checklist — every study topic
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug`
 - [x] Mobile-responsive layout — burger topic menu below `md`
 - [x] Eight lessons verified — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling, `useEffect`, forms & controlled inputs
-- [ ] Deploy to Vercel — current version `0.09.0` (`0.01` initial page + `0.01` per topic)
+- [ ] Deploy to Vercel — current version `0.10.0` (each new topic adds `0.01`)
 - [ ] More lessons (the open topics are listed in `ROADMAP.md`)
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle
