@@ -12,15 +12,15 @@ import { beltBadgeClass, beltDotClass } from "../topics/beltStyles";
  */
 export function TopicIndex() {
   return (
-    <div className="max-w-4xl">
+    <div className="w-full">
       <h1 className="text-2xl font-bold mb-2 md:text-3xl">Welcome to the Dojo</h1>
-      <p className="text-dojo-muted mb-8 max-w-prose">
+      <p className="text-dojo-muted mb-8">
         The lessons build on each other, so the cards below are numbered in the order
         they are meant to be read. Any topic can also be opened straight from the
         sidebar.
       </p>
 
-      <ol className="grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2">
+      <ol className="grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 2xl:grid-cols-3">
         {topicRegistry.map((topic, index) => (
           <li key={topic.slug}>
             <Link

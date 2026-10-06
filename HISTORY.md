@@ -29,7 +29,19 @@ topic cards a clear order.
    comfortably. `RichText` now caps paragraphs and bullets at `max-w-prose` (65ch) with `leading-7`,
    while fenced code blocks keep the full width, since code wants the room. Section spacing went from
    `mb-8` to `mb-10`, and the header gained a rule separating it from the body.
-4. **Verified**: `tsc` and `npm run lint` green. The visual result is the learner's to confirm — the
+4. **Wide screens were leaving a hole.** The content was capped at `max-w-4xl` (896px) and left-aligned, so on
+   a ~1900px window it hugged the sidebar and left roughly 700px of empty space beside it.
+   - **First attempt — a `2xl` two-column split.** The page centred itself under a `max-w-7xl` cap, and from
+     `2xl` up the Live Demo moved into a `28rem` right column beside the lecture. It was **reverted**: the
+     demo components are built at `max-w-md` / `max-w-lg`, and the narrower side column made their own
+     controls wrap — "Log a rep" broke across two lines in the event-handling demo. A demo needs the width it
+     was designed at, so it does not belong in a side column.
+   - **What shipped instead.** One full-width column, uncapped: the lecture text lost its `max-w-prose`
+     measure and the sample code (which wants the width anyway — it was already scrolling horizontally at
+     920px) both take the whole panel. The Live Demo panel is `w-fit`, so it wraps the demo rather than
+     stretching a mostly-empty bordered box across the page. The index grid stays two columns and goes to
+     three at `2xl`.
+5. **Verified**: `tsc` and `npm run lint` green. The visual result is the learner's to confirm — the
    reviewer still cannot run `npm run dev`.
 
 ### Forms — fixed, explained, and verified

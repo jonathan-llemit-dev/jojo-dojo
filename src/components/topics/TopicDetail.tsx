@@ -9,6 +9,12 @@ import { RichText } from "./RichText";
  * 1. Description / lesson explanation
  * 2. Sample code block (when available)
  * 3. Live working component demo
+ *
+ * Layout: one full-width column. An earlier attempt split the page at `2xl` and put
+ * the Live Demo in a right-hand column, but the demo components are designed at
+ * `max-w-md` / `max-w-lg` — wrapping one into a narrower column made its *own*
+ * controls wrap too, so the split was dropped. The lecture and the code now take the
+ * whole width of the panel instead, and the demo keeps the width it was built for.
  */
 export function TopicDetail() {
   // A URL param is always `string | undefined`, so read it first and only look it
@@ -42,7 +48,7 @@ export function TopicDetail() {
   const lessonTotal = topicRegistry.length;
 
   return (
-    <div className="max-w-4xl">
+    <div className="w-full">
       {/* Header — where you are in the path, then the belt, then the heading. */}
       <header className="mb-8 border-b border-dojo-border pb-6">
         <nav
@@ -96,12 +102,13 @@ export function TopicDetail() {
         </section>
       )}
 
-      {/* Live demo */}
+      {/* Live demo. `w-fit` keeps the panel wrapped around the demo at the width it
+          was designed for, instead of stretching a mostly-empty box across the page. */}
       <section>
         <h2 className="text-lg font-semibold mb-3 text-dojo-ember">
           Live Demo
         </h2>
-        <div className="rounded-xl border border-dojo-border bg-dojo-surface/30 p-4 md:p-6">
+        <div className="w-fit max-w-full rounded-xl border border-dojo-border bg-dojo-surface/30 p-4 md:p-6">
           <Demo />
         </div>
       </section>
