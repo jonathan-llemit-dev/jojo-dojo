@@ -10,25 +10,133 @@ Newest first.
 
 ## Session log
 
-8. **Verified and closed out — by quiz, not by repair.** Event handling had no hands-on exercise to fix, so
-   clearance for the box came from three questions, asked one at a time with feedback between each. All
-   three correct, and none guessable from the wording of the options:
-   - **What the gates object to** in `onClick={handleReset()}` — answered that the handler runs while
-     rendering and `onClick` receives its return value instead of the function. That is the fact both `tsc`
-     and ESLint point at, from different angles.
-   - **Reading four differently-wired buttons** — identified the one correct wiring. The question planted
-     two *different* mistakes, and the feedback separated them: calling during render is **loud** (both
-     gates stop you), while failing to supply the argument a handler needs is **silent** (nothing stops
-     you; the click passes the event object where an id was expected).
-   - **Choosing the form** for a Rename button needing that row's id — picked the arrow wrapper and gave the
-     right reason. The "read the id off the event object" option was offered and would have been **accepted**
-     as a real pattern; it is the one answer that requires the event object this lesson deferred.
-   
-   `ROADMAP.md` ticked, `NOTES.md` entry 07 rewritten as verified with the quiz recorded, the marker flipped
-   to `Status: OK`, and Event handling moved into the snapshot's "Solid" table. **Six lessons, six verified;
-   `useEffect` is now the only `quiz-passed` topic left.**
+### Versioning — the version is now derived, not invented
 
-### Event handling — a fix-it exercise that turned out to be impossible
+1. **The learner set the rule:** `0.01` for the initial page, then **`+0.01` per topic**. Seven topics, so the
+   project is **`0.08.0`**. It replaces the old hand-picked `v0.1.0` deploy target that never shipped — the
+   exact guesswork that once left the `HomePage` badge advertising a release which did not exist.
+2. **Applied in five places, not one.** `package.json`, **both** project `"version"` entries at the top of
+   `package-lock.json` (the root one and `packages[""]` — dependency versions untouched), the `HomePage` badge
+   (short form `v0.08`), and the four docs that had been pitching `v0.1.0`.
+3. **Written into `CLAUDE.md` as a convention** with its own section, so a new session derives the number
+   instead of choosing one: the rule, the three artefacts that must move together, and why the old approach
+   failed. Step 5 of the lesson-adding checklist now covers the bump, which is what makes the version advance
+   automatically as topics are added.
+4. **Asked rather than assumed.** The learner's two statements initially disagreed — "+0.1 per topic" against
+   "7 topics → 0.08" — and `0.01 + (7 × 0.1)` is `0.71`, not `0.08`. Since the difference was between two
+   plausible conventions and this one gets written into five files, the ambiguity was put back to the learner
+   instead of being resolved by picking the reading that matched the stated number.
+5. **One judgement call recorded:** the roadmap's `useState` deep dive is not a topic folder, so it does not
+   advance the version. It is a gap *within* a verified topic. Routing, by contrast, has a notes entry but no
+   lesson folder — either way the count that matters is the seven `src/topics/` folders.
+
+### Sync pass — making the record readable by a cold session
+
+Before starting a new topic, everything was audited for agreement between the docs, the code, and *each other* —
+not just for factual accuracy, but for whether a fresh AI session could pick the project up unassisted.
+
+1. **One genuine code/doc contradiction: `RichText.tsx` said "three rules" while `CLAUDE.md` said four.** The
+   parser implements four (fenced blocks, bullets, inline code, blank-line paragraphs), so the source comment
+   was wrong, and its sibling comment on `parseBlocks` claimed "three" while listing three *structural* rules
+   and silently omitting the fourth. Both comments now name all four and say which function owns each. This is
+   the second time a stale comment in this file has been caught — worth knowing this file is a repeat offender.
+2. **The version story was ambiguous.** `package.json` says `0.0.0` and the `HomePage` badge matches it, but
+   every doc pitched "Deploy v0.1.0" without saying the version has to be *bumped* as part of that work — which
+   is why the badge had once advertised a release that never happened. The roadmap and notes deploy lines now
+   spell out that bumping `package.json` to `0.1.0` is part of the task.
+3. **Added an "Orientation — read this first" section to the top of `CLAUDE.md`.** A cold session previously had
+   to infer, from scattered sections, which of the five root docs answers what, whose job the written record is,
+   and what "verified" means. It now says so up front, including the rule most likely to be misread: *do not
+   tick a box because a lesson file exists.*
+4. **Added the missing "Adding a lesson — the checklist".** Adding a lesson touches six places across five
+   files, and that procedure existed only as scattered remarks — this project's single most-repeated failure is
+   docs drifting out of sync, so the procedure is now written down as a table, including the decision that has
+   to be made *before* writing the demo: fix-it exercise, or explainer. That decision now carries the gate-probe
+   rule with it.
+5. **Made the objective ordering explicit.** `Next session objectives` listed Forms before the `useState` deep
+   dive, which read as an oversight since the deep dive is older. It is deliberate — Forms is a **`GAP`** (never
+   used at all), the deep dive is a *gap within a verified topic* — and now says so.
+6. **Verified by script, not by eye:** 18 claimed paths all exist; dependency majors match `package.json`
+   (React 19, Vite 8, Tailwind 4, React Router 7); all 8 notes entries agree with their marker file and roadmap
+   box (entry 03 Routing being the documented exception); all 7 lessons are wired into the registry and named in
+   all four docs; no stale claims anywhere; and all 7 descriptions still render without literal markup.
+7. **Two of my own checkers were wrong first**, and both were reported as problems before being disproved:
+   a regex that missed "reviewer-written" text that was present, and one that mapped alphabetically-sorted
+   folders against entry numbers. Neither was a repo defect — which is exactly why a failing check is worth
+   reading before acting on it.
+
+### `useEffect` — the second lesson that could not be a fix-it exercise
+1. **Seven candidate bugs were probed against both gates before anything was designed.** The request was a
+   fix-it with two or more bugs; the probes said that is not available here, and the split is clean:
+   - **Rejected by `react-hooks/set-state-in-effect`:** derived state synced through an effect
+     (`useEffect(() => setCount(prop), [prop])`) — the "you might not need an effect" mistake React's own
+     docs lead with — and an object or array used as a dependency.
+   - **Rejected by `react-hooks/exhaustive-deps`:** any wrong or missing dependency array, including a
+     wrapper handler on the dependency line. It is a *warning* rather than an error, so it does not fail the
+     build — but the warning text names the fix ("wrap the definition in its own `useCallback()`"), which
+     hands over the answer, so shipping it would be worse than useless.
+   - **Passes both gates:** a fetch with no `AbortController` (but with no server here, the race is
+     unobservable), and a missing cleanup on an interval or listener.
+
+   That leaves **one** mistake in two shapes, which is too thin for an exercise whose point is diagnosis.
+   So: lecture plus quiz, per the stated fallback.
+2. **The lesson is live at `/dojo/topic/use-effect`** — a training timer whose only effect starts, stops and
+   cleans up an interval. The demo deliberately keeps two independent pieces of state (`seconds` driven by
+   the interval, `draft` driven by the textarea) so the dependency array can stay honest: the effect depends
+   on `isRunning` and nothing else, and typing never restarts the timer.
+3. **The cleanup is the teaching device.** The lesson text walks through deleting the `return` line: nothing
+   breaks immediately, each change to `isRunning` leaves the previous interval alive and starts another, and
+   the clock ends up ticking two and then three times as fast. A leak **compounds**, so the symptom arrives
+   several interactions after the mistake.
+4. **Two rules from React's own documentation are included**: use the updater form
+   (`setSeconds((s) => s + 1)`) so state does not have to enter the dependency array, and compute derived
+   values during render rather than in an effect. The demo's formatted clock is the worked example of the
+   second.
+5. **Verified**: exact mirror at **64 of 64** lines, `tsc` and `npm run lint` both green with no warnings.
+6. **A mistake of my own, caught by the checker rather than by eye.** The first draft of the description used
+   Markdown emphasis — `**Cleanup is the half people skip**` plus six more instances of `**bold**` and
+   `*italic*`. `RichText` has no emphasis rule, so every one of those would have printed literal asterisks on
+   the lesson page. The sweep that caught it now checks all seven descriptions for literal backticks, `**`
+   and lone `*` outside code spans; all seven are clean.
+7. **Deferred, and recorded as deferred:** a real fetch with loading and error states. There is no server in
+   this project, so a fetch demo would have to fake its data and could not show the race condition that makes
+   `AbortController` worth teaching. It belongs with Forms, alongside the event object.
+8. **Verified by quiz — with one answer wrong first time, which is the first in the journal.** Two of three
+   were right immediately: what genuinely needs an effect (`document.title`, because nothing outside React
+   re-renders itself), and why a missing cleanup compounds (the previous intervals are never stopped, so each
+   re-run adds a contributor rather than replacing one). The third was wrong — shown an effect reading `reps`
+   with `[]`, the answer was that an empty array still re-runs when a value the effect reads changes. That is
+   backwards: the dependency array is the *only* thing that decides re-runs, so `[]` means once after the
+   first render and nothing after.
+
+   The correction landed, and the follow-up answer was right and precise — the callback would still see `0`,
+   because it closed over the value from the render it ran in. Recorded in entry 08 with the correction
+   spelled out rather than smoothed over, because "an empty array still re-runs when a value changes" is the
+   belief that makes someone add dependencies pointlessly or wonder why an effect is not firing.
+9. **Box ticked; all seven lessons are now verified.** `ROADMAP.md` has no `IN PROGRESS` or `quiz-passed`
+   lines left, and both the "In progress" and "Quiz-passed" sections of the snapshot are empty for the first
+   time.
+
+### Event handling — verified by quiz
+
+- **Verified and closed out — by quiz, not by repair.** Event handling had no hands-on exercise to fix, so
+  clearance for the box came from three questions, asked one at a time with feedback between each. All
+  three correct, and none guessable from the wording of the options:
+  - **What the gates object to** in `onClick={handleReset()}` — answered that the handler runs while
+    rendering and `onClick` receives its return value instead of the function. That is the fact both `tsc`
+    and ESLint point at, from different angles.
+  - **Reading four differently-wired buttons** — identified the one correct wiring. The question planted two
+    *different* mistakes, and the feedback separated them: calling during render is loud (both gates stop
+    you), while failing to supply the argument a handler needs is silent (nothing stops you; the click
+    passes the event object where an id was expected).
+  - **Choosing the form** for a Rename button needing that row's id — picked the arrow wrapper and gave the
+    right reason. The "read the id off the event object" option was offered and would have been accepted as
+    a real pattern; it is the one answer that requires the event object this lesson deferred.
+
+  `ROADMAP.md` ticked, `NOTES.md` entry 07 rewritten as verified with the quiz recorded, the marker flipped
+  to `Status: OK`, and Event handling moved into the snapshot's "Solid" table.
+
+### Event handling — how the lesson was built
 
 1. **The plan was a fix-it exercise, and the plan was wrong.** The mistake this topic exists to teach —
    `onClick={handler()}` instead of `onClick={handler}` — cannot be shipped as a planted bug in this
@@ -234,7 +342,6 @@ Following the routing exercises and a five-question assessment, the reviewer's r
 6. **Verified and closed out.** Both bugs fixed on the first attempt, after a framing hint, and the fix was better than the minimum: the condition was named once (`const isTraining = reps > 0;`) and then reused, so the badge collapsed to a single ternary and `&&` could never receive a number. Recorded as **guided** — the hint plus the named-boolean pattern being visible in the sample — so props bug 2 remains the only unaided fix on record. The learner also added a fatigue warning above 20 reps, which is beyond the exercise; every conditional it added keeps a real boolean on the left.
 7. **Sample code swapped for a real mirror** — 63/63 lines against the repaired demo. It is the first sample needing **escaping**: the demo contains its own template literal, so `\`` and `\${` are escaped in `index.ts` and the parity check unescapes before comparing. That rule is now part of the mirror convention.
 8. **Found and fixed a stale status line** in `NOTES.md` entry 04, which still read "exercise in progress, not yet verified" long after props was verified — the close-out had updated the evidence section but not the header. Worth checking the status line of any entry being closed out.
-
 ### UI convention — code in descriptions now renders as code
 
 1. **Fixed a real defect, not just polish.** `topic.longDescription` was rendered as a single `<p>` with `whitespace-pre-line`, so every backtick and bullet dash the content already contained was appearing **literally** on the lesson pages: readers saw `` `useState` `` complete with backticks, and `- ` lists as run-on prose.

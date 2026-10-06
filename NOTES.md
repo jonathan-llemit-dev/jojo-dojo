@@ -31,6 +31,7 @@ assessment rather than a marker):
 | File & component structure | Followed the registry convention unaided: `demo.tsx` + `index.ts`, marker header, camelCase export for a data object rather than PascalCase |
 | Lists & keys | Fixed the `lists-and-keys` exercise unaided — changed `key={index}` to `key={exercise.id}` and nothing else — then explained why: React **reuses the row component and the tick lives inside that reused component**, so a key that names a slot glues the state to the slot. Entry 06 |
 | Event handling | Built the `event-handling` lesson and scored **3/3** on its quiz, including reading four differently-wired buttons and picking the one arrow form that both defers the call and supplies the argument. Entry 07 |
+| `useEffect` | The timer demo (interval effect, real dependency array, real cleanup), plus explained why a missing cleanup **compounds** and why `[]` means once rather than "when anything changes". One quiz answer was wrong and corrected — entry 08 |
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
 
 *Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
@@ -47,9 +48,11 @@ for the mobile menu), which is why that surface has not been exercised yet.*
 
 Understood as *concepts*, not yet *demonstrated as skills*. A single correct multiple-choice answer is weak evidence, so these stay unticked until a lesson exercises them.
 
-- **`useEffect`** — knows it runs after render and re-runs when a dependency changes. Has never written one.
+*(Empty, and this is the first time in the journal it has been. `useEffect` was the last entry — cleared by entry 08.)*
 
-*(**Lists & keys** and **Event handlers** were both on this list, and both are now verified — entries 06 and 07. `useEffect` is the last one left.)*
+### In progress — lesson live, verification outstanding
+
+*(Empty. Every registered lesson is verified.)*
 
 ### Gaps — the honest list
 
@@ -57,9 +60,10 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### Next, in order
 
-1. **`useEffect`** — real data fetching with a loading state and cleanup. The last `quiz-passed`.
-2. **Forms & controlled inputs** — the natural companion to `useEffect`, and the home for the event object that event handling deferred.
-3. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
+1. **Forms & controlled inputs** — the natural companion to `useEffect`, and the home for the event object that event handling deferred.
+2. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
+3. **`useState` deep dive** — object/array state, lazy initialisers, two setters in one handler.
+4. **Deploy to Vercel** — the current version is **`0.08.0`**: `0.01` for the initial page plus `0.01` per topic, so it moves one step every time a lesson is added. Re-check it against the topic count before deploying, and keep the `HomePage` badge (`v0.08`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
 
 ---
 
@@ -560,6 +564,111 @@ explained half is above.
 
 ---
 
+## 08 — `useEffect` (Dependencies, Cleanup & When Not To)
+
+- **Status:** OK (Mastered) — verified 2026-10-04, after one corrected misconception
+- **Added:** 2026-10-04
+- **Belt:** white
+- **Marker file:** `src/topics/use-effect/demo.tsx`
+- **Route:** `/dojo/topic/use-effect`
+
+### Explanation
+
+Everything so far happens **during** render. `useEffect` is for what happens **after** it, and the way to
+know you need one is to ask whether you are talking to something outside React: a timer, an event listener,
+a network request, `document.title`, a third-party widget. None of those are React, so they cannot happen
+during render — and none of them notice when your state changes. An effect is the bridge.
+
+**The dependency array decides when the effect runs**, and it is the whole rest of the hook:
+
+| Second argument | Runs |
+| --- | --- |
+| `[]` | once, after the first render |
+| `[isRunning]` | after the first render, and again whenever `isRunning` changes |
+| omitted | after **every** render — almost never what you want |
+
+The array is a **promise**: every value the effect body reads from the component belongs in it.
+`react-hooks/exhaustive-deps` checks that promise and names what you left out.
+
+**Cleanup is the half that gets skipped.** An effect may return a function; React runs it before the next
+run of that effect and once more on unmount. Whatever the body started, the cleanup stops:
+
+```tsx
+useEffect(() => {
+  const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+  return () => clearInterval(id);
+}, [isRunning]);
+```
+
+Delete the `return` line and nothing breaks *immediately* — which is the trap. Each change to `isRunning`
+leaves the old interval alive and starts another, so the clock ticks twice as fast, then three times as
+fast. **A leak compounds rather than appearing**: the symptom shows up several interactions after the
+mistake, which is why this survives so long in real code.
+
+**The updater form keeps the dependency array honest.** `setSeconds((s) => s + 1)` needs no dependency on
+`seconds`. Reading `seconds` directly inside the effect would force `[isRunning, seconds]`, tearing down and
+rebuilding the interval every single second.
+
+**And the rule React's own docs lead with: you might not need an effect at all.** If you are reaching for
+`useEffect` to *compute* a value from props or state, compute it during render instead. The demo's formatted
+clock (`M:SS`) is calculated in the component body for exactly this reason — deriving it in an effect would
+cost a second render and show a stale value for one frame.
+
+### Why there is no fix-it exercise
+
+Probing seven candidate bugs against both gates left only cleanup mistakes shippable:
+
+| Bug | Gates |
+| --- | --- |
+| Derived state synced through an effect | rejected by `react-hooks/set-state-in-effect` |
+| Object/array as a dependency | rejected by the same rule + `exhaustive-deps` |
+| Wrong or missing dependency array | rejected by `exhaustive-deps` |
+| Wrapper handler on the dependency line | rejected by `exhaustive-deps` |
+| Fetch with no `AbortController` | passes, but there is no server here to observe the race |
+| Listener / interval with no cleanup | **passes both** |
+
+That last row is one mistake in two shapes, which is too thin for an exercise whose point is diagnosis. So
+the lesson is a lecture and a working reference, and clearance comes from the quiz.
+
+### How it was verified — 2026-10-04
+
+This topic had no hands-on exercise, so the **explained** half came from three questions asked one at a
+time, with feedback between each. Two were right first time; the third was wrong, and that is the part of
+this entry worth reading.
+
+**Q1 — what needs an effect.** Correct. Chose `document.title` and gave the reason that matters: it is not
+React, so nothing re-renders it when state changes, and the effect is the bridge. The three options rejected
+— `reduce()`, `{count}`, and formatting seconds into `M:SS` — are all values derived from state that already
+exists, so they belong in the render. The demo's formatted clock is the worked example.
+
+**Q2 — why a missing cleanup compounds.** Correct. Identified that the previous intervals are never stopped,
+so the work multiplies rather than replacing itself, and that it compounds over further toggles.
+`setInterval` has no "replace the old one" behaviour — without the returned handle there is nothing to stop
+it, so each re-run adds another contributor: 1 → 2 → 3 increments per tick.
+
+**Q3 — the dependency array. Initially wrong, then corrected; this is the entry's real content.**
+Given an effect reading `reps` with `[]` as its dependencies, the first answer was that an empty array
+still re-runs when a value the effect reads changes. That is backwards, and it matters: **the dependency
+array is the only thing that decides re-runs.**
+- `[]` — once, after the first render. Never again.
+- `[reps]` — after the first render, then whenever `reps` changes.
+- omitted — after every render.
+
+So the console shows `0` once and nothing more. The component re-renders as `reps` climbs and the `<p>`
+updates, because JSX is evaluated on every render — but the effect does not, because nothing told it to.
+
+The correction was then confirmed with a follow-up, and the answer was right and precise: if that callback
+were invoked anyway, it would still see `0`, because **it closed over the value from the render it ran in.**
+That is the stale closure, and it is why a missing dependency is a real defect rather than a style nit.
+
+Worth recording as a process note: this is the first quiz answer in the journal that was wrong. It was
+corrected in conversation and the mechanism was then explained correctly in the learner's own words, which
+is why the box is ticked — but the correction is written down rather than smoothed over, because "an empty
+array still re-runs when a value changes" is exactly the belief that makes someone add dependencies
+pointlessly or wonder why an effect is not firing.
+
+---
+
 ## Traps & mental models
 
 Every correction made during review, in one place. These are the things most likely to bite again.
@@ -577,6 +686,10 @@ Every correction made during review, in one place. These are the things most lik
 | `{label || "N/A"}` for a prop that should always exist | Silences the symptom and keeps the defect — the UI now says "N/A" forever. If a value is genuinely required, type it as required and let the compiler find the call sites that forgot it. |
 | `{slug}` used as a lookup key when it may be missing | `topicBySlug[undefined]` is `undefined`, so guard with `slug ? topicBySlug[slug] : undefined` before using it. |
 | Two siblings sharing a key | React warns in the console and cannot tell them apart, so one row's state is reused for the other and the other's state is discarded. Ids from the data are unique; names are not. |
+| `useEffect` with no cleanup | Whatever the effect started keeps running. Change the dependency and React starts **another** one, so the work multiplies — a timer ticks twice as fast, a listener fires twice per event. The symptom appears several interactions after the mistake, which is why it survives review. Return `() => clearInterval(id)` / `removeEventListener` / `controller.abort()`. |
+| `useEffect` used to derive a value | Costs a second render and shows a stale value for one frame. If the value is a function of props or state, compute it during render. This is also what `react-hooks/set-state-in-effect` enforces. |
+| A dependency array that lies | `[]` or a partial list means the effect reads a value frozen at the render it ran in. `exhaustive-deps` names the value you left out — fix the effect, do not silence the warning. |
+| Reading state directly inside an interval | Forces that state into the dependency array, so the interval is torn down and rebuilt every tick. Use the updater form: `setSeconds((s) => s + 1)`. |
 
 **The one mental model that explains most of React:** a re-render means **React calls your component
 function again**, with fresh arguments. State persists across those calls, plain variables do not, and

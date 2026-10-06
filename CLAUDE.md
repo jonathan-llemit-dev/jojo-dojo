@@ -12,6 +12,35 @@ current state of play.
 
 The **learning journal** is the primary goal — deploy-ability is secondary. The site is Vercel-ready (see `vercel.json`).
 
+## Orientation — read this first
+
+Five files describe this repo, and a new session should know which answers what before reading any of them:
+
+| File | Answers | Written by |
+| ---- | ------- | ---------- |
+| **`CLAUDE.md`** (this file) | How does the project work? What are the conventions? What state is it in, and what is next? | reviewer |
+| **`NOTES.md`** | What does the learner actually *know*, with evidence? One numbered entry per topic, plus a traps cheat-sheet. | reviewer |
+| **`ROADMAP.md`** | Which topics are verified, and which are still open? | reviewer |
+| **`HISTORY.md`** | Why is a convention the way it is? A session log, newest first. | reviewer |
+| **`README.md`** | The public-facing summary: versions, install steps, structure. | reviewer |
+
+**The working arrangement, in one paragraph.** Jonathan is learning React; the AI assistant is the
+**reviewer and assessor**, not merely a coder. His job is to **build** — write lesson demos, do exercises,
+and explain concepts in his own words. The reviewer's job is the **written record**: `NOTES.md` in full, the
+`ROADMAP.md` boxes, `HISTORY.md`, and mechanical plumbing (renames, stale comments, factual errors). **Never
+assign note-writing as learner work** — it was explicitly declined in favour of hands-on practice, and
+"write your study note" must never be asked of him. The learner's explanation comes out in **conversation**,
+often as a short quiz.
+
+**A topic is verified only when both halves are met** — working code the learner wrote or directed
+(**demonstrated**), *and* a correct explanation in his own words or a non-guessable correct answer
+(**explained**). A right multiple-choice answer alone is `quiz-passed`, not verified. The full standard, and
+how to check knowledge, are under "Reviewer Responsibilities" below. That is the rule most likely to be
+misread by a fresh session: **do not tick a box because a lesson file exists.**
+
+**Current state, one line:** seven lessons registered and all seven verified; the learner's next topics are
+the roadmap's open `GAP` lines, starting with Forms & controlled inputs.
+
 ## Commands
 
 | Command | Description |
@@ -76,6 +105,9 @@ src/
     ├── lists-and-keys/
     │   ├── demo.tsx            # ListsKeysDemo + ExerciseRow — keyed by exercise.id; fix-it exercise, fixed & verified
     │   └── index.ts            # Exports listsKeysTopic registry entry
+    ├── use-effect/
+    │   ├── demo.tsx            # UseEffectDemo — interval effect, dependency array and cleanup
+    │   └── index.ts            # Exports useEffectTopic registry entry
     └── use-state/
         ├── demo.tsx            # CounterDemo — the live useState working component
         └── index.ts            # Exports useStateTopic registry entry
@@ -102,6 +134,52 @@ src/
 
 The journal convention keeps every topic traceable for review and for AI reading the repo:
 
+### Adding a lesson — the checklist
+
+Adding a lesson touches **seven places**. Miss one and the docs drift, which is the failure this project has
+hit most often. Do them in this order:
+
+| # | Where | What |
+| - | ----- | ---- |
+| 1 | `src/topics/<slug>/demo.tsx` | The live component, opening with the **topic marker** header. |
+| 2 | `src/topics/<slug>/index.ts` | The registry entry: `slug`, `title`, `belt`, `description`, `longDescription`, `codeExample`, `component`. |
+| 3 | `src/topics/registry.ts` | Import it and add it to `topicRegistry`. **This is the only wiring needed** — the sidebar link, the `/dojo/topic/<slug>` route and the index-grid card all follow from it. No route is ever written by hand. |
+| 4 | `CLAUDE.md` | Add the folder to the "Key files" tree, and update "Current project state" (the lesson count). |
+| 5 | `package.json` + `HomePage.tsx` | Bump the **version** by one topic step — see "Versioning" below — and match the badge in `HomePage.tsx`. |
+| 6 | `NOTES.md` + `ROADMAP.md` | A numbered entry for the topic (reviewer's job), and the roadmap line's status. |
+| 7 | `README.md` + `HISTORY.md` | The lesson folder in the README structure, and a session entry in HISTORY explaining what changed and why. |
+
+**Before step 6**, decide the lesson's *kind*, because it changes what steps 1 and 6 look like:
+
+- **Explainer** — a correct demo, assessed by quiz. Use when the characteristic mistake is rejected by the
+  gates (see "Fix-it exercises" below), since no compiling version of the bug exists.
+- **Fix-it exercise** — a deliberately broken demo, assessed by repair. **Probe the candidate bug against
+  `tsc` and `npm run lint` first**; if either rejects it, the exercise is impossible and it must be an
+  explainer instead. Two lessons have already been converted after the fact.
+
+### Versioning — one step per topic
+
+The version tracks **how many lessons the dojo holds**. The learner's rule:
+
+```
+initial page = 0.01        each new topic = +0.01
+```
+
+So with seven topics the version is **0.08** — the initial page plus seven steps. `package.json` is the
+source of truth (`0.08.0`; the third digit stays `0`), and three things must move together whenever a topic
+is added or the count changes:
+
+1. `"version"` in `package.json` — and the **two** `"version"` entries at the top of `package-lock.json`
+   (the root one and the `packages[""]` one). Never hand-edit dependency versions in the lock.
+2. The badge in `src/pages/HomePage.tsx`, which shows the short form: `v0.08`.
+3. The lesson count sentence in "Current project state" below.
+
+*History note: the pre-convention target was a hand-picked `v0.1.0` that never shipped, while `package.json`
+sat at `0.0.0` — which is why the HomePage badge once advertised a release that did not exist. The rule above
+replaces that guesswork: the version is derived from the topic count, so it is never invented.*
+
+### The conventions themselves
+
 - **Topic marker comment**: each new topic's `demo.tsx` starts with a doc-style comment header:
   ```tsx
   // ─────────────────────────────────────────────
@@ -115,11 +193,14 @@ The journal convention keeps every topic traceable for review and for AI reading
   - Write the template literal **flush against the left margin**. A template literal preserves indentation, so indenting it to match the surrounding code renders as ragged leading whitespace in the Sample Code panel.
   - **If the demo contains its own template literal, escape it.** A bare backtick would terminate the sample's template literal early and `${` would be interpolated, so write `` \` `` and `\${` in `index.ts`, and make the parity check unescape before comparing. `conditional-rendering` is the worked example.
 - **The import line is not decoration — it follows from the hooks used.** `jsx` correctly has none: it calls no hook, and React 19 needs no `import React`, so adding one would teach the wrong thing. `use-state`, `components-props` and `conditional-rendering` all open with `import { useState } from "react";`. Verified: every snippet's imports match its demo's exactly.
-- **Current parity**, re-verified by diffing each snippet against its demo after stripping comments and blank lines: `components-props` matches at 46 of 46 code lines; `conditional-rendering` matches at **63 of 63** (its backticks escaped — see above; the demo's stripped JSX comment leaves one extra empty `{}` line, so compare against the demo with that line removed); `event-handling` matches at **105 of 105**; `lists-and-keys` matches at **62 of 62** (same one-line `{}` residue); `jsx` matches at 9 except that the sample omits the leading `export` keyword (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability, 38 code lines down to 11. **`NOTES.md` quotes the same snippets** — when a snippet changes, the notes' copy of it is part of the mirror and has drifted before.
+- **Current parity**, re-verified by diffing each snippet against its demo after stripping comments and blank lines: `components-props` matches at 46 of 46 code lines; `conditional-rendering` matches at **63 of 63** (its backticks escaped — see above; the demo's stripped JSX comment leaves one extra empty `{}` line, so compare against the demo with that line removed); `event-handling` matches at **105 of 105**; `lists-and-keys` matches at **62 of 62** (same one-line `{}` residue); `use-effect` matches at **64 of 64**; `jsx` matches at 9 except that the sample omits the leading `export` keyword (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability, 38 code lines down to 11. **`NOTES.md` quotes the same snippets** — when a snippet changes, the notes' copy of it is part of the mirror and has drifted before.
 - **Re-run that diff rather than eyeballing it.**
 - **Exception — fix-it exercises.** While a lesson ships deliberately broken, its snippet teaches the *correct* pattern instead of mirroring the buggy demo. Swap it for the real mirror once the exercise is fixed. No lesson is currently in that state — `lists-and-keys` was the last one and became a real mirror when its exercise was fixed.
 
-- **Fix-it exercises**: a lesson may be shipped deliberately broken to teach a concept. The rules: the marker says `Status: LD`; the file's header comment lists the **observed symptoms only** — never the bug locations or the fix — so the learner has to diagnose; every planted bug must still compile, keeping `tsc` and `npm run lint` green; the roadmap line is marked `IN PROGRESS`; and `NOTES.md` explains the concept-level rules, not the answers. When the learner reports it fixed, re-assess, verify `tsc`/lint, then flip the roadmap box and rewrite the notes entry as verified. Two hard-won rules: an exercise must **name its expected values** (otherwise a workaround is a reasonable answer), and its symptoms must be **simulated, never described from reading the code** (the first `conditional-rendering` header claimed the badge was missing from 1–5 reps, until a five-line simulation showed the real symptom is a gap at 0 reps with an overlap from 6). **Not every topic can be one:** if the mistake the lesson would teach is rejected by `tsc` or by an ESLint rule, no compiling version of it exists, so the lesson has to be an explainer instead. `event-handling` is the worked example — `onClick={handler()}` is caught by `tsc` (`void` is not assignable to `MouseEventHandler`) and by `react-hooks/set-state-in-render`. Check that a candidate bug survives both gates *before* designing an exercise around it.
+- **Fix-it exercises**: a lesson may be shipped deliberately broken to teach a concept. The rules: the marker says `Status: LD`; the file's header comment lists the **observed symptoms only** — never the bug locations or the fix — so the learner has to diagnose; every planted bug must still compile, keeping `tsc` and `npm run lint` green; the roadmap line is marked `IN PROGRESS`; and `NOTES.md` explains the concept-level rules, not the answers. When the learner reports it fixed, re-assess, verify `tsc`/lint, then flip the roadmap box and rewrite the notes entry as verified. Two hard-won rules: an exercise must **name its expected values** (otherwise a workaround is a reasonable answer), and its symptoms must be **simulated, never described from reading the code** (the first `conditional-rendering` header claimed the badge was missing from 1–5 reps, until a five-line simulation showed the real symptom is a gap at 0 reps with an overlap from 6). **Not every topic can be one:** if the mistake the lesson would teach is rejected by `tsc` or by an ESLint rule, no compiling version of it exists, so the lesson has to be an explainer instead. **Check a candidate bug against both gates *before* designing an exercise around it** — two lessons have now been converted after the fact. The rules responsible so far:
+  - `react-hooks/set-state-in-render` and `tsc` (`void` not assignable to `MouseEventHandler`) kill every "called during render" wiring — `event-handling`.
+  - `react-hooks/set-state-in-effect` kills the derived-state family (`useEffect(() => setCount(prop), [prop])`), and `react-hooks/exhaustive-deps` kills every wrong dependency array — `use-effect`.
+  - What survives: cleanup mistakes (a missing `clearInterval` / `removeEventListener`), which is one mistake in two shapes — too thin for an exercise that needs diagnosis.
 
 - **NOTES.md** (at repo root): the **reviewer-written** study record — the Knowledge Snapshot, a numbered entry per topic, and a traps cheat-sheet. **The learner does not write here.** Their hands-on work IS the exercise; this file is what they read between sessions. Notes are never a homework task, and "write your study note" must never be asked of them. The reviewer keeps this file current.
 
@@ -161,7 +242,9 @@ stands and what comes next.
 
 ### Current project state
 - Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
-- **Six lessons registered, all six verified**: `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys` and `event-handling` — all added through the registry, with no new routes written. `event-handling` is the only one that is an **explainer** rather than a fix-it exercise (its planted bug cannot compile); it was verified by a 3/3 quiz instead of a repair.
+- **Version `0.08.0`**, derived from the topic count — `0.01` for the initial page plus one step per topic. It is not hand-picked; see "Versioning" below. The badge in `HomePage.tsx` shows the short form `v0.08`.
+- **Seven lessons registered, all seven verified**: `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys`, `event-handling` and `use-effect` — all added through the registry, with no new routes written. No `IN PROGRESS`, `quiz-passed` or `GAP` line remains among them.
+- **Two lessons are lectures rather than fix-it exercises** — `event-handling` and `use-effect` — because their characteristic mistakes cannot be shipped as compiling, lint-clean bugs. Both were cleared by quiz, and both are recorded in the fix-it convention below, which now requires checking a candidate bug against both gates before designing an exercise around it.
 - **Layout is mobile-responsive**, confirmed by the learner at phone width: below `md` the topic list is a burger dropdown, and the nav/padding/headings scale down. The reviewer cannot run `npm run dev`, so visual checks are the learner's to make.
 - A scratch routing playground lives at `/test/:student/:name/:subjects` (`components/sandbox/TestGreeting.tsx`), kept deliberately as a labelled demonstration of the `:param` ↔ `useParams()` name contract.
 - The old single-page `App.tsx` is gone — replaced by the routes above. The 3 "technique cards" (Vite/Tailwind/Vercel) were dropped per your decision; the GitHub link survives in `TopNav`.
@@ -169,10 +252,15 @@ stands and what comes next.
 - **The reviewer cannot run `npm run dev` or `npm run build`**: both need to write inside `node_modules`, which the AI sandbox blocks. `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` both pass (re-verified this session — lint had been failing on an editor worktree under `.kilo`, now ignored), and the responsive layout has been confirmed visually by the learner — but each lesson demo is still only type-checked, never observed by the reviewer.
 
 ### Next session objectives (priority order)
-1. **`useEffect`** — real data fetching with a loading state and cleanup. The last `quiz-passed` topic, and the first genuinely new hook. A ready-made first job: `Sidebar.tsx` deliberately has no Escape-to-close, because that needs a keydown listener and therefore `useEffect`.
-2. **Forms & controlled inputs** — the natural companion to `useEffect`, and the natural home for the event object (`preventDefault`, `target`) that event handling deferred.
-3. **`useState` deep dive** — object/array state, lazy initialisers, two setters in one handler.
-4. **Deploy v0.1.0 to Vercel** and confirm the SPA rewrite handles deep links on a real refresh.
+
+Ordering note: the roadmap's open lines are listed with `Forms` first even though the `useState` deep dive also
+sits unverified. That is deliberate — `Forms` is a **`GAP`** (never used at all), whereas the deep dive is a
+*gap within a verified topic*, so it costs less to leave waiting.
+
+1. **Forms & controlled inputs** — the natural companion to `useEffect`, and the home for two things deferred to it: the event object (`preventDefault`, `target`, typing a parameter as `React.MouseEvent`), and a real fetch with loading and error states.
+2. **`useState` deep dive** — object/array state, lazy initialisers, two setters in one handler. Still a `GAP`: every `useState` in the repo holds a primitive.
+3. **`useRef`** — the next hook with an obvious use: `Sidebar.tsx` deliberately has no Escape-to-close, and the keydown listener it needs is a natural `useEffect` + `useRef` job.
+4. **Deploy to Vercel** — the current version is `0.08.0` (see "Versioning" above; it moves one step per topic, so re-check it before deploying). Confirm the SPA rewrite handles deep links on a real refresh.
 
 ### Backlog (not yet prioritised)
 - "Featured Lessons" preview grid on the landing page, pulling from `topicRegistry`.

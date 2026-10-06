@@ -18,7 +18,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] Conditional rendering — `&&`, ternary, early return — lesson live at `/dojo/topic/conditional-rendering`
 - [x] Lists & keys — `map()`, why keys matter — lesson live at `/dojo/topic/lists-and-keys`; fixed and explained (entry 06)
 - [ ] Forms & controlled components — input state, validation — **GAP**: never used
-- [ ] `useEffect` — side effects (data fetching, subscriptions, cleanup) — quiz-passed on timing, never written
+- [x] `useEffect` — side effects, dependency array, cleanup — lecture live at `/dojo/topic/use-effect`; verified by quiz (data fetching deferred to Forms)
 - [ ] `useContext` / `useReducer` — global state patterns — **GAP**: never used
 - [ ] Custom hooks — extracting reusable logic — **GAP**: never used
 - [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization — **GAP**: never used
@@ -37,7 +37,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] Tailwind CSS v4 with the custom dojo theme
 - [x] Landing page (hero + About + footer)
 - [x] Mobile-responsive layout — the topic list is a burger dropdown below `md`, and padding/headings scale
-- [ ] Deploy v0.1.0 to Vercel
+- [ ] Deploy to Vercel — the version is derived from the topic count (`0.01` initial + `0.01` per topic), so it is currently **`0.08.0`** with seven topics; re-check it against the count before deploying and match the `HomePage` badge
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug` with nested layout route + sidebar
@@ -46,7 +46,15 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 
 ---
 
-_Last updated: 2026-10-04 (Event handling verified and ticked; six lessons done)_
+_Last updated: 2026-10-04 (all seven lessons verified — no `quiz-passed` or `IN PROGRESS` lines remain)_
+
+**Why `useEffect` is a lecture, not a fix-it exercise.** Probing seven candidate bugs against both gates
+left only one that ships clean, and it is one mistake in two shapes. `react-hooks/set-state-in-effect`
+rejects the whole derived-state family (`useEffect(() => setCount(prop), [prop])`), and
+`react-hooks/exhaustive-deps` rejects every wrong dependency array — including a wrapper handler on the
+dependency line. What survives is **cleanup** mistakes, and too little to build an exercise that needs
+diagnosis. The rule now written into `CLAUDE.md`: clear a candidate bug against both gates *before*
+designing an exercise around it.
 
 **Why event handling was an explainer, not a fix-it exercise.** Its central mistake —
 `onClick={handler()}` instead of `onClick={handler}` — cannot be shipped as a planted bug in

@@ -8,8 +8,20 @@ import type { ReactNode } from "react";
  * markup: text stays text. That is deliberate, and it is why a hand-rolled parser
  * is safe to keep around.
  *
- * The markup is intentionally tiny — three rules — rather than a Markdown library:
+ * The markup is intentionally tiny — four rules — rather than a Markdown library:
  * no dependency to install or keep updated, and the parsing is short enough to read.
+ *
+ *   1. ``` alone on a line opens or closes a code block
+ *   2. a blank line separates paragraphs
+ *   3. a line starting with "- " is a bullet, and a plain line after one continues it
+ *   4. `backticks` around a run of text become inline <code>
+ *
+ * The first three are structural — `parseBlocks` decides them per line. The fourth
+ * applies inside whatever text survives, in `withInlineCode`.
+ *
+ * The full convention, including what each rule is *for*, lives in `CLAUDE.md` under
+ * "Key patterns to maintain". Keep the two in step: this comment used to say "three
+ * rules" while the parser implemented four.
  */
 
 type Block =
@@ -46,7 +58,9 @@ function withInlineCode(text: string, keyPrefix: string): ReactNode[] {
 }
 
 /**
- * Turn the description string into blocks. Three rules, applied in order:
+ * Turn the description string into blocks — the three structural rules, applied in
+ * order. The fourth rule, inline code, is handled per block by `withInlineCode` below,
+ * since it applies inside a paragraph's text rather than deciding where blocks end.
  *
  *   1. ``` alone on a line opens or closes a code block — contents kept verbatim
  *   2. a line starting with "- " is a bullet; a plain line after one continues it

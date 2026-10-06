@@ -5,6 +5,7 @@ import { componentsPropsTopic } from "./components-props";
 import { conditionalRenderingTopic } from "./conditional-rendering";
 import { listsKeysTopic } from "./lists-and-keys";
 import { eventHandlingTopic } from "./event-handling";
+import { useEffectTopic } from "./use-effect";
 
 /**
  * Aggregate topic registry — the single source of truth for both the sidebar
@@ -19,6 +20,7 @@ export const topicRegistry: Topic[] = [
   conditionalRenderingTopic,
   listsKeysTopic,
   eventHandlingTopic,
+  useEffectTopic,
 ];
 
 /**

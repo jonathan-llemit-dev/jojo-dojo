@@ -5,6 +5,8 @@
 
 A dark, dojo-themed React learning journal forged with **Vite**, styled with **Tailwind CSS v4**, and ready to deploy on **Vercel**. The landing page is at `/`; every React lesson then lives at its own URL under `/dojo`. Every commit is a rep. Every deploy is a rank up.
 
+**Version `0.08.0`** — the version tracks how many lessons the dojo holds: `0.01` for the initial page, plus `0.01` for each topic added. Seven topics, so `0.08`. It is derived, never hand-picked.
+
 ---
 
 ## ✨ Features
@@ -80,6 +82,7 @@ my-react-app/
 │       ├── conditional-rendering/  # One folder per lesson: demo.tsx + index.ts
 │       ├── event-handling/    # One folder per lesson: demo.tsx + index.ts
 │       ├── lists-and-keys/    # One folder per lesson: demo.tsx + index.ts (fix-it exercise, fixed)
+│       ├── use-effect/        # One folder per lesson: demo.tsx + index.ts
 │       └── use-state/         # One folder per lesson: demo.tsx + index.ts
 ├── index.html                 # HTML shell
 ├── vite.config.ts             # Vite + Tailwind plugin config
@@ -144,8 +147,8 @@ This is the visitor-facing summary. The **master checklist — every study topic
 - [x] Landing page (hero + about)
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug`
 - [x] Mobile-responsive layout — burger topic menu below `md`
-- [x] Six lessons verified and counting — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling
-- [ ] Deploy v0.1.0 to Vercel
+- [x] Seven lessons verified — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling, `useEffect`
+- [ ] Deploy to Vercel — current version `0.08.0` (`0.01` initial page + `0.01` per topic)
 - [ ] More lessons (the open topics are listed in `ROADMAP.md`)
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle
