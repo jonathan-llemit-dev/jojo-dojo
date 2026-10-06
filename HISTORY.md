@@ -10,6 +10,61 @@ Newest first.
 
 ## Session log
 
+### Forms — fixed, explained, and verified
+
+1. **Both bugs fixed.** The learner's `forms` demo now reads the typed value
+   (`onChange={(event) => setName(event.target.value)}`) and its submit handler calls
+   `event.preventDefault()` first. `tsc` and `npm run lint` green; the sample was swapped from the fix-it
+   exception to a real mirror, verified at **53 of 53** lines.
+2. **A detour worth recording.** Beyond the two fixes, the learner added `new FormData(event.currentTarget)`
+   plus a `console.log` to read the values back out of the form, reasoning that "FormData is the new way for
+   form submission since React 19." Two corrections: `FormData` is the browser's API, not new to React — React
+   19 added *form actions* (`<form action={fn}>`), a different pattern — and in a controlled form the values
+   already live in state, so re-reading them from the DOM is redundant. Asked to explain, the learner corrected
+   it in their own words: `FormData` reads at submit time (uncontrolled), while `useState` keeps the values
+   live (controlled). The block was removed.
+3. **Also caught this session:** `@types/react` deprecates `FormEvent`/`FormEventHandler`; the lesson teaches
+   `SubmitEvent<HTMLFormElement>` instead (see the previous entry).
+4. **Box ticked.** `ROADMAP.md` marked verified, `NOTES.md` entry 09 rewritten as `OK (Mastered)` with the
+   FormData correction spelled out, the marker flipped to `Status: OK`, and Forms moved into the snapshot's
+   "Solid" table. All eight lessons are now verified.
+
+### Forms & controlled inputs — the eighth lesson, a fix-it exercise
+
+1. **Docs audit before building.** `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` both pass. The
+   version chain was consistent (7 topics → `0.08.0` across `package.json`, both `package-lock.json` entries,
+   and the `v0.08` badge). All 7 lesson folders wired into the registry and named in all four docs; assets and
+   `vercel.json` match their descriptions; every `description` is markup-free and every `longDescription` has
+   balanced backticks.
+2. **One real drift found and fixed: `use-effect` sample no longer mirrored its demo.** Four lines differed —
+   the demo said "Timer running — keep going!" / "Paused - Taking a break is fine, but never give up!" /
+   "Timer not started." / "characters logged.", while the Sample Code panel said "Interval running — one
+   cleanup away from becoming two." / "Paused. The interval was cleared when you paused." / "Not started." /
+   "characters logged". `CLAUDE.md` claimed "64 of 64" parity, which was false (60 of 64). The demo is
+   canonical, so the sample was corrected to match and the claim is true again. `NOTES.md` entry 08 was not
+   affected (it does not quote those strings).
+3. **Probed before designing, per the fix-it rule.** Two candidate bugs survive both gates; two shapes do not:
+   - Survives: a no-op `onChange` that writes state back to itself (silent read-only), and a submit handler
+     with no `event` parameter (no `preventDefault`, page reloads).
+   - Rejected: `value` on a field whose setter is otherwise dead (`noUnusedLocals` → TS6133 'setName' is
+     never read), and a submit handler that types the `event` parameter but never uses it
+     (`noUnusedParameters` → TS6133 'event' is never read).
+
+   So a fix-it exercise with exactly two bugs is possible — the learner's stated preference.
+4. **Shipped `forms` at `/dojo/topic/forms`** — a dojo sign-up form (Name + Email + Sign up) with both
+   plantable bugs. The header names the objective and expected values and lists only the symptoms; the Sample
+   Code panel teaches the correct pattern (the fix-it exception). Marker `Status: LD`, ROADMAP `IN PROGRESS`.
+5. **Version bumped `0.08.0` → `0.09.0`** (eight topics) across `package.json`, both `package-lock.json`
+   entries, and the `HomePage` badge.
+6. **Understanding checked before building** — two questions, one at a time. Both solid: the controlled
+   round-trip (`value` follows state, `onChange` follows the box, and the two failure modes) and the browser's
+   default submit behaviour plus why `preventDefault` stops it. Ready for the exercise.
+7. **`FormEvent` → `SubmitEvent` correction.** The learner caught that `@types/react` deprecates
+   `FormEvent`/`FormEventHandler` ("FormEvent doesn't actually exist" — the DOM has no form event). The
+   lesson now teaches `SubmitEvent<HTMLFormElement>` (a `<form>`'s `onSubmit` is typed `SubmitEventHandler<T>`),
+   in the sample, the notes, and the demo. `ChangeEvent<HTMLInputElement>` and `MouseEvent<HTMLButtonElement>`
+   are unaffected — only the invented "form event" was removed.
+
 ### Versioning — the version is now derived, not invented
 
 1. **The learner set the rule:** `0.01` for the initial page, then **`+0.01` per topic**. Seven topics, so the

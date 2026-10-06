@@ -17,7 +17,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] Event handling — handlers, references, passing arguments — lesson live at `/dojo/topic/event-handling`; verified by a 3/3 quiz (the event object is deferred to Forms)
 - [x] Conditional rendering — `&&`, ternary, early return — lesson live at `/dojo/topic/conditional-rendering`
 - [x] Lists & keys — `map()`, why keys matter — lesson live at `/dojo/topic/lists-and-keys`; fixed and explained (entry 06)
-- [ ] Forms & controlled components — input state, validation — **GAP**: never used
+- [x] Forms & controlled components — input state, validation — lesson live at `/dojo/topic/forms`; fixed and explained (entry 09)
 - [x] `useEffect` — side effects, dependency array, cleanup — lecture live at `/dojo/topic/use-effect`; verified by quiz (data fetching deferred to Forms)
 - [ ] `useContext` / `useReducer` — global state patterns — **GAP**: never used
 - [ ] Custom hooks — extracting reusable logic — **GAP**: never used
@@ -37,7 +37,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] Tailwind CSS v4 with the custom dojo theme
 - [x] Landing page (hero + About + footer)
 - [x] Mobile-responsive layout — the topic list is a burger dropdown below `md`, and padding/headings scale
-- [ ] Deploy to Vercel — the version is derived from the topic count (`0.01` initial + `0.01` per topic), so it is currently **`0.08.0`** with seven topics; re-check it against the count before deploying and match the `HomePage` badge
+- [ ] Deploy to Vercel — the version is derived from the topic count (`0.01` initial + `0.01` per topic), so it is currently **`0.09.0`** with eight topics; re-check it against the count before deploying and match the `HomePage` badge
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug` with nested layout route + sidebar
@@ -46,7 +46,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 
 ---
 
-_Last updated: 2026-10-04 (all seven lessons verified — no `quiz-passed` or `IN PROGRESS` lines remain)_
+_Last updated: 2026-10-07 (all eight lessons verified — no `quiz-passed` or `IN PROGRESS` lines remain)_
 
 **Why `useEffect` is a lecture, not a fix-it exercise.** Probing seven candidate bugs against both gates
 left only one that ships clean, and it is one mistake in two shapes. `react-hooks/set-state-in-effect`

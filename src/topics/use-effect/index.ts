@@ -111,7 +111,7 @@ export function UseEffectDemo() {
 
       <label className="flex flex-col gap-2">
         <span className="text-xs text-dojo-muted">
-          What did you drill? {draft.length} characters logged
+          What did you drill? {draft.length} characters logged.
         </span>
         <textarea
           value={draft}
@@ -124,10 +124,10 @@ export function UseEffectDemo() {
 
       <p className="text-xs text-dojo-muted">
         {isRunning
-          ? "Interval running — one cleanup away from becoming two."
+          ? "Timer running — keep going!"
           : seconds > 0
-            ? "Paused. The interval was cleared when you paused."
-            : "Not started."}
+            ? "Paused - Taking a break is fine, but never give up!"
+            : "Timer not started."}
       </p>
     </div>
   );

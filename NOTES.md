@@ -17,7 +17,7 @@ assessment rather than a marker):
 
 ## Current Knowledge Snapshot
 
-*Assessed 2026-10-04 by the AI reviewer. This is the quick answer to "what do I actually know?" — read it before a study session rather than re-reading every entry. It is re-assessed after each new lesson. The evidence rules are in the "Reviewer responsibilities" section of `CLAUDE.md`; the roadmap checkboxes are marked from this list.*
+*Assessed 2026-10-07 by the AI reviewer. This is the quick answer to "what do I actually know?" — read it before a study session rather than re-reading every entry. It is re-assessed after each new lesson. The evidence rules are in the "Reviewer responsibilities" section of `CLAUDE.md`; the roadmap checkboxes are marked from this list.*
 
 ### Solid — confirmed in working code *and* explained correctly
 
@@ -33,6 +33,7 @@ assessment rather than a marker):
 | Event handling | Built the `event-handling` lesson and scored **3/3** on its quiz, including reading four differently-wired buttons and picking the one arrow form that both defers the call and supplies the argument. Entry 07 |
 | `useEffect` | The timer demo (interval effect, real dependency array, real cleanup), plus explained why a missing cleanup **compounds** and why `[]` means once rather than "when anything changes". One quiz answer was wrong and corrected — entry 08 |
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
+| Forms & controlled inputs | Fixed both bugs in the `forms` exercise — the no-op `onChange` and the missing `preventDefault` — and corrected a `FormData` detour by explaining controlled vs read-at-submit. Entry 09 |
 
 *Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
 originally recorded on code evidence alone, which contradicted the reviewer's own standard — a
@@ -56,14 +57,13 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### Gaps — the honest list
 
-- **Never used at all:** forms / controlled inputs, `useContext` / `useReducer`, custom hooks, `useMemo` / `useCallback`, `useRef`, portals.
+- **Never used at all:** `useContext` / `useReducer`, custom hooks, `useMemo` / `useCallback`, `useRef`, portals.
 
 ### Next, in order
 
-1. **Forms & controlled inputs** — the natural companion to `useEffect`, and the home for the event object that event handling deferred.
-2. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
-3. **`useState` deep dive** — object/array state, lazy initialisers, two setters in one handler.
-4. **Deploy to Vercel** — the current version is **`0.08.0`**: `0.01` for the initial page plus `0.01` per topic, so it moves one step every time a lesson is added. Re-check it against the topic count before deploying, and keep the `HomePage` badge (`v0.08`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
+1. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
+2. **`useState` deep dive** — object/array state, lazy initialisers, two setters in one handler.
+3. **Deploy to Vercel** — the current version is **`0.09.0`**: `0.01` for the initial page plus `0.01` per topic, so it moves one step every time a lesson is added. Re-check it against the topic count before deploying, and keep the `HomePage` badge (`v0.09`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
 
 ---
 
@@ -669,6 +669,62 @@ pointlessly or wonder why an effect is not firing.
 
 ---
 
+## 09 — Forms & Controlled Inputs (`value` + `onChange`, `preventDefault`)
+
+- **Status:** OK (Mastered) — verified 2026-10-07
+- **Added:** 2026-10-07
+- **Belt:** white
+- **Marker file:** `src/topics/forms/demo.tsx`
+- **Route:** `/dojo/topic/forms`
+
+### Explanation
+
+An input is **controlled** when its value comes from state and its changes write back to state. Two halves,
+two different jobs:
+
+- `value={name}` makes the input **follow state** — every render shows whatever `name` is.
+- `onChange={(event) => setName(event.target.value)}` makes **state follow the input** — every keystroke
+  hands the new text back to `name`.
+
+Drop `value` and the box stops reflecting state (it still types, but programmatic values won't show); drop
+`onChange` and the box freezes (React keeps re-rendering it back to the state value). A controlled input
+needs both halves: state in through `value`, text out through `onChange`. The typed text arrives on the
+event object as `event.target.value` — the same event object the event-handling lesson deferred, now with a
+job to do.
+
+The other half of a form is the submit. A `<form>` has a default behaviour: on submit the browser builds an
+HTTP request from `action`/`method` and navigates, reloading the page and throwing away state. To keep the
+submit in React you stop that default with `event.preventDefault()` — "don't do your default thing, let my
+React code run instead." The parameter is typed, and the type follows the event: `SubmitEvent<HTMLFormElement>`
+for a submit, `ChangeEvent<HTMLInputElement>` for a change, `MouseEvent<HTMLButtonElement>` for a click.
+
+### How it was verified — 2026-10-07
+
+The exercise shipped with two planted bugs: the Name input's `onChange` wrote state back to itself
+(`onChange={() => setName(name)}`), so typing never changed state and the field looked frozen; and the
+submit handler took no event parameter and never called `preventDefault()`, so the browser reloaded the page
+and the confirmation was lost.
+
+Both were fixed correctly — `onChange={(event) => setName(event.target.value)}`, and a
+`handleSubmit(event: SubmitEvent<HTMLFormElement>)` that calls `event.preventDefault()` first — and the
+objective is met: type in both fields, press Sign up, and the confirmation reads "Welcome, <name> — we'll
+email you at <email>." with no reload. `tsc` and `npm run lint` stay green.
+
+The real learning was a detour worth recording. On top of the two fixes the learner added a
+`new FormData(event.currentTarget)` block (plus a `console.log`) to read the values back out of the form,
+reasoning that "FormData is the new way for form submission since React 19." That was wrong in two ways:
+`FormData` is the browser's own API, not new to React — React 19 added *form actions* (`<form action={fn}>`),
+a different pattern — and in a controlled form the values already live in state, so reading them back from
+the DOM is redundant. Asked to explain, the learner corrected it in their own words: `FormData` reads from
+the form at submit time (the uncontrolled path, when nothing needs to react live), while `useState` keeps the
+values so they are available in real time. The block was removed, and the submit handler is now the clean two
+lines.
+
+Both halves of the standard are met: the working component is the learner's own fix, and the explanation is
+correct.
+
+---
+
 ## Traps & mental models
 
 Every correction made during review, in one place. These are the things most likely to bite again.
@@ -690,6 +746,9 @@ Every correction made during review, in one place. These are the things most lik
 | `useEffect` used to derive a value | Costs a second render and shows a stale value for one frame. If the value is a function of props or state, compute it during render. This is also what `react-hooks/set-state-in-effect` enforces. |
 | A dependency array that lies | `[]` or a partial list means the effect reads a value frozen at the render it ran in. `exhaustive-deps` names the value you left out — fix the effect, do not silence the warning. |
 | Reading state directly inside an interval | Forces that state into the dependency array, so the interval is torn down and rebuilt every tick. Use the updater form: `setSeconds((s) => s + 1)`. |
+| Controlled input missing one half | `value` without `onChange` freezes the box (React re-renders it back to the unchanged state); `onChange` without `value` types fine but the box stops reflecting state. A controlled input needs both. |
+| Form submit without `preventDefault()` | The browser runs its default submit — an HTTP request to the form's `action`/`method` — which reloads the page and throws state away. Call `event.preventDefault()` first. |
+| Reading form values with `FormData` when they're already in state | Redundant in a controlled form — state is the source of truth. `FormData` is for reading at submit time (uncontrolled), or for React 19 form *actions* (`<form action={fn}>`), a different pattern. |
 
 **The one mental model that explains most of React:** a re-render means **React calls your component
 function again**, with fresh arguments. State persists across those calls, plain variables do not, and
@@ -702,4 +761,4 @@ state sitting on the wrong row rather than as data being wrong.
 
 ---
 
-*Last updated: 2026-10-04*
+*Last updated: 2026-10-07*
