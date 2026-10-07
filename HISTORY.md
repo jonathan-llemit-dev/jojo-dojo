@@ -10,6 +10,81 @@ Newest first.
 
 ## Session log
 
+### The hands-on exercise becomes a build, not a repair — and lesson 11 ships with it (2026-10-08)
+
+**The learner's call, and it changes the default *kind* of lesson.** Rather than repair a planted bug, the
+hands-on half of a topic should be **a component or a feature they write themselves** — after the lecture, on
+their own, with the reviewer assessing that code and asking a couple of questions anchored in it. The evidence
+standard is unchanged: both halves are still required. Only the shape of the *demonstrated* half changes.
+
+**Why it is the better default from here.** Three reasons, and the first is measurable:
+
+1. **Most of what is left has no plantable bug.** `useRef` needed thirteen probes to establish that, and
+   `event-handling` and `use-effect` were converted to explainers after the fact. What remains on the roadmap —
+   custom hooks, `memo`/`useMemo`/`useCallback`, portals — is the same shape.
+2. **Writing a component is closer to the real work than repairing one.** A fix-it exercise tests diagnosis; a
+   build tests whether the concept can be applied somewhere the lecture did not already put it.
+3. **It removes a whole class of ceremony** — no planted bug to design, no gate probe to run, no symptoms to
+   simulate — from topics that do not benefit from it.
+
+The fix-it exercise is **not retired.** It stays for a topic whose point is diagnosis, and the probe rule still
+applies before designing one.
+
+**Where it is written down.** `CLAUDE.md` gains a third lesson kind — *build-on task*, *fix-it exercise*,
+*explainer* — with the build-on task as the default, plus a four-rule working agreement: the acceptance
+criteria are written down before the learner starts; the task must force the concept to be re-derived rather
+than copied; both halves still apply, with the explanation anchored in the code they wrote; and a failed
+criterion is named with its line. `ROADMAP.md` gains a `BUILD` status marker for "lecture live, hands-on
+outstanding". The evidence standard now says it outright: under a build-on task the lesson's own demo is the
+*reference*, and however good it is, it is not the learner's evidence.
+
+**The gates were probed anyway, because the kind had to be chosen between the two.** Thirty-five throwaway
+files in `probe-tmp/`, run through the **real root ESLint config** rather than a copy — the mistake that once
+silently ignored thirteen probe files — with a clean control plus a tsc-only and a lint-only control to prove
+the harness reported anything at all. Folder deleted afterwards; all four gates re-run green.
+
+The finding that settles it for this topic: **`react-hooks/immutability` does not analyse a reducer's own
+`state` parameter.** `state.count += 1; return state;` inside a reducer passes both gates, as do
+`Object.assign(state, …)`, a nested-field write and `state.items.push(…)`. The same mutation written in a
+component — on the state `useReducer()` returned, or on a value `useContext()` returned — is rejected:
+*"Modifying a value returned from 'useContext()' is not allowed"*. So a reducer-purity fix-it **was**
+available, and this lecture is a deliberate choice rather than a gate failure. That is recorded in the entry so
+a future session does not misread it as one.
+
+**Two boundaries were measured, and one of them corrects an overstatement in these docs.**
+`react-hooks/set-state-in-render` fires on an **unconditional** `setState` during render (*"Cannot call
+setState during render"*) but accepts a **guarded** one — `if (count === 0) setCount(1)` — because that is
+React's documented "adjust state during render". It does not fire on `dispatch` at all. `CLAUDE.md` had claimed
+the rule kills *every* "called during render" wiring; the wording is now the measured one. The `event-handling`
+conclusion is unaffected, because `onClick={handleReset()}` is unconditional and `tsc` rejects it regardless.
+
+Rejected by `tsc`, for the record: an unguarded nullable context value (`TS18047`), a provider value missing a
+promised member (`TS2741`), a typo in a `case` label against a union action type (`TS2678`), a reducer
+returning a state with a missing field (`TS2741`), and `{ items: state.items.push(x) }` (`TS2322`).
+
+**Lesson 11 — `use-context-reducer`, the first build-on task.** A dojo session card: a `useReducer` owns
+`{ rounds, draft, log, nextId }`, a `createContext` publishes `{ state, dispatch }`, and three panels — rounds,
+technique, session log — read it with `useContext` while receiving **no props at all**. The action type is a
+discriminated union with no `default` branch, so a new action is a compile error until the reducer handles it.
+Version `0.13.0`; registered with one registry entry and no new routes.
+
+The hands-on half is deliberately shaped so it cannot be satisfied by copying the demo: add a **fourth panel**,
+in a different part of the tree, dispatching **a new action type** the reducer does not yet handle, taking zero
+props. Seven acceptance criteria are written into `NOTES.md` entry 12 *before* any of it is built — the
+journal's oldest lesson, *name the expected values*, applied to a build task instead of a repair.
+
+**Two things in the tooling had to move with it.** `check:repo` hardcoded `10` entries, `10` folders, the
+version in four places and the parity-claims map. The version is now a single `VERSION`/`SHORT` constant, and
+the marker check became **status-aware**: it no longer demands that every marker read `OK`, it demands that any
+non-`OK` marker is *named in* `NOTES.md` and `ROADMAP.md`. That is the check the old version could not express —
+a lesson may legitimately be live and unfinished, so the script now asserts *agreement with the docs* rather
+than "everything is finished".
+
+**Verified:** `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` green; `npm run check:prose` clean on
+all eleven, longest block still 67 words in `use-ref`; `npm run check:repo` `ALL CHECKS PASSED`, with
+`use-context-reducer` measured at **132 of 132** lines — the longest sample in the repo, regenerated
+mechanically from the demo rather than retyped. Not committed: **the learner makes every commit.**
+
 ### Roadmap narrowed to React + TypeScript; three project chores removed (2026-10-07)
 
 **The learner's call, and it corrected a long-standing wrong assumption in these docs.** Three roadmap items

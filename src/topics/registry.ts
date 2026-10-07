@@ -9,6 +9,7 @@ import { useEffectTopic } from "./use-effect";
 import { formsTopic } from "./forms";
 import { useStateDeepDiveTopic } from "./use-state-deep-dive";
 import { useRefTopic } from "./use-ref";
+import { useContextReducerTopic } from "./use-context-reducer";
 
 /**
  * Aggregate topic registry — the single source of truth for both the sidebar
@@ -27,6 +28,7 @@ export const topicRegistry: Topic[] = [
   formsTopic,
   useStateDeepDiveTopic,
   useRefTopic,
+  useContextReducerTopic,
 ];
 
 /**

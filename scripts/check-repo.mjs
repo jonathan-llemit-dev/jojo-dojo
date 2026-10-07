@@ -1,6 +1,11 @@
 // Repo-vs-docs verification. Mechanical: counts, versions, paths, parity, doc claims.
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 
+// The version this run expects. Kept as one constant so a topic bump is a one-line edit
+// here rather than four scattered literals.
+const VERSION = "0.13.0";
+const SHORT = "v0.13";
+
 let fails = 0;
 const ok = (m) => console.log(`  ok   ${m}`);
 const bad = (m) => { fails++; console.log(`  FAIL ${m}`); };
@@ -44,17 +49,24 @@ function extractSample(src) {
 }
 const isResidue = (l) => /^\{\s*\}$/.test(l.trim());
 
+// ── 0. the docs, read once ───────────────────────────────────────────────────
+const notes = readFileSync("NOTES.md", "utf8");
+const roadmap = readFileSync("ROADMAP.md", "utf8");
+const readme = readFileSync("README.md", "utf8");
+const history = readFileSync("HISTORY.md", "utf8");
+const claude = readFileSync("CLAUDE.md", "utf8");
+
 // ── 1. version, in all its places ────────────────────────────────────────────
-head("version 0.12.0 in every artefact");
+head(`version ${VERSION} in every artefact`);
 const pkg = JSON.parse(readFileSync("package.json", "utf8"));
 const lock = JSON.parse(readFileSync("package-lock.json", "utf8"));
 const home = readFileSync("src/pages/HomePage.tsx", "utf8");
 const badge = home.match(/v\d+\.\d+/g) ?? [];
 console.log(`  package.json ${pkg.version} | lock.root ${lock.version} | lock[""] ${lock.packages?.[""]?.version} | badge ${JSON.stringify(badge)}`);
-if (pkg.version === "0.12.0") ok("package.json is 0.12.0"); else bad(`package.json is ${pkg.version}`);
+if (pkg.version === VERSION) ok(`package.json is ${VERSION}`); else bad(`package.json is ${pkg.version}`);
 if (lock.version === pkg.version && lock.packages?.[""]?.version === pkg.version) ok("both lock version fields match");
 else bad("lock version fields disagree with package.json");
-if (badge.length === 1 && badge[0] === "v0.12") ok("HomePage badge is exactly v0.12");
+if (badge.length === 1 && badge[0] === SHORT) ok(`HomePage badge is exactly ${SHORT}`);
 else bad(`HomePage badge is ${JSON.stringify(badge)}`);
 // Only flag a doc that claims a DIFFERENT version is the CURRENT one. A bare "0.10"
 // can legitimately appear as history — CLAUDE.md's versioning note explains that
@@ -62,7 +74,7 @@ else bad(`HomePage badge is ${JSON.stringify(badge)}`);
 for (const f of ["CLAUDE.md", "NOTES.md", "ROADMAP.md", "README.md"]) {
   const text = readFileSync(f, "utf8");
   const currentClaims = [...text.matchAll(/(?:current version is|Version `|at \*\*`|is at \*\*`|version is \*\*`)(\d+\.\d+\.\d+)/g)].map((m) => m[1]);
-  const wrong = currentClaims.filter((v) => v !== "0.12.0");
+  const wrong = currentClaims.filter((v) => v !== VERSION);
   if (wrong.length) bad(`${f} claims current version ${[...new Set(wrong)].join(", ")}`);
   else ok(`${f}: no wrong current-version claim${currentClaims.length ? ` (says ${[...new Set(currentClaims)].join(", ")})` : ""}`);
 }
@@ -73,7 +85,7 @@ const reg = readFileSync("src/topics/registry.ts", "utf8");
 const entries = [...(reg.match(/export const topicRegistry: Topic\[\] = \[([\s\S]*?)\];/)?.[1] ?? "").matchAll(/^\s*(\w+),/gm)].map((m) => m[1]);
 const dirs = readdirSync("src/topics", { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort();
 console.log(`  ${entries.length} registry entries | ${dirs.length} folders`);
-if (entries.length === 10 && dirs.length === 10) ok("10 entries and 10 folders"); else bad("entry/folder count mismatch");
+if (entries.length === 11 && dirs.length === 11) ok("11 entries and 11 folders"); else bad("entry/folder count mismatch");
 for (const d of dirs) {
   const demo = readFileSync(`src/topics/${d}/demo.tsx`, "utf8");
   const status = demo.match(/Status: (OK|LD|RV)/)?.[1];
@@ -85,8 +97,19 @@ for (const d of dirs) {
   if (problems.length) bad(`${d}: ${problems.join("; ")}`);
   else ok(`${d} — slug matches, status ${status}`);
 }
+// A lesson may ship as `LD` while its hands-on work is outstanding, so this asserts
+// *agreement with the docs* rather than "everything is finished". Either all markers read
+// OK and NOTES.md says nothing is in progress, or every non-OK lesson is named in the
+// notes and on the roadmap.
 const nonOk = dirs.filter((d) => !/Status: OK/.test(readFileSync(`src/topics/${d}/demo.tsx`, "utf8")));
-if (nonOk.length === 0) ok("every lesson marker reads OK"); else bad(`not OK: ${nonOk.join(", ")}`);
+if (nonOk.length === 0) {
+  if (notes.includes("Every registered lesson is verified")) ok("every marker reads OK, and NOTES.md says so");
+  else bad("every marker reads OK but NOTES.md still lists a lesson as outstanding");
+} else {
+  const undocumented = nonOk.filter((d) => !notes.includes(d) || !roadmap.includes(d));
+  if (undocumented.length) bad(`marker not OK but not named in NOTES.md and ROADMAP.md: ${undocumented.join(", ")}`);
+  else ok(`${nonOk.length} lesson(s) in progress (${nonOk.join(", ")}) — named in NOTES.md and ROADMAP.md`);
+}
 
 // ── 3. parity ────────────────────────────────────────────────────────────────
 head("codeExample <-> demo.tsx parity");
@@ -108,8 +131,7 @@ for (const name of dirs) {
 
 // ── 4. the numbers CLAUDE.md claims ─────────────────────────────────────────
 head("CLAUDE.md parity claims vs measured");
-const claude = readFileSync("CLAUDE.md", "utf8");
-const claims = { "components-props": 46, "conditional-rendering": 63, "event-handling": 105, "lists-and-keys": 62, "use-effect": 64, forms: 53, "use-state-deep-dive": 114, "use-ref": 77 };
+const claims = { "components-props": 46, "conditional-rendering": 63, "event-handling": 105, "lists-and-keys": 62, "use-effect": 64, forms: 53, "use-state-deep-dive": 114, "use-ref": 77, "use-context-reducer": 132 };
 for (const [slug, n] of Object.entries(claims)) {
   const claimed = claude.includes(`${n} of ${n}`);
   const measured = parity[slug]?.exact && parity[slug].a === n;
@@ -119,28 +141,26 @@ for (const [slug, n] of Object.entries(claims)) {
 
 // ── 5. docs consistency ─────────────────────────────────────────────────────
 head("docs consistency");
-const notes = readFileSync("NOTES.md", "utf8");
-const roadmap = readFileSync("ROADMAP.md", "utf8");
-const readme = readFileSync("README.md", "utf8");
-const history = readFileSync("HISTORY.md", "utf8");
 const checks = [
-  [claude.includes("ten lessons registered and all ten verified"), "CLAUDE.md: ten/ten one-liner"],
+  [claude.includes("eleven lessons registered — ten verified, one awaiting its build task"), "CLAUDE.md: eleven/ten+1 one-liner"],
   [claude.includes("Do not commit. The learner makes every commit."), "CLAUDE.md: the no-commit rule is present"],
-  [claude.includes("**`0.12.0`** with ten topics"), "CLAUDE.md: versioning sentence"],
+  [claude.includes(`**\`${VERSION}\`** with eleven topics`), "CLAUDE.md: versioning sentence"],
   [claude.includes("the site has been live on Vercel"), "CLAUDE.md: deploy framed as settled"],
   [!claude.includes("Deploy to Vercel — the current version"), "CLAUDE.md: no deploy objective remains"],
+  [claude.includes("**Build-on task** — a correct lecture"), "CLAUDE.md: build-on task is the documented default"],
   [roadmap.includes("React and TypeScript topics only"), "ROADMAP.md: scope stated"],
-  [roadmap.includes("ten lessons live, all ten verified"), "ROADMAP.md: footer ten/ten"],
+  [roadmap.includes("eleven lessons live"), "ROADMAP.md: footer eleven"],
   [!/^- \[ \] .*(Deploy|Social links|Custom domain|LinkedIn)/m.test(roadmap), "ROADMAP.md: three chores not re-added"],
   [!/^- \[ \] Vite \+ React/m.test(roadmap), "ROADMAP.md: chore section removed"],
   [roadmap.includes("Redux") && roadmap.includes("Next.js"), "ROADMAP.md: Redux/Next.js parked under 'Later'"],
+  [roadmap.includes("`BUILD` = lecture live"), "ROADMAP.md: BUILD marker documented"],
   [notes.includes("## 11 — `useRef`"), "NOTES.md: entry 11 present"],
-  [notes.includes("Every registered lesson is verified"), "NOTES.md: nothing in progress"],
-  [/^- \*\*Never used at all:\*\*(?!.*useRef)/m.test(notes), "NOTES.md: useRef off the 'never used' line"],
-  [readme.includes("Ten lessons verified"), "README.md: ten lessons"],
+  [notes.includes("## 12 — `useContext` & `useReducer`"), "NOTES.md: entry 12 present"],
+  [/^- \*\*Never used at all:\*\*(?!.*useReducer)/m.test(notes), "NOTES.md: useReducer off the 'never used' line"],
+  [readme.includes("Ten lessons verified"), "README.md: ten lessons verified"],
   [readme.includes("jojo-dojo.vercel.app"), "README.md: live URL present"],
   [!/\[ \] Deploy to Vercel/m.test(readme), "README.md: deploy chore removed"],
-  [history.includes("Roadmap narrowed to React + TypeScript"), "HISTORY.md: this decision is logged"],
+  [history.includes("The hands-on exercise becomes a build, not a repair"), "HISTORY.md: the exercise-model decision is logged"],
 ];
 for (const [pass, label] of checks) { if (pass) ok(label); else bad(label); }
 

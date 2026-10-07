@@ -72,11 +72,16 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### In progress — lesson live, verification outstanding
 
-*(Empty. Every registered lesson is verified.)*
+**`use-context-reducer` (entry 12)** — the lecture and its demo are live at `/dojo/topic/use-context-reducer`
+as a **build-on task**. This is the first topic using the new default exercise shape: rather than repairing a
+planted bug, the hands-on half is **a component or feature the learner writes themselves**. Both gates are
+green on the lecture, the Sample Code panel is a true mirror at 132 of 132, and the roadmap line is marked
+`BUILD`. The task, its expected values and the seven acceptance criteria are in entry 12 — and the box stays
+unticked until their code *and* their explanation are both on the record.
 
 ### Gaps — the honest list
 
-- **Never used at all:** `useContext` / `useReducer`, custom hooks, `useMemo` / `useCallback`, portals.
+- **Never used at all:** custom hooks, `useMemo` / `useCallback`, portals.
 - **Taught in code but not yet exercised by a lesson of its own:** **lazy initialisers** (`useState(() => build())`). The mechanism is written up in entry 10 and appears in that lesson's prose, but no exercise has tested it, so it is not on the "Solid" table. Everything else the `useState` deep dive set out to cover — object/array replacement and the double-setter collapse — is now verified.
 
 ### Next, in order
@@ -85,14 +90,14 @@ React and TypeScript topics only. Deploy, social links and a custom domain were 
 settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
 deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
-1. **`useContext` / `useReducer`** — the next hooks with no coverage, and the first topic that genuinely needs shared state rather than local state.
+1. **`useContext` / `useReducer`** — lecture live, hands-on build outstanding. This is now a **build task**, not a lesson to write: add a fourth panel that reads the shared session from a different part of the tree and dispatches a new action. The brief and the acceptance criteria are in entry 12.
 2. **Custom hooks** — extracting a repeated hook sequence into one place.
 3. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them.
 4. **Portals** — rendering outside the parent DOM hierarchy.
 5. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
 
-The project is at **`0.12.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
-deliberately). Keep the `HomePage` badge (`v0.12`) in step; the three version artefacts are listed in
+The project is at **`0.13.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
+deliberately). Keep the `HomePage` badge (`v0.13`) in step; the three version artefacts are listed in
 `CLAUDE.md` under "Versioning".
 
 ---
@@ -1024,6 +1029,77 @@ omitting the array applies no restriction.** It is in the cheat-sheet.
 
 ---
 
+## 12 — `useContext` & `useReducer` (Shared State, and Actions Instead of Setters)
+
+- **Status:** LD (Learning) — lecture live 2026-10-08, hands-on build outstanding
+- **Added:** 2026-10-08
+- **Belt:** white
+- **Marker file:** `src/topics/use-context-reducer/demo.tsx`
+- **Route:** `/dojo/topic/use-context-reducer`
+
+### What this lesson is
+
+The first topic where the state does not belong to a single component. The demo is a training card with three
+panels — rounds, technique, session log — that pass **no props to each other**. One `useReducer` owns the
+session, one `createContext` publishes `{ state, dispatch }`, and each panel takes what it needs with
+`useContext`.
+
+`useState` holds one value and hands you a setter. `useReducer` holds one object and hands you a `dispatch`,
+and a plain function — the reducer — decides what each named action does to it. The two ideas are independent,
+and they are used together here because that is how they get used: the reducer is the state machine, the
+context is the delivery.
+
+### The two rules the lesson turns on
+
+1. **A reducer returns the next state; it never changes the one it was handed.** React compares the old state
+   with the new one by reference. `{ ...state, rounds: state.rounds + 1 }` is a different object, so React
+   re-renders; `state.rounds += 1; return state;` is the *same* object, and React's own source bails out before
+   scheduling a render at all. The screen keeps the old number from the very first click — it does not "work
+   once and then stop".
+2. **The provider must be an ancestor of every consumer.** A component cannot read a value it publishes
+   itself. A `useContext` call in the same component that renders `<SessionContext.Provider>` sees whatever
+   sits above it — or the context's default, which is chosen to look plausible, and that is what makes a
+   missing provider silent.
+
+### The hands-on task — build, do not repair
+
+**The task.** Add a **fourth panel** that consumes the same session context from a different part of the tree,
+dispatches **a new action type** you add to `SessionAction`, and handles it **purely** in `sessionReducer`. It
+must take **zero props** from the provider's parent, and it must show something the three existing panels do
+not — total techniques committed, the longest technique name, how many rounds were logged before a reset, your
+choice.
+
+**Expected values.** The card must still behave exactly as it does now: "Log a round" adds 1, "Add to the log"
+appends the trimmed technique and clears the box, "Reset the session" returns to the starting state — and your
+panel must update on every one of those, from its own position in the tree.
+
+**The seven acceptance criteria — this is what gets measured, and they are fixed now, not after the fact:**
+
+| # | Criterion |
+| - | --- |
+| 1 | The provider is an ancestor of every consumer, checked against the tree rather than inferred |
+| 2 | The reducer is pure in **every** shape: no `state.x =`, no alias, no nested field, no `Object.assign`, no in-place array method |
+| 3 | Every dispatched action is handled, and `SessionAction` stays a discriminated union so a typo cannot compile |
+| 4 | Context state is read with `useContext`; it is never mirrored into a local `useState` |
+| 5 | No state derived in an effect, and no `set-state-in-effect` |
+| 6 | `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` stay green |
+| 7 | It genuinely needs context — a version that could equally have been written with props does not count |
+
+**How it gets assessed.** The code is the *demonstrated* half. The *explained* half is two or three questions
+anchored in that code, or a prose explanation handed over with it. A failed criterion gets named, with the
+line it failed on, and the box stays open.
+
+### Why this is a lecture and not a fix-it exercise
+
+It **could** have been a fix-it exercise. Thirty-five probe files against both gates showed that a reducer's
+own `state` parameter is invisible to `react-hooks/immutability`: `state.count += 1; return state;` inside a
+reducer compiles and lints clean, while the identical mutation written in a component is rejected outright.
+The lecture is therefore a deliberate choice of exercise shape rather than a gate failure — the model changed
+on 2026-10-08, and a build of your own is now the default hands-on half. The full probe result is recorded in
+`ROADMAP.md` and `HISTORY.md`.
+
+---
+
 ## Traps & mental models
 
 Every correction made during review, in one place. These are the things most likely to bite again.
@@ -1060,6 +1136,9 @@ Every correction made during review, in one place. These are the things most lik
 | Reaching for a ref to dodge a stale closure | The "latest value" ref trick works in the wild but is unavailable here: writing `.current` during render is exactly what `react-hooks/refs` rejects. Fix the dependency array instead — that is what it is for. |
 | Putting `ref` on your own component | A function component does not forward `ref` unless you ask it to; `tsc` refuses (`TS2322`: property `ref` does not exist). Refs attach to DOM elements, or to a component that opts in. |
 | A ref callback written as an arrow that returns a value | `<div ref={(node) => (boxRef.current = node)}>` returns the node, and React reads a returned value as a cleanup function. `tsc` rejects it (`TS2322`). Use a block body: `ref={(node) => { boxRef.current = node; }}`. |
+| Writing into the state a reducer was handed | `state.count += 1; return state;` gives React back the very object it passed in, so the comparison finds nothing changed and no render is scheduled — the screen never moves, not even on the first click. A reducer returns a **new** object: `{ ...state, count: state.count + 1 }`. |
+| A consumer with no provider above it | `useContext` walks **up** the tree. With no provider ancestor you get the value from `createContext(default)`, and that default is usually chosen to look reasonable, so nothing warns you and nothing changes when the state does. A provider rendered in the same component as the `useContext` call does not help — it is not an ancestor of it. |
+| An action type that never reaches the reducer | With `type: string`, a typo at the `dispatch` site compiles and the switch quietly falls through. Type the actions as a union and leave out the `default` branch: a typo then fails to compile, and a new action type is a compile error until the reducer handles it. |
 
 **The one mental model that explains most of React:** a re-render means **React calls your component
 function again**, with fresh arguments. State persists across those calls, plain variables do not, and
@@ -1076,4 +1155,4 @@ tally, and precisely why it must never hold a value the render depends on.
 
 ---
 
-*Last updated: 2026-10-07*
+*Last updated: 2026-10-08*

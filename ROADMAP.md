@@ -5,8 +5,14 @@ explanation from you, not just a right answer to a quiz question. The assessment
 Knowledge Snapshot at the top of `NOTES.md`, and marking these boxes is the reviewer's job, not
 yours. See "Reviewer responsibilities" in `CLAUDE.md`.
 
-Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting the fix ·
-`quiz-passed` = concept understood, needs a lesson · `GAP` = answered wrong or never used.
+Status markers used on unverified lines: `BUILD` = lecture live, the learner's own component or feature
+outstanding · `IN PROGRESS` = fix-it exercise live, awaiting the fix · `quiz-passed` = concept understood,
+needs a lesson · `GAP` = answered wrong or never used.
+
+**The exercise model changed on 2026-10-08.** The learner's hands-on work is now normally **a new component,
+or a new feature added to the demo**, rather than the repair of a planted bug — so a verified topic is still
+"code *and* explanation", but the code is theirs from the first line. Fix-it exercises stay available for
+topics that turn on a mistake worth diagnosing. See `CLAUDE.md` → "The build-on task — the working agreement".
 
 **This roadmap covers React and TypeScript topics only** (decided 2026-10-07). Infrastructure is not
 tracked here, and the three items that used to sit at the bottom are settled rather than pending:
@@ -31,7 +37,7 @@ Do not re-add these to a future roadmap. If a session needs the deployment *mech
 - [x] Forms & controlled components — input state, validation — lesson live at `/dojo/topic/forms`; fixed and explained (entry 09)
 - [x] `useEffect` — side effects, dependency array, cleanup — lecture live at `/dojo/topic/use-effect`; verified by quiz (data fetching deferred to Forms)
 - [x] `useRef` — DOM access and mutable values — explainer live at `/dojo/topic/use-ref`; thirteen candidates probed against both gates and every one with a diagnosable symptom was rejected, so the hands-on half was the Escape-to-close in `Sidebar.tsx`. Verified 2026-10-07, after three passes past the "refs aren't initialised until effects run" misconception (entry 11)
-- [ ] `useContext` / `useReducer` — global state patterns — **GAP**: never used
+- [ ] `useContext` / `useReducer` — global state patterns — **BUILD**: lecture live at `/dojo/topic/use-context-reducer`, and the outstanding half is the learner's own panel. The task, its expected values and the seven acceptance criteria are in `NOTES.md` entry 12
 - [ ] Custom hooks — extracting reusable logic — **GAP**: never used
 - [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization — **GAP**: never used
 - [ ] Portals — rendering outside the parent DOM hierarchy — **GAP**: never used
@@ -54,7 +60,7 @@ they were considered rather than forgotten.
 
 ---
 
-_Last updated: 2026-10-07 (ten lessons live, all ten verified — scope narrowed to React + TypeScript topics)_
+_Last updated: 2026-10-08 (eleven lessons live — ten verified, one awaiting its build task)_
 
 **Why the `useState` deep dive is a fix-it exercise with three array bugs, not an object bug.** The
 characteristic mistake it teaches — writing a field on an object held in state — cannot be shipped at all:
@@ -129,3 +135,29 @@ Escape-to-close in `Sidebar.tsx` as the hands-on half.
 **The teaching point this gate leaves behind.** The "latest value ref" escape hatch for dodging a
 stale closure — still recommended by plenty of tutorials — is unavailable in this project, and the
 reason is not arbitrary: a ref the render depends on is a ref the render will show stale.
+
+**Why the fix-it exercise stopped being the default (2026-10-08).** The learner's call: instead of repairing a
+planted bug, the hands-on half should be **a component or a feature of their own**. Three reasons it is the
+better default from here. Most of what is left on this roadmap has no plantable bug at all — `useRef` needed
+thirteen probes to establish that, and `event-handling` and `use-effect` were converted after the fact. Writing
+a component is closer to the real work than repairing one. And a build-on task needs no gate probe at all,
+which removes a whole class of session ceremony from topics that do not benefit from it.
+
+The fix-it exercise is not retired: it stays for a topic whose point is **diagnosis**, and the probe rule above
+still applies before designing one.
+
+**The gates were still probed for `useContext` / `useReducer` (2026-10-08), because the kind had to be chosen
+between the two.** Thirty-five throwaway files in an isolated harness, with a clean control plus one tsc-only
+and one lint-only control to prove the harness reported anything at all. The finding that mattered:
+
+- `react-hooks/immutability` **does not analyse a reducer's own `state` parameter.** `state.count += 1;
+  return state;` inside a reducer passes both gates, as do `Object.assign(state, …)`, a nested-field write and
+  `state.items.push(…)`. The same mutation written in a component — on the state `useReducer()` returned, or on
+  a value `useContext()` returned — is rejected outright. So a reducer-purity fix-it **was** available, and the
+  lecture is a deliberate choice rather than a gate failure.
+- Also measured: `react-hooks/set-state-in-render` fires on an **unconditional** `setState` during render but
+  accepts a **guarded** one (`if (count === 0) setCount(1)`), and does not fire on `dispatch` at all. The
+  `event-handling` conclusion is unaffected — `onClick={handleReset()}` is unconditional and `tsc` rejects it.
+- Rejected by `tsc`, for the record: an unguarded nullable context value (`TS18047`), a provider value missing
+  a promised member (`TS2741`), a typo in a `case` label against a union action type (`TS2678`), a reducer
+  returning a state with a missing field (`TS2741`), and `{ items: state.items.push(x) }` (`TS2322`).

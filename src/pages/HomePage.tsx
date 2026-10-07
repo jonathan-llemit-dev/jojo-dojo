@@ -41,7 +41,7 @@ export function HomePage() {
       {/* Hero */}
       <section className="flex-1 px-4 py-16 flex flex-col items-center text-center sm:px-6 sm:py-24">
         <span className="mb-4 px-3 py-1 text-xs rounded-full border border-dojo-border text-dojo-muted">
-          🥋 Welcome, student · v0.12
+          🥋 Welcome, student · v0.13
         </span>
 
         <p className="text-dojo-ember tracking-[0.3em] uppercase text-sm mb-4">
