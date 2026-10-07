@@ -1001,6 +1001,12 @@ that render, that React can render twice or discard a render, and that a DOM ref
 returns. When that lands, flip this entry to the "Solid" table, set the marker to `OK`, tick the roadmap box,
 and move the line in `CLAUDE.md` from *pending* to *closed*.
 
+**Where it stands as of hand-off (2026-10-07).** The learner is working through this topic themselves and has
+asked to be checked when they report back — so **do not re-open it unprompted, and do not fill the gap in for
+them.** When they say they are done: re-read `src/topics/use-ref/demo.tsx` and the `Sidebar.tsx` change to see
+what they actually altered, verify `tsc` / `npm run lint` / `npm run check:prose`, then ask the read-side
+question fresh. Only then decide the box.
+
 ---
 
 ## Traps & mental models
