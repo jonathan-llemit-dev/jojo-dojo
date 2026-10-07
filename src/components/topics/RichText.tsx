@@ -1,27 +1,33 @@
 import type { ReactNode } from "react";
 
 /**
- * Renders a topic's prose — paragraphs, `- ` bullets, fenced code blocks and
- * `inline code` — as ordinary React nodes.
+ * Renders a topic's prose — paragraphs, `- ` bullets, fenced code blocks,
+ * `inline code`, and **emphasis** — as ordinary React nodes.
  *
  * Nothing here uses dangerouslySetInnerHTML, so a description can never inject
  * markup: text stays text. That is deliberate, and it is why a hand-rolled parser
  * is safe to keep around.
  *
- * The markup is intentionally tiny — four rules — rather than a Markdown library:
+ * The markup is intentionally tiny — five rules — rather than a Markdown library:
  * no dependency to install or keep updated, and the parsing is short enough to read.
  *
  *   1. ``` alone on a line opens or closes a code block
  *   2. a blank line separates paragraphs
  *   3. a line starting with "- " is a bullet, and a plain line after one continues it
  *   4. `backticks` around a run of text become inline <code>
+ *   5. `**like this**` becomes <strong> and `*like this*` becomes <em>
  *
- * The first three are structural — `parseBlocks` decides them per line. The fourth
- * applies inside whatever text survives, in `withInlineCode`.
+ * The first three are structural — `parseBlocks` decides them per line. The last two
+ * apply inside whatever text survives, in `withInlineCode` and `withEmphasis`.
+ *
+ * Order matters between 4 and 5: inline code is split out FIRST, so an asterisk inside
+ * a code span stays a literal asterisk — `setReps(reps * 2)` keeps its `*`. Emphasis is
+ * then applied only to the plain-text runs.
  *
  * The full convention, including what each rule is *for*, lives in `CLAUDE.md` under
  * "Key patterns to maintain". Keep the two in step: this comment used to say "three
- * rules" while the parser implemented four.
+ * rules" while the parser implemented four, and emphasis was added later still — see
+ * the session log in `HISTORY.md`.
  */
 
 type Block =
@@ -32,15 +38,65 @@ type Block =
 /** One pair of backticks around one or more non-backtick characters. */
 const INLINE_CODE = /`([^`]+)`/;
 
+/** `**bold**` — tested before emphasis, since `**` also starts a `*` run. */
+const BOLD = /\*\*([^*]+)\*\*/;
+
+/** `*italic*` — a single asterisk pair, not part of a `**` run. */
+const ITALIC = /\*([^*]+)\*/;
+
 /** Shared by every piece of code, inline or block, so they look like one family. */
 const CODE_TEXT = "font-mono text-dojo-text";
 
 /**
- * Split a line into plain text and inline <code> pieces.
+ * Turn `**strong**` and `*em*` into real elements.
+ *
+ * The split-with-capture-group trick again: `.split` with a capture alternates
+ * text, capture, text…, so odd indices are the emphasised runs. Bold is tried first
+ * because `**` would otherwise be read as an empty italic run followed by a literal.
+ *
+ * A line with an odd, unmatched asterisk is left exactly as written rather than
+ * half-consumed, so a stray `*` (say, multiplication in prose) cannot corrupt the rest
+ * of the line. Plain prose is returned as bare strings, so the common case adds no
+ * wrapper elements at all.
+ */
+function withEmphasis(text: string, keyPrefix: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+
+  for (const [index, chunk] of text.split(BOLD).entries()) {
+    if (index % 2 === 1) {
+      nodes.push(
+        <strong key={`${keyPrefix}-strong-${index}`} className="font-semibold text-dojo-text">
+          {chunk}
+        </strong>,
+      );
+      continue;
+    }
+
+    for (const [innerIndex, inner] of chunk.split(ITALIC).entries()) {
+      if (innerIndex % 2 === 1) {
+        nodes.push(
+          <em key={`${keyPrefix}-em-${index}-${innerIndex}`} className="italic">
+            {inner}
+          </em>,
+        );
+      } else if (inner !== "") {
+        nodes.push(inner);
+      }
+    }
+  }
+
+  return nodes;
+}
+
+/**
+ * Split a line into plain text, inline <code> pieces, and emphasis.
  *
  * String.split with a capture group alternates text, capture, text, capture…, so the
  * odd indices are exactly the backticked parts. An unpaired backtick just stays as
  * literal text, which fails quietly instead of throwing.
+ *
+ * Code is extracted before emphasis is considered, which is what keeps an asterisk
+ * inside `backticks` literal.
  */
 function withInlineCode(text: string, keyPrefix: string): ReactNode[] {
   return text.split(INLINE_CODE).map((part, index) =>
@@ -52,7 +108,7 @@ function withInlineCode(text: string, keyPrefix: string): ReactNode[] {
         {part}
       </code>
     ) : (
-      part
+      withEmphasis(part, `${keyPrefix}-text-${index}`)
     ),
   );
 }

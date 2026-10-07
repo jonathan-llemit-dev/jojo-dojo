@@ -10,6 +10,66 @@ Newest first.
 
 ## Session log
 
+### The browser gap closed, and a lesson page caught printing its own asterisks (2026-10-07)
+
+**For the first time, a lesson demo was driven in a real browser.** Every prior session had type-checked its
+work and reasoned about the runtime; none had *seen* it. Installing the browser-automation stack closed that:
+`bsk` 0.3.2 is at `~/.local/bin/bsk.exe`, **SHA-256 verified against the vendor's published manifest**
+(`b773c443…7eab`), `bskPath` pinned in the DSH profile's `cordis.patch.yml`, and the BrowserSkill extension in
+Chrome.
+
+**Four host obstacles, all worth recording:**
+
+1. **No Rust toolchain and no bundled `bsk`** — the CLI had to be installed, not built. `irm | iex` was not
+   run blind: the installer was fetched and read first, and then the release zip was downloaded directly so
+   the checksum could be verified independently.
+2. **This machine's schannel is broken.** `curl` and PowerShell both fail against *any* HTTPS host with
+   `schannel: AcquireCredentialsHandle failed: SEC_E_NO_CREDENTIALS`. **Node's `fetch` works**, so every
+   download went through `node -e "fetch(...)"`. A future session that reaches for `Invoke-WebRequest` will
+   conclude the network is down when it is not.
+3. **`--foreground` was the wrong flag.** The daemon reported `daemon ready` and then died every time. Its own
+   help text explains why: foreground mode is *"owned by the current terminal or supervisor"*, and every
+   process the agent spawns belongs to a job object the host reaps. **Plain `bsk daemon start` works.**
+4. **A sandboxed shell cannot reach the daemon's named pipe** (`Access is denied`, os error 5) — documented
+   confinement, not a fault. `bsk doctor` from the agent therefore reports FAIL rows that are lies; the
+   plugin's own calls are unaffected. Diagnosing this needed the daemon's log at `~/.bsk/daemon.log.<date>`,
+   which is the only place the real story appears.
+
+**What the browser verified — clicking, not reasoning.** On `/dojo/topic/use-state-deep-dive`: "Log two reps"
+moved the counter **0 → 2 → 4**; "Add technique" grew the list **2 → 3**, added the typed row, and cleared the
+box; a row toggle flipped to "Drilled"; "Reset" returned the list to its original two. Console clean apart
+from Vite's HMR and a `chrome-extension://invalid` line belonging to the extension itself. **The Reset bug the
+learner reported is confirmed fixed on screen** — the same bug that had cost a round of diagnosis, now
+verified at the pixel level.
+
+**One real defect, and it was mine.** The rendered page showed literal asterisks:
+`**replace, do not mutate**` and `*different*`. `RichText` supports exactly five things now, but it supported
+four — inline backticks, fenced code blocks, `- ` bullets, and paragraph breaks — and **never** emphasis. The
+`**` markers came from my own prose in the previous session.
+
+**The worst part is that the docs had already warned me.** A previous session hit the identical problem on
+`use-effect`, wrote it up in this file, and — because `RichText` had no emphasis rule — **banned emphasis in
+descriptions** and added a sweep to police it. I wrote `**bold**` into a new lesson anyway. That is the
+argument for fixing causes rather than enforcing workarounds: a rule that says "never do X because the tool
+can't" is a trap with a delay on it, and the delay expired.
+
+**Fixed properly, at the cause:**
+
+1. **Emphasis added to `RichText`** as rules 4 and 5 (`**bold**`, `*italic*`), so the markup is expressible
+   instead of forbidden. Inline code is split out **first**, so an asterisk inside backticks stays literal —
+   `setReps(reps * 2)` keeps its `*`. Bold is attempted before italic, because `**` also opens a `*` run, and
+   an unmatched single `*` is left exactly as written rather than half-consumed.
+2. **Verified in the browser, not just in the type-checker:** the accessibility tree now reports real
+   `<strong>` and `<em>` nodes — `replace, do not mutate`, `the updater form`, `Two setters in one handler.`,
+   `the same array`, `passed as`, and the numeral `1` — and the screenshot shows the asterisks gone.
+   `tsc` and `npm run lint` both green.
+3. **The ban is replaced by the capability**, and `CLAUDE.md` records *why* — including that the previous
+   workaround was the wrong call.
+
+**Method note worth keeping:** the session's first instinct was to verify by reasoning, and reasoning is what
+missed this. The asterisks had survived a type-check, a lint pass, a parity diff and a self-review. They took
+about four seconds to spot in a screenshot. **Look at the thing.**
+
 ### The lesson pages were narrating their own authoring — reader-facing cleanup (2026-10-07)
 
 **The learner's call, and it was right.** "When a topic is totally completed by me we should remove statements
