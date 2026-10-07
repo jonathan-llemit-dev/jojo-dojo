@@ -10,6 +10,131 @@ Newest first.
 
 ## Session log
 
+### `useState` deep dive — verified, after one word was pinned down (2026-10-07)
+
+**The box is ticked.** The exercise was fixed earlier in this session; the last thing owed was the
+*explained* half. Asked in their own words why `setReps(reps + 1)` written twice stores 1, the learner said it
+reads "the current value of state when it was last rendered, [so] every entry of `setReps(reps + 1)` is just
+the same reference of the previous value + 1, not the updated value + 1" — the snapshot mechanism, correctly.
+
+**Why that answer was probed instead of accepted.** It used the word "**reference**", and in this journal
+that word is already taken: it means object *identity*, the thing React compares to decide whether to
+re-render. A stale number has no reference to be stale. If those two ideas blur, the double-setter bug and
+the `[...current]` immutability bug start to look like the same bug, and they are not — one is about a
+captured value, the other about a value's identity. Rather than let an ambiguous word sit in the record, the
+distinction was put to them directly and then tested on a fresh case: `setReps(reps + 2)` twice from `0`
+gives **2**, not 4, because both lines read the same render's value. A shared-reference reading predicts 4.
+They answered 2, from the snapshot rule, so what they meant is now settled and the explanation stands.
+
+**Recorded as verified, with the ambiguity written down rather than smoothed over.** The alternative — tick
+it quietly and move on — would have put a correct box on top of a fuzzy idea, which is the failure mode the
+evidence standard exists to prevent. The probing cost one question and removed the doubt.
+
+### `useState` deep dive — fixed, quiz-confirmed, and left deliberately un-ticked
+
+1. **The three bugs were fixed by the learner, and verified as fixed.** `setReps((reps) => reps + 1)` twice
+   for the double setter; a new object built outside the setter and added with
+   `setTechniques((techniques) => [...techniques, newTechnique])`; `techniques.slice().sort(...)` for the
+   sort; and `[...STARTING_TECHNIQUES]` for Reset. `npx tsc -p tsconfig.app.json --noEmit` and
+   `npm run lint` both pass, and no in-place mutation shape remains in the file.
+
+2. **A misconception caught mid-exercise, and the reason it matters.** After fixing the sort, the learner's
+   note on the add handler read "nothing to fix here" — they had stopped treating the add as a bug once its
+   sibling was repaired. The add was still mutating in place. **Fixing one member of a bug family does not
+   fix the family**: the three handlers shared one root cause and each needed its own fix. Corrected on the
+   next pass with no location hint, so the diagnosis was still theirs.
+
+3. **"Reset still isn't working" was reported, and Reset was never a separate bug.** It had always been one
+   more *symptom* of the same mutation family — `splice` in place, then hand the setter the same array — and
+   it was fixed by the same move as the others. It *looked* broken because the add handler was still broken,
+   so nothing on the list ever re-rendered. Worth recording because it is the same shape as bug C hiding
+   behind bug B: **when several bugs share a root cause, the survivors produce symptoms that look like new
+   bugs**, and the fix is to finish the family rather than chase the latest symptom.
+
+4. **The Sample Code panel was swapped from the fix-it exception to a true mirror.** Regenerated
+   mechanically from the fixed demo rather than retyped, with backticks and `${` escaped, and the parity
+   check re-run rather than eyeballed: **114 of 114** lines exact. All eight other topics re-measured exactly
+   as documented in the same run. `CLAUDE.md`'s exception note was updated, since no lesson is in the
+   fix-it state any more.
+
+5. **Every marker written for the broken state was rewritten.** The topic marker went `LD` → `OK`, the file
+   header went from "three planted bugs" to the rule that explains them, and the three `BUG A/B/C` handler
+   comments became explanations of the correct pattern. A lesson that still *describes itself* as broken is
+   the same class of drift as a stale count — the code was right and the commentary was not.
+
+6. **The box was deliberately NOT ticked — this is the entry's real content.** The repair satisfies the
+   *demonstrated* half, and the mechanism was then confirmed by a 2/2 quiz: that both `setReps(reps + 1)`
+   lines read the render's own snapshot and compute the same number, and that the updater form works because
+   a *function* is queued and handed the previous result (explicitly rejecting the near-miss that says a
+   function "skips batching"). The learner chose the multiple-choice route over free text, so by the
+   journal's own standard this is **`quiz-passed`, not verified** — the roadmap line carries that status, the
+   snapshot records it, and one own-words answer upgrades it. Recording a near-miss as a pass would be the
+   exact softening the standard exists to prevent.
+
+### `useState` deep dive — audit, three-bug exercise, and a gate that closed a whole family of bugs
+
+1. **Docs audit before building.** `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` both pass on
+   arrival. The version chain was consistent (`0.10.0` in `package.json`, both `package-lock.json` entries,
+   and the `v0.10` badge). All eight lesson folders were wired into the registry and named in all four docs.
+   The recorded parity claims were re-run through a script rather than eyeballed and **all eight held**:
+   `components-props` 46/46, `event-handling` 105/105, `forms` 53/53, `use-effect` 64/64 exact;
+   `conditional-rendering` 63/63 and `lists-and-keys` 62/62 with the one-line `{}` residue each; `jsx` 9 with
+   the leading `export` omitted; `use-state` 38 → 11 trimmed by design.
+
+2. **One real drift found — and it made the gap look bigger than it is.** `CLAUDE.md`, `NOTES.md` and
+   `ROADMAP.md` all claimed *every* `useState` in the repo holds a primitive. It does not: `lists-and-keys`
+   holds an **array of objects** (`useState<Exercise[]>(EXERCISES)`), `event-handling` holds an array of
+   objects plus a `string | null`, and `event-handling` and `use-effect` **already** call two setters in one
+   handler. The claim was corrected in all three files rather than being worked around, and the real gap is
+   now stated precisely: **object-field replacement**, **lazy initialisers**, and **calling the same setter
+   twice**. A pre-existing count error was corrected at the same time — `CLAUDE.md` still read "eight lessons
+   registered and all eight verified" while the same file also said the completed `forms` was the most recent
+   fix-it.
+
+3. **Probed the candidate bugs against both gates *before* designing the exercise — and it changed the
+   design.** Two throwaway probes, deleted afterwards:
+   - **Rejected:** the obvious object bug. ESLint's **`react-hooks/immutability`** rule refuses *every* shape
+     of writing a field on object state — direct (`student.name = …`), through an alias
+     (`const next = student; next.name = …`), through a nested field, inside a component-local function, and
+     `Object.assign(student, …)`. Five shapes, five rejections. An earlier assumption that the rule only
+     caught the direct form was **wrong**, and the probe is what caught it.
+   - **Survives:** array *methods*. `list.push(…)` and `list.sort(…)` are silent to that rule — it looks for
+     property writes, not method calls. `setReps(reps + 1)` twice in one handler also passes both gates, and
+     so does an eager `useState(buildPlan())`.
+   - Also confirmed by tsc: mutating an array *without* calling its setter fails `noUnusedLocals`
+     (TS6133 *'setTechniques' is never read*), so the planted array bug has to hand the setter back the same
+     array rather than omit the call. Both bugs were reshaped to satisfy that before shipping.
+
+4. **Shipped `use-state-deep-dive` at `/dojo/topic/use-state-deep-dive`** — a training card with three
+   planted bugs: `push` then `setTechniques(list)` (same array, no re-render), `sort` then
+   `setTechniques(list)` (same), and `setReps(reps + 1)` twice (collapses to +1). The marker is `Status: LD`,
+   the header lists **symptoms and expected values only**, and `tsc` + `npm run lint` are both green with all
+   three bugs in place. Version bumped `0.10.0` → **`0.11.0`** across `package.json`, both lock entries and
+   the badge (`v0.11`); `README.md` structure and Roadmap, `ROADMAP.md`, `NOTES.md` entry 10 and the traps
+   table, and `CLAUDE.md` all updated.
+
+5. **The symptoms were simulated, not described — and the first draft was wrong.** A throwaway Node script
+   modelled the component (state persisting across renders, a setter given the same reference bailing out, a
+   handler reading the state from its own render) and ran both the buggy and the fixed version. It caught
+   two errors in the drafted header:
+   - The draft claimed "Add technique" *works once, then stops*. It never works at all: the rows stay at 2
+     however many times it is pressed.
+   - The draft did not know that **bug C is hidden behind bug B**. Sorting an array that never grows looks
+     like nothing happening; the real symptom only becomes visible after B is fixed. The header now says so,
+     and the simulation output is what the expected values were read from.
+   Against the real seed order, the fixed version gives reps `2 → 4 → 6`, list `2 → 3 → 4`, sort
+   `Elbow, Front, Knee, Roundhouse`, and Reset back to the original two — all reproduced.
+
+6. **Sample Code is the fix-it exception, and its size is now measured.** The panel teaches the four correct
+   handler patterns (the three the demo needs, plus the object-spread replacement the lesson could not ship
+   as a bug). Per the convention it does **not** mirror the buggy demo: 21 stripped sample lines against 118
+   stripped demo lines, recorded here so the mismatch is not mistaken for drift later. All other eight
+   topics still measure as they claim.
+
+7. **Noted for the fix-it convention:** `react-hooks/immutability` is now the fourth rule on the list of
+   gates that decide whether a topic can be an exercise at all, and it is the one that splits mutation bugs
+   in two — objects rejected, array methods allowed.
+
 ### Version rule corrected — a running `+0.01`, not a formula
 
 The learner asked for `0.10` before committing, and the reviewer pushed back: the Versioning section said the

@@ -7,6 +7,7 @@ import { listsKeysTopic } from "./lists-and-keys";
 import { eventHandlingTopic } from "./event-handling";
 import { useEffectTopic } from "./use-effect";
 import { formsTopic } from "./forms";
+import { useStateDeepDiveTopic } from "./use-state-deep-dive";
 
 /**
  * Aggregate topic registry — the single source of truth for both the sidebar
@@ -23,6 +24,7 @@ export const topicRegistry: Topic[] = [
   eventHandlingTopic,
   useEffectTopic,
   formsTopic,
+  useStateDeepDiveTopic,
 ];
 
 /**

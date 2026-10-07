@@ -34,6 +34,7 @@ assessment rather than a marker):
 | `useEffect` | The timer demo (interval effect, real dependency array, real cleanup), plus explained why a missing cleanup **compounds** and why `[]` means once rather than "when anything changes". One quiz answer was wrong and corrected — entry 08 |
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
 | Forms & controlled inputs | Fixed both bugs in the `forms` exercise — the no-op `onChange` and the missing `preventDefault` — and corrected a `FormData` detour by explaining controlled vs read-at-submit. Entry 09 |
+| `useState` deep dive | Fixed all three bugs in the `use-state-deep-dive` exercise unaided — updater form for the double setter, `[...techniques, newTechnique]` for the add, `techniques.slice().sort(...)` for the sort — then explained the snapshot mechanism in their own words: both `setReps(reps + 1)` lines read the same render's value, so both compute the same number. Entry 10 |
 
 *Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
 originally recorded on code evidence alone, which contradicted the reviewer's own standard — a
@@ -41,15 +42,32 @@ docs-audit question about why `jsx/demo.tsx` needs no `import React` (answer: JS
 calls from `react/jsx-runtime`) closed that gap rather than the rule being relaxed.*
 
 *Scope note: deeper `useState` material — object and array state, lazy initialisers, and batching when
-one handler sets state twice — is tracked as its own roadmap item rather than kept as a caveat on the
-completed lesson. Every `useState` in the repo currently holds a primitive (numbers, plus one boolean
-for the mobile menu), which is why that surface has not been exercised yet.*
+one handler sets state twice — is tracked as its own roadmap item (entry 10) rather than kept as a caveat
+on the completed lesson. This note used to claim that **every** `useState` in the repo holds a primitive.
+That was wrong, and the correction matters because it shrinks the real gap: `lists-and-keys` holds an array
+of objects (`useState<Exercise[]>(EXERCISES)`), `event-handling` holds an array of objects plus a
+`string | null`, and both `event-handling` and `use-effect` already call two setters in one handler. What is
+genuinely unexercised is **replacing a field on an object held in state**, **lazy initialisers**, and
+**calling the same setter twice in one handler** — which is what entry 10's exercise targets.*
 
 ### Quiz-passed — explained correctly, no dedicated code yet
 
 Understood as *concepts*, not yet *demonstrated as skills*. A single correct multiple-choice answer is weak evidence, so these stay unticked until a lesson exercises them.
 
-*(Empty, and this is the first time in the journal it has been. `useEffect` was the last entry — cleared by entry 08.)*
+*(Empty. `useState` deep dive was the last entry — cleared by an own-words explanation on 2026-10-07, see entry 10.)*
+
+**Process note — the pre-lesson check that started this topic, 2026-10-07 (2 of 4).** Kept because the wrong answers show what the exercise had to fix. Two of the three misconceptions were gone by the end (the array-mutation one, cleared by the repair itself, and the double-setter one, cleared in entry 10); the lazy-initialiser one has **not** been re-tested, which is why that gap is still listed below rather than assumed closed:
+
+| # | Question | Result |
+| --- | --- | --- |
+| 1 | What does the screen show when a handler does `list.push(x); setTechniques(list);`? | **Wrong.** Answered "grows on the first press, then stops". The truth is it never grows at all — the mutation never produced a render. That answer implies the mutation *works* and only needs forcing, which would send a fix in the wrong direction. |
+| 2 | What does `useState(buildPlan())` put in state? | **Correct** — it calls `buildPlan` and stores the return value. (First wording of this question was too dense and was **voided**, then re-asked smaller.) |
+| 3 | What does `useState(() => buildPlan())` put in state? | **Wrong.** Answered "the function itself". The arrow makes React call it once and store the array; the composition of the two facts in Q2 is the part not yet in place. |
+| 4 | `setReps(reps + 1)` twice in one handler, from 0 — the new count? | **Wrong.** Answered "up by 2, because React batches". Batching is real but is not what saves you: both lines compute `0 + 1` from the same render's `reps` and the second is a no-op. The belief that "batching applies both changes" is exactly what hides the bug. |
+
+**What the repair itself showed.** All three handlers were fixed correctly and unaided: the updater form for the double setter, `[...techniques, newTechnique]` for the add, and `techniques.slice().sort(...)` for the sort — the last being the strongest evidence in the set, because `sort` returning the *same* array is the subtlest of the three and `.slice()` is exactly the right instinct. `tsc` and `npm run lint` stayed green throughout.
+
+**One misconception corrected mid-exercise, worth keeping.** The learner's work-in-progress note on the add handler read "nothing to fix here" — having just fixed the sort, they had stopped treating the add as a bug. It was still mutating in place. The lesson: **fixing one member of a bug family does not fix the family**; three handlers with three identical root causes needed three fixes, and two siblings being repaired does not make the third correct. It was fixed on the next pass, without a hint about the location.
 
 ### In progress — lesson live, verification outstanding
 
@@ -58,12 +76,13 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 ### Gaps — the honest list
 
 - **Never used at all:** `useContext` / `useReducer`, custom hooks, `useMemo` / `useCallback`, `useRef`, portals.
+- **Taught in code but not yet exercised by a lesson of its own:** **lazy initialisers** (`useState(() => build())`). The mechanism is written up in entry 10 and appears in that lesson's prose, but no exercise has tested it, so it is not on the "Solid" table. Everything else the `useState` deep dive set out to cover — object/array replacement and the double-setter collapse — is now verified.
 
 ### Next, in order
 
-1. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
-2. **`useState` deep dive** — object/array state, lazy initialisers, two setters in one handler.
-3. **Deploy to Vercel** — the current version is **`0.10.0`**: a running number that gains `0.01` with every new topic (and can be adjusted deliberately). Keep the `HomePage` badge (`v0.10`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
+1. **`useRef`** — the next hook with an obvious use: `Sidebar.tsx` deliberately has no Escape-to-close, and the keydown listener it needs is a natural `useEffect` + `useRef` job.
+2. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
+3. **Deploy to Vercel** — the current version is **`0.11.0`**: a running number that gains `0.01` with every new topic (and can be adjusted deliberately). Keep the `HomePage` badge (`v0.11`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
 
 ---
 
@@ -725,6 +744,134 @@ correct.
 
 ---
 
+## 10 — `useState` Deep Dive (Object & Array State, Lazy Initialisers, Two Setters)
+
+- **Status:** OK (Mastered) — verified 2026-10-07
+- **Added:** 2026-10-07
+- **Belt:** white
+- **Marker file:** `src/topics/use-state-deep-dive/demo.tsx`
+- **Route:** `/dojo/topic/use-state-deep-dive`
+
+### What this entry is
+
+This is the **concept-level** write-up. It was written *before* the exercise was fixed, so it states the
+rules without handing over the answers — and it has been kept that way, because the rules are the point and
+the specifics are now in the code. The three bugs were all in *how state is updated*, never in what is
+rendered, and all three compiled, so nothing warned you: the page loaded, the buttons responded, and the
+numbers were simply wrong.
+
+**Fixed 2026-10-07.** Status is `OK` in the marker, `tsc` and `npm run lint` are green, and the Sample Code
+panel is a true mirror of the demo at **114 of 114** lines. See the "How it was verified" section at the end
+of this entry for what is proven and what is still owed.
+
+### The rule the whole lesson turns on
+
+React decides whether to re-render by comparing the value you handed the setter with the one it already had
+— **by reference**. A changed object or array that is still the *same* object or array is not a change React
+can see. Everything below is that one fact in different clothes.
+
+**Replace, do not mutate.**
+
+| State shape | Replace it like this | What is *not* an update |
+| --- | --- | --- |
+| Object | `setStudent((current) => ({ ...current, name: next }))` | `student.name = next` — the same object, so React bails out |
+| Array | `setEntries((current) => [...current, entry])` | `entries.push(entry)` — changes the array in place and returns its new *length* |
+| Array, reordered | `setEntries((current) => [...current].sort(byName))` | `entries.sort(...)` — sorts in place and returns the same array |
+| Array, one item replaced | `setEntries((current) => current.map(...))` or `toSpliced` | `entries[i] = newItem` |
+
+- **`push` returns a number, not an array.** That is why `setEntries(entries.push(x))` is doubly wrong, and
+  why the `[...current, x]` spread is the shape to reach for.
+- **The updater form** — passing a function instead of a value — is what makes replacement safe, because the
+  function is handed the *latest* state rather than the value that was captured when the handler was written.
+
+### Lazy initialisers
+
+A **lazy initialiser** is a function you hand to `useState` instead of a value:
+
+```tsx
+const [plan] = useState(buildPlan());        // calls buildPlan on EVERY render, keeps only the first result
+const [plan] = useState(() => buildPlan());  // calls it once, for the first render only
+```
+
+React cannot tell whether a function is your starting *value* or the thing that *produces* it, so a bare
+function counts as an initialiser only when it is passed as the initialiser. The arrow is the whole
+difference. It earns its keep when building the value is expensive; it costs nothing when it is not.
+
+### Two setters in one handler
+
+React **batches** the updates a handler makes, so nothing re-renders between them, and **every line in the
+handler reads the state from the render it came from** — not from the line above it. Hence the outcome that
+surprises people:
+
+```tsx
+setReps(reps + 1);   // reps is still the old value here
+setReps(reps + 1);   // ...and still the old value here, so this computes the SAME number
+```
+
+Both lines produce the same figure, the second replaces the first, and the count rises by **1**. With the
+updater form each call is handed the previous call's result, so the same two lines rise by **2**.
+
+Two different setters in one handler (`setSignedUp(true)` next to `setEmail(...)`) have no such problem —
+they are different boxes. The trap is specifically the **same** setter twice, or a value computed from state
+that another line in the same handler has already changed.
+
+### The exercise
+
+Three planted bugs, in three different shapes, all array-or-counter rather than object-field. Expected
+values were written into the demo's own header comment, so the target was never a matter of opinion: "Log
+two reps" must add 2, "Add technique" must grow the list and clear the box, and "Sort A-Z" must actually
+reorder the rows. One of them was invisible until another was fixed — the sort looked like nothing
+happening behind a list that never grew — which is worth remembering about bugs that share a root cause.
+
+**One thing worth knowing about the exercise's shape:** the *object-field* mistake that this lesson is
+really about **cannot be shipped as a planted bug in this project.** ESLint's `react-hooks/immutability`
+rule rejects every way of writing it — direct, aliased, nested, inside a helper, and `Object.assign` — which
+was checked with a throwaway probe before the exercise was designed. Array *methods* (`push`, `sort`) are
+not caught by that rule, which is why the plantable bugs are array-shaped. Object replacement is therefore
+taught in the lesson prose and the Sample Code panel rather than offered as something to repair. The full
+probe result is recorded in `ROADMAP.md` and `HISTORY.md`.
+
+### How it was verified — 2026-10-07
+
+**Demonstrated — all three fixed unaided, both gates green.** `setReps((reps) => reps + 1)` twice for the
+double setter; a new object built outside the setter and added with
+`setTechniques((techniques) => [...techniques, newTechnique])` for the add; and
+`techniques.slice().sort(...)` for the sort. Reset was fixed by the same move (`[...STARTING_TECHNIQUES]`).
+Every shape that mutates in place is gone from the file, and `tsc` / `npm run lint` pass. The Sample Code
+panel was then swapped from the fix-it exception to a real mirror, measured at **114 of 114** lines.
+
+**The best evidence in the fix is the `.slice()`.** `sort` returning *the same array* is the subtlest of the
+three mutations — there is no return value to misread, unlike `push` returning a length — and reaching for a
+copy first is precisely the correct instinct. The add was fixed on a second pass after a note that read
+"nothing to fix here": having repaired the sort, the learner had stopped treating the add as a bug, and the
+lesson is that **fixing one member of a bug family does not fix the family**.
+
+**Explained — in their own words, 2026-10-07.** Asked why `setReps(reps + 1)` written twice stores 1, the
+answer was that it reads "the current value of state when it was last rendered, [so] every entry of
+`setReps(reps + 1)` is just the same reference of the previous value + 1, not the updated value + 1". That is
+the mechanism: one snapshot, both lines compute the same number, the second replaces the first.
+
+**One word was probed rather than waved through.** The answer said "**reference**", and in this journal that
+word means object *identity* — the thing React compares to decide whether to re-render — not a captured
+value. Those are two different bugs that must not blur together, so the distinction was put directly ("a
+stale number has no reference to be stale") and then tested on a fresh case: `setReps(reps + 2)` twice from
+`0`. The answer was **2**, not 4 — "both lines read `reps` as 0 separately, so both call `setReps(2)`" —
+derived from the snapshot rule. A shared-reference reading predicts 4, so this settles what they meant. With
+the wording pinned down, the explanation stands.
+
+**Verdict: verified.** Both halves are on the record — working code the learner wrote (all three handlers
+fixed, gates green, sample a true mirror at 114 of 114), and the mechanism explained in their own words.
+Recorded in the snapshot's "Solid" table.
+
+**Note on the exercise's shape.** The *object-field* mistake this lesson is really about **cannot be shipped
+as a planted bug in this project.** ESLint's `react-hooks/immutability` rule rejects every way of writing it
+— direct, aliased, nested, inside a helper, and `Object.assign` — checked with a throwaway probe before the
+exercise was designed. Array *methods* (`push`, `sort`) are not caught by that rule, which is why the planted
+bugs were array-shaped. Object replacement is therefore taught in the lesson prose and the Sample Code panel
+rather than offered as something to repair. The full probe result is in `ROADMAP.md` and `HISTORY.md`.
+
+---
+
 ## Traps & mental models
 
 Every correction made during review, in one place. These are the things most likely to bite again.
@@ -749,6 +896,11 @@ Every correction made during review, in one place. These are the things most lik
 | Controlled input missing one half | `value` without `onChange` freezes the box (React re-renders it back to the unchanged state); `onChange` without `value` types fine but the box stops reflecting state. A controlled input needs both. |
 | Form submit without `preventDefault()` | The browser runs its default submit — an HTTP request to the form's `action`/`method` — which reloads the page and throws state away. Call `event.preventDefault()` first. |
 | Reading form values with `FormData` when they're already in state | Redundant in a controlled form — state is the source of truth. `FormData` is for reading at submit time (uncontrolled), or for React 19 form *actions* (`<form action={fn}>`), a different pattern. |
+| `entries.push(x)` on array state | Changes the array **in place** and returns its new *length*, not the array. Hand that back with `setEntries(entries)` and React compares by reference, sees the same array, and does not re-render — so nothing appears. Replace instead: `setEntries((current) => [...current, x])`. |
+| `entries.sort(…)` on array state | Sorts in place and returns the **same** array, so `setEntries(entries)` again changes nothing on screen. Sort a copy: `setEntries((current) => [...current].sort(byName))`. `splice` and `reverse` are the same trap. |
+| `setReps(reps + 1)` written twice in one handler | Both lines read `reps` from the render they ran in, so both compute the **same** number and the second replaces the first — the count rises by 1, not 2. Use the updater form (`setReps((current) => current + 1)`) whenever the next value depends on the current one, once or several times. |
+| `useState(expensiveThing())` meaning to initialise lazily | Calls the function on **every** render and discards every result but the first. Pass the function itself: `useState(() => expensiveThing())`. |
+| Writing a field on an object held in state | `student.name = next` changes the very object React is holding, so `setStudent(student)` hands back the same reference and React bails out. Replace: `setStudent((current) => ({ ...current, name: next }))`. In this project ESLint's `react-hooks/immutability` rule rejects the mutation at the source — in every shape it was probed. |
 
 **The one mental model that explains most of React:** a re-render means **React calls your component
 function again**, with fresh arguments. State persists across those calls, plain variables do not, and

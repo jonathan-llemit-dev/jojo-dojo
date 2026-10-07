@@ -38,7 +38,7 @@ often as a short quiz.
 how to check knowledge, are under "Reviewer Responsibilities" below. That is the rule most likely to be
 misread by a fresh session: **do not tick a box because a lesson file exists.**
 
-**Current state, one line:** eight lessons registered and all eight verified.
+**Current state, one line:** nine lessons registered and all nine verified.
 
 ## Commands
 
@@ -110,9 +110,12 @@ src/
     ├── forms/
     │   ├── demo.tsx            # FormsDemo — controlled inputs; fix-it exercise, fixed & verified
     │   └── index.ts            # Exports formsTopic registry entry
-    └── use-state/
-        ├── demo.tsx            # CounterDemo — the live useState working component
-        └── index.ts            # Exports useStateTopic registry entry
+    ├── use-state/
+    │   ├── demo.tsx            # CounterDemo — the live useState working component
+    │   └── index.ts            # Exports useStateTopic registry entry
+    └── use-state-deep-dive/
+        ├── demo.tsx            # UseStateDeepDiveDemo — object/array state; fix-it exercise, fixed & verified
+        └── index.ts            # Exports useStateDeepDiveTopic registry entry
 ```
 
 **Key patterns to maintain:**
@@ -170,13 +173,13 @@ new topic = current version + 0.01
 
 The version is therefore a **running number, not a formula**. It is *not* computed from the topic count, and
 the learner may also adjust it deliberately — a milestone, a deploy, a fresh start. What is fixed is the step:
-one new lesson, one `+0.01`. At the time of writing the project is at **`0.10.0`** with eight topics.
+one new lesson, one `+0.01`. At the time of writing the project is at **`0.11.0`** with nine topics.
 
 Three artefacts must move together whenever the version changes:
 
 1. `"version"` in `package.json` — and the **two** `"version"` entries at the top of `package-lock.json`
    (the root one and the `packages[""]` one). Never hand-edit dependency versions in the lock.
-2. The badge in `src/pages/HomePage.tsx`, which shows the short form: `v0.10`.
+2. The badge in `src/pages/HomePage.tsx`, which shows the short form: `v0.11`.
 3. The version sentence in "Current project state" below.
 
 *History note: this section used to claim the version was "derived from the topic count, so it is never
@@ -202,11 +205,12 @@ stands as the reason the three artefacts must stay in step: a hand-picked `v0.1.
 - **The import line is not decoration — it follows from the hooks used.** `jsx` correctly has none: it calls no hook, and React 19 needs no `import React`, so adding one would teach the wrong thing. `use-state`, `components-props` and `conditional-rendering` all open with `import { useState } from "react";`. Verified: every snippet's imports match its demo's exactly.
 - **Current parity**, re-verified by diffing each snippet against its demo after stripping comments and blank lines: `components-props` matches at 46 of 46 code lines; `conditional-rendering` matches at **63 of 63** (its backticks escaped — see above; the demo's stripped JSX comment leaves one extra empty `{}` line, so compare against the demo with that line removed); `event-handling` matches at **105 of 105**; `lists-and-keys` matches at **62 of 62** (same one-line `{}` residue); `use-effect` matches at **64 of 64**; `jsx` matches at 9 except that the sample omits the leading `export` keyword (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability, 38 code lines down to 11; `forms` matches at **53 of 53** (fixed — now a real mirror). **`NOTES.md` quotes the same snippets** — when a snippet changes, the notes' copy of it is part of the mirror and has drifted before.
 - **Re-run that diff rather than eyeballing it.**
-- **Exception — fix-it exercises.** While a lesson ships deliberately broken, its snippet teaches the *correct* pattern instead of mirroring the buggy demo. Swap it for the real mirror once the exercise is fixed. No lesson is currently in that state — `forms` was the most recent one and became a real mirror when its exercise was fixed.
+- **Exception — fix-it exercises.** While a lesson ships deliberately broken, its snippet teaches the *correct* pattern instead of mirroring the buggy demo. Swap it for the real mirror once the exercise is fixed. **No lesson is currently in that state** — `use-state-deep-dive` was the most recent one and became a real mirror when its exercise was fixed, measured at 114 of 114 lines after regeneration.
 
 - **Fix-it exercises**: a lesson may be shipped deliberately broken to teach a concept. The rules: the marker says `Status: LD`; the file's header comment lists the **observed symptoms only** — never the bug locations or the fix — so the learner has to diagnose; every planted bug must still compile, keeping `tsc` and `npm run lint` green; the roadmap line is marked `IN PROGRESS`; and `NOTES.md` explains the concept-level rules, not the answers. When the learner reports it fixed, re-assess, verify `tsc`/lint, then flip the roadmap box and rewrite the notes entry as verified. Two hard-won rules: an exercise must **name its expected values** (otherwise a workaround is a reasonable answer), and its symptoms must be **simulated, never described from reading the code** (the first `conditional-rendering` header claimed the badge was missing from 1–5 reps, until a five-line simulation showed the real symptom is a gap at 0 reps with an overlap from 6). **Not every topic can be one:** if the mistake the lesson would teach is rejected by `tsc` or by an ESLint rule, no compiling version of it exists, so the lesson has to be an explainer instead. **Check a candidate bug against both gates *before* designing an exercise around it** — two lessons have now been converted after the fact. The rules responsible so far:
   - `react-hooks/set-state-in-render` and `tsc` (`void` not assignable to `MouseEventHandler`) kill every "called during render" wiring — `event-handling`.
   - `react-hooks/set-state-in-effect` kills the derived-state family (`useEffect(() => setCount(prop), [prop])`), and `react-hooks/exhaustive-deps` kills every wrong dependency array — `use-effect`.
+  - `react-hooks/immutability` kills every way of writing a property to a `useState` object — directly (`student.name = …`), through an alias (`const next = student; next.name = …`), through a nested field, inside a component-local function, and via `Object.assign(student, …)`. All five were probed. It does **not** reach array *methods*: `list.push(…)` and `list.sort(…)` both pass, so an array-mutation bug is plantable while an object-field mutation bug is not — `use-state-deep-dive`.
   - What survives: cleanup mistakes (a missing `clearInterval` / `removeEventListener`), which is one mistake in two shapes — too thin for an exercise that needs diagnosis.
 
 - **NOTES.md** (at repo root): the **reviewer-written** study record — the Knowledge Snapshot, a numbered entry per topic, and a traps cheat-sheet. **The learner does not write here.** Their hands-on work IS the exercise; this file is what they read between sessions. Notes are never a homework task, and "write your study note" must never be asked of them. The reviewer keeps this file current.
@@ -249,14 +253,14 @@ stands and what comes next.
 
 ### Current project state
 - Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
-- **Version `0.10.0`** — a running number, advanced by `0.01` for each new topic and adjustable deliberately. See "Versioning" below. The badge in `HomePage.tsx` shows the short form `v0.10`.
-- **Eight lessons registered, all eight verified**: `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys`, `event-handling`, `use-effect` and `forms` — all added through the registry, with no new routes written. No `IN PROGRESS`, `quiz-passed` or `GAP` line remains among them.
-- **Two lessons are lectures rather than fix-it exercises** — `event-handling` and `use-effect` — because their characteristic mistakes cannot be shipped as compiling, lint-clean bugs. Both were cleared by quiz, and both are recorded in the fix-it convention below, which now requires checking a candidate bug against both gates before designing an exercise around it.
+- **Version `0.11.0`** — a running number, advanced by `0.01` for each new topic and adjustable deliberately. See "Versioning" below. The badge in `HomePage.tsx` shows the short form `v0.11`.
+- **Nine lessons registered, all nine verified**: `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys`, `event-handling`, `use-effect`, `forms` and `use-state-deep-dive`. The last of these was a fix-it exercise, fixed by the learner with both gates green and its sample now a true mirror; it is verified because the mechanism was then explained in their own words. All nine are added through the registry, with no new routes written.
+- **Three lessons are not fix-it exercises** — `event-handling` and `use-effect` are lectures, because their characteristic mistakes cannot be shipped as compiling, lint-clean bugs. `use-state-deep-dive` *was* a fix-it exercise, but its *object*-state bug had to be dropped for the same reason (see the gate list under "Fix-it exercises"); its three array-shaped bugs are now fixed.
 - **Layout is mobile-responsive**, confirmed by the learner at phone width: below `md` the topic list is a burger dropdown, and the nav/padding/headings scale down. The reviewer cannot run `npm run dev`, so visual checks are the learner's to make.
 - A scratch routing playground lives at `/test/:student/:name/:subjects` (`components/sandbox/TestGreeting.tsx`), kept deliberately as a labelled demonstration of the `:param` ↔ `useParams()` name contract.
 - The old single-page `App.tsx` is gone — replaced by the routes above. The 3 "technique cards" (Vite/Tailwind/Vercel) were dropped per your decision; the GitHub link survives in `TopNav`.
 - **The AI reviewer owns the Knowledge Snapshot in `NOTES.md` and the `ROADMAP.md` boxes** (see "Reviewer Responsibilities" above). Learner knowledge as of the last assessment is summarised there.
-- **The reviewer cannot run `npm run dev` or `npm run build`**: both need to write inside `node_modules`, which the AI sandbox blocks. `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` both pass (re-verified this session — lint had been failing on an editor worktree under `.kilo`, now ignored), and the responsive layout has been confirmed visually by the learner — but each lesson demo is still only type-checked, never observed by the reviewer.
+- **The reviewer cannot run `npm run dev` or `npm run build`** *inside its own sandbox*: Vite's config loader spawns a child process and `tsc -b` writes inside `node_modules`, both of which the sandbox blocks. `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` both pass (re-verified 2026-10-07). Starting the dev server *does* work with an escalated one-shot (`npm run dev`), and the reviewer confirmed that Vite serves `src/topics/use-state-deep-dive/demo.tsx` transformed — but the browser-automation tooling is not installed on this machine (`bsk` missing, no cargo to build it), so **no lesson demo has ever been observed by the reviewer**. Visual checks remain the learner's to make.
 
 ### Next session objectives (priority order)
 
@@ -264,9 +268,11 @@ Ordering note: `Forms` is now verified, so it no longer appears among the open l
 + error states) that `useEffect` deferred to Forms is still deferred — there is no server in this project, so a
 fetch demo would have to fake its data. The remaining open lines, in priority order:
 
-1. **`useState` deep dive** — object/array state, lazy initialisers, two setters in one handler. Still a `GAP`: every `useState` in the repo holds a primitive.
-2. **`useRef`** — the next hook with an obvious use: `Sidebar.tsx` deliberately has no Escape-to-close, and the keydown listener it needs is a natural `useEffect` + `useRef` job.
-3. **Deploy to Vercel** — the current version is `0.10.0` (see "Versioning" above; add `0.01` for each new topic and keep the badge in step). Confirm the SPA rewrite handles deep links on a real refresh.
+1. **`useRef`** — the next hook with an obvious use: `Sidebar.tsx` deliberately has no Escape-to-close, and the keydown listener it needs is a natural `useEffect` + `useRef` job.
+2. **Deploy to Vercel** — the current version is `0.11.0` (see "Versioning" above; add `0.01` for each new topic and keep the badge in step). Confirm the SPA rewrite handles deep links on a real refresh.
+3. **One left-over surface from the `useState` deep dive** — **lazy initialisers** (`useState(() => build())`) are written up in lesson 10's prose but have never been exercised, so they are the one part of that topic not on the "Solid" table. It needs a lesson of its own or a question in a future review, not a new claim.
+
+*Closed line:* **`useState` deep dive** — verified 2026-10-07. The exercise at `/dojo/topic/use-state-deep-dive` was fixed by the learner, both gates are green, its Sample Code panel is a true mirror (114 of 114), and the snapshot mechanism was explained in their own words. That lesson also corrected a gap stated too broadly in the old notes: `lists-and-keys` already held an **array** of objects and `event-handling` / `use-effect` already called two setters in one handler.
 
 ### Backlog (not yet prioritised)
 - "Featured Lessons" preview grid on the landing page, pulling from `topicRegistry`.
