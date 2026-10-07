@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "check:prose": "node scripts/check-prose.mjs",
+    "check:repo": "node scripts/check-repo.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

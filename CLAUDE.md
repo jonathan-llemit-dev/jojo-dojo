@@ -57,6 +57,7 @@ misread by a fresh session: **do not tick a box because a lesson file exists.**
 | `npm run preview` | Preview the production build locally |
 | `npm run lint` | Run ESLint across the project (`eslint .`) |
 | `npm run check:prose` | Validate every lesson's `longDescription` — RichText safety rules *and* the voice limits. Run it after editing any description. |
+| `npm run check:repo` | Verify the repo against what the docs claim — version in all three artefacts, registry/folder/marker counts, every sample↔demo parity number, and the doc-policy invariants. Run it at the start of a session and after any doc edit. |
 
 No test framework is installed. There are no tests to run.
 

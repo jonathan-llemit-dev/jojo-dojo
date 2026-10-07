@@ -81,9 +81,19 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### Next, in order
 
-1. **Deploy to Vercel** — the current version is **`0.12.0`**: a running number that gains `0.01` with every new topic (and can be adjusted deliberately). Keep the `HomePage` badge (`v0.12`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
-2. **`useContext` / `useReducer`** — the next hooks with no coverage, and the first topic that genuinely needs shared state rather than local state.
-3. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
+React and TypeScript topics only. Deploy, social links and a custom domain were removed from the roadmap as
+settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
+deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
+
+1. **`useContext` / `useReducer`** — the next hooks with no coverage, and the first topic that genuinely needs shared state rather than local state.
+2. **Custom hooks** — extracting a repeated hook sequence into one place.
+3. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them.
+4. **Portals** — rendering outside the parent DOM hierarchy.
+5. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
+
+The project is at **`0.12.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
+deliberately). Keep the `HomePage` badge (`v0.12`) in step; the three version artefacts are listed in
+`CLAUDE.md` under "Versioning".
 
 ---
 
