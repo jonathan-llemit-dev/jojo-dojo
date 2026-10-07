@@ -26,9 +26,9 @@ export const eventHandlingTopic: Topic = {
     "`handleReset` returns `void` and `onClick` wants a function:\n\n" +
     "```\nType 'void' is not assignable to type 'MouseEventHandler<HTMLButtonElement> | undefined'.\n```\n\n" +
     "and ESLint's `react-hooks/set-state-in-render` rule flags the same line, because a\n" +
-    "handler that sets state would otherwise run during every render. That is why this topic\n" +
-    "has no fix-it exercise: the convention for one requires the planted bug to compile and\n" +
-    "lint clean, and this bug cannot. It is caught as you type, which is better.\n\n" +
+    "handler that sets state would otherwise run during every render. So the mistake never\n" +
+    "reaches the browser — it is caught as you type, which is better than debugging it at\n" +
+    "runtime.\n\n" +
     "The case that catches people is a handler that needs an argument. The fix is not fewer\n" +
     "parentheses; it is one more layer — an arrow that is itself the handler:\n\n" +
     "```\n<button onClick={() => handleRemoveExercise(exercise.id)}>Remove</button>\n```\n\n" +
@@ -43,7 +43,7 @@ export const eventHandlingTopic: Topic = {
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.
   //
-  // A real mirror of `./demo.tsx`. Event handling is NOT a fix-it exercise — see the
+  // A real mirror of `./demo.tsx` — the two are kept in step.
   // reasoning in the module comment of `demo.tsx` — so the two are kept in step.
   codeExample: `import { useState } from "react";
 

@@ -30,14 +30,12 @@ export const formsTopic: Topic = {
     "`preventDefault()` tells the browser \"do not do your default thing\", so React code runs " +
     "instead of a page reload. Notice the parameter is typed — and the type depends on the event: " +
     "`SubmitEvent<HTMLFormElement>` for a form submit, `ChangeEvent<HTMLInputElement>` for an input " +
-    "change, `MouseEvent<HTMLButtonElement>` for a button click.\n\n" +
-    "This lesson shipped as a fix-it exercise and is now fixed. The demo and the sample below " +
-    "are the same component.",
+    "change, `MouseEvent<HTMLButtonElement>` for a button click.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.
   //
-  // A real mirror of ./demo.tsx — the exercise is fixed, so the two are kept in step.
+  // A real mirror of ./demo.tsx — the two are kept in step.
   codeExample: `import { useState, type SubmitEvent } from "react";
 
 export function FormsDemo() {

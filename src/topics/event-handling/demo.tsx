@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // Topic: Event Handling — inline arrows, named handlers, and passing arguments
-// Added: 2026-10-04 | Status: OK (verified — demo plus a 3/3 quiz)
+// Added: 2026-10-04 | Status: OK
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //
@@ -14,15 +14,10 @@
 //   3. a NAMED handler that takes an ARGUMENT, wrapped in an arrow
 //        onClick={() => handleRemove(exercise.id)}
 //
-// Why there is no fix-it exercise for this topic, unlike `components-props`,
-// `conditional-rendering` and `lists-and-keys`: the mistake it would teach —
-// `onClick={handler()}` instead of `onClick={handler}` — does not reach runtime in this
-// project. TypeScript rejects it (`void` is not assignable to `MouseEventHandler`) and
-// ESLint's `react-hooks/set-state-in-render` rule rejects it too. A fix-it exercise has
-// to compile and lint clean, so this bug cannot be shipped. It is caught while you type,
-// which is the better outcome. The lesson description shows the exact message.
-//
-// The rest of this file is therefore a working reference, not a puzzle.
+// The mistake to avoid — `onClick={handler()}` instead of `onClick={handler}` — never
+// reaches the browser here: TypeScript rejects it (`void` is not assignable to
+// `MouseEventHandler`) and ESLint's `react-hooks/set-state-in-render` rule rejects it
+// too. It is caught while you type, which is the better outcome.
 
 import { useState } from "react";
 

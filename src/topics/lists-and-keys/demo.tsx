@@ -1,26 +1,13 @@
 // ─────────────────────────────────────────────
 // Topic: Lists & Keys — rendering an array with .map() and a stable key
-// Added: 2026-10-04 | Status: OK (verified — fixed and explained)
+// Added: 2026-10-04 | Status: OK
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //
-// FIX-IT EXERCISE — fixed 2026-10-04. The list was keyed by array index, so the row's
-// own state stayed in its slot while the exercise moved away from it. It is now keyed
-// by `exercise.id`, and the comment at the .map() records why.
-//
-// OBJECTIVE (as set)
-//   Make the "Done" tick stay on the exercise you ticked, even after the list is
-//   reordered.
-//
-// HOW IT WAS DIAGNOSED
-//   1. Pressed "Done" on the middle row (Front kicks) — it read Done.
-//   2. Pressed "Rotate" once. The rows reordered and the tick was no longer on
-//      Front kicks; it had landed on whichever exercise took the middle slot.
-//   3. Pressing "Rotate" again kept moving the tick from exercise to exercise, which
-//      is the signature of a row whose identity React is getting wrong.
-//
-// The Sample Code panel and this file are now a real mirror — see "Sample code mirrors
-// the live demo" in CLAUDE.md.
+// The list is keyed by `exercise.id`, not by the array index. An index names a slot,
+// so React would reuse "the row in slot 1" across a reorder and the row's own state
+// would stay in the slot while the exercise moved away from it. An id identifies the
+// exercise, so the state follows it — see the comment at the `.map()`.
 
 import { useState } from "react";
 

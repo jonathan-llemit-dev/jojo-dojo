@@ -26,16 +26,15 @@ export const listsKeysTopic: Topic = {
     "unique, but real data repeats it, and React warns in the console rather than guessing.\n\n" +
     "So the safe default is an id that comes from the data itself, like `exercise.id`. `key={index}` is " +
     "only acceptable for a list that never changes order and never gains or loses a row.\n\n" +
-    "This lesson shipped as a fix-it exercise and has now been fixed: the list is keyed by the " +
-    "exercise's own id, so each row's state follows the exercise rather than the slot it sits in. " +
-    "The Live Demo and the code below are the same component.",
+    "In the demo the list is keyed by the exercise's own id, so each row's state follows the " +
+    "exercise rather than the slot it sits in — press Done on a row, then Rotate, and the tick " +
+    "travels with the exercise.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.
   //
-  // This is a real mirror of `./demo.tsx` (comments and blank-line-for-blank-line
-  // aside) — it was written as the fix-it exception and became the mirror once the
-  // exercise was fixed. Keep the two in step.
+  // This is a real mirror of `./demo.tsx` — comments and blank lines aside, the two are
+  // kept in step.
   codeExample: `import { useState } from "react";
 
 type Exercise = {

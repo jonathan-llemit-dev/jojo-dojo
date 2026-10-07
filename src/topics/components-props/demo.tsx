@@ -4,8 +4,7 @@
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //
-// This lesson began as a fix-it exercise and was verified on 2026-10-04. It now
-// demonstrates the two things props are actually for:
+// The two things props are actually for:
 //   1. The parent owns the state and passes the count down — data flows down.
 //   2. The child renders what it is handed. It never keeps its own copy, because
 //      props are a fresh snapshot on every render, not something to store.

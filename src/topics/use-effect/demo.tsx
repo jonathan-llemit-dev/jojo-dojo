@@ -1,22 +1,8 @@
 // ─────────────────────────────────────────────
 // Topic: useEffect — synchronising with a timer, dependencies and cleanup
-// Added: 2026-10-04 | Status: OK (verified — demo plus a 3-question quiz, one corrected)
+// Added: 2026-10-04 | Status: OK
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
-//
-// Why there is no fix-it exercise for this topic, unlike `components-props`,
-// `conditional-rendering` and `lists-and-keys`. Two whole families of `useEffect` bug
-// cannot be shipped as planted bugs here, because the gates catch them at the source:
-//
-//   `react-hooks/set-state-in-effect`  rejects derived state synced through an effect —
-//     `useEffect(() => setCount(prop), [prop])` — which is the "you might not need an
-//     effect" mistake React's own docs lead with. It also rejects an object or array
-//     used as a dependency.
-//   `react-hooks/exhaustive-deps`      rejects a missing or wrong dependency array.
-//
-// What survives both gates is cleanup mistakes, and that is one mistake in two shapes —
-// too little for an exercise that is supposed to need diagnosis. So this is a working
-// reference instead, and the lesson is checked by quiz.
 //
 // The demo is a training timer. The only effect in the file starts and stops an
 // interval, and the cleanup function is the half that makes it correct: without it,

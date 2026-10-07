@@ -1,35 +1,24 @@
 // ─────────────────────────────────────────────
 // Topic: useState Deep Dive — object & array state, replace instead of mutate
-// Added: 2026-10-07 | Status: OK (fixed — verified by quiz, free-text explanation still owed)
+// Added: 2026-10-07 | Status: OK (verified)
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //
-// FIXED 2026-10-07. This file shipped as a fix-it exercise with three planted bugs, all
-// of which compiled and linted clean, so the page loaded and nothing crashed — every
-// one of them was in how state was *updated*, never in what was rendered. The learner
-// fixed all three. The comments at the three handlers now record the CORRECT pattern
-// and why it is correct, rather than the bug that used to be there.
+// React compares the value you hand a setter with the one it already has — by
+// reference. Hand back the same array or the same object and React sees no change,
+// skips the re-render, and the screen keeps showing the previous render's data. So
+// every update has to *replace* the value with a new one:
+//   - arrays:  `[...current, item]` to add, `current.slice().sort(...)` to sort
+//   - objects: `{ ...current, field: next }`
+// `push`, `sort` and `splice` change the array you already have, so none of them is an
+// update. `sort` in particular returns *the same array*, not a new one — which is why
+// it needs `.slice()` first.
 //
-// WHAT WAS WRONG, AND THE ONE RULE THAT EXPLAINS ALL THREE
-//   React compares the value you hand a setter with the one it already has — **by
-//   reference**. Hand back the same array or the same object and React sees no change,
-//   skips the re-render, and the screen keeps showing the previous render's data. So
-//   every update has to *replace* the value with a new one:
-//     - arrays:  `[...current, item]` to add, `current.slice().sort(...)` to sort
-//     - objects: `{ ...current, field: next }`
-//   `push`, `sort` and `splice` change the array you already have, so none of them is
-//   an update. `sort` in particular returns *the same array*, not a new one — which is
-//   why it needs `.slice()` first.
-//
-// THE OTHER SHAPE: TWO SETTERS, ONE HANDLER
-//   React batches a handler's updates, so every line reads the state from the render it
-//   came from. `setReps(reps + 1)` twice therefore computes the same number twice and
-//   the count rises by one. The updater form hands React a function instead of a value,
-//   so React queues the functions and feeds each the previous result — and two calls
-//   really do add two.
-//
-// The Sample Code panel now mirrors this file, which is what CLAUDE.md requires once an
-// exercise is fixed — see "Sample code mirrors the live demo".
+// The other shape this file shows: React batches a handler's updates, so every line
+// reads the state from the render it came from. `setReps(reps + 1)` twice therefore
+// computes the same number twice and the count rises by one. The updater form hands
+// React a function instead of a value, so React queues the functions and feeds each the
+// previous result — and two calls really do add two.
 
 import { useState } from "react";
 

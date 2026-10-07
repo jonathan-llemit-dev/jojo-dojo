@@ -93,28 +93,28 @@ src/
     │   ├── demo.tsx            # JsxDemo — JSX comment, {2 + 2}, {new Date()...}
     │   └── index.ts            # Exports jsxTopic registry entry
     ├── components-props/
-    │   ├── demo.tsx            # PropsDemo + Drill — props down; began as a fix-it exercise
+    │   ├── demo.tsx            # PropsDemo + Drill — props down, events up
     │   └── index.ts            # Exports componentsPropsTopic registry entry
     ├── conditional-rendering/
-    │   ├── demo.tsx            # ConditionalDemo + SummaryRow — named boolean + ternary; began as a fix-it exercise
+    │   ├── demo.tsx            # ConditionalDemo + SummaryRow — named boolean + ternary
     │   └── index.ts            # Exports conditionalRenderingTopic registry entry
     ├── event-handling/
     │   ├── demo.tsx            # EventHandlingDemo + ExerciseRow — named handlers, references, arrow-wrapped arguments
     │   └── index.ts            # Exports eventHandlingTopic registry entry
     ├── lists-and-keys/
-    │   ├── demo.tsx            # ListsKeysDemo + ExerciseRow — keyed by exercise.id; fix-it exercise, fixed & verified
+    │   ├── demo.tsx            # ListsKeysDemo + ExerciseRow — keyed by exercise.id
     │   └── index.ts            # Exports listsKeysTopic registry entry
     ├── use-effect/
     │   ├── demo.tsx            # UseEffectDemo — interval effect, dependency array and cleanup
     │   └── index.ts            # Exports useEffectTopic registry entry
     ├── forms/
-    │   ├── demo.tsx            # FormsDemo — controlled inputs; fix-it exercise, fixed & verified
+    │   ├── demo.tsx            # FormsDemo — controlled inputs, typed submit handler
     │   └── index.ts            # Exports formsTopic registry entry
     ├── use-state/
     │   ├── demo.tsx            # CounterDemo — the live useState working component
     │   └── index.ts            # Exports useStateTopic registry entry
     └── use-state-deep-dive/
-        ├── demo.tsx            # UseStateDeepDiveDemo — object/array state; fix-it exercise, fixed & verified
+        ├── demo.tsx            # UseStateDeepDiveDemo — object & array state, replace don't mutate
         └── index.ts            # Exports useStateDeepDiveTopic registry entry
 ```
 
@@ -203,8 +203,12 @@ stands as the reason the three artefacts must stay in step: a hand-picked `v0.1.
   - Write the template literal **flush against the left margin**. A template literal preserves indentation, so indenting it to match the surrounding code renders as ragged leading whitespace in the Sample Code panel.
   - **If the demo contains its own template literal, escape it.** A bare backtick would terminate the sample's template literal early and `${` would be interpolated, so write `` \` `` and `\${` in `index.ts`, and make the parity check unescape before comparing. `conditional-rendering` is the worked example.
 - **The import line is not decoration — it follows from the hooks used.** `jsx` correctly has none: it calls no hook, and React 19 needs no `import React`, so adding one would teach the wrong thing. `use-state`, `components-props` and `conditional-rendering` all open with `import { useState } from "react";`. Verified: every snippet's imports match its demo's exactly.
-- **Current parity**, re-verified by diffing each snippet against its demo after stripping comments and blank lines: `components-props` matches at 46 of 46 code lines; `conditional-rendering` matches at **63 of 63** (its backticks escaped — see above; the demo's stripped JSX comment leaves one extra empty `{}` line, so compare against the demo with that line removed); `event-handling` matches at **105 of 105**; `lists-and-keys` matches at **62 of 62** (same one-line `{}` residue); `use-effect` matches at **64 of 64**; `jsx` matches at 9 except that the sample omits the leading `export` keyword (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability, 38 code lines down to 11; `forms` matches at **53 of 53** (fixed — now a real mirror). **`NOTES.md` quotes the same snippets** — when a snippet changes, the notes' copy of it is part of the mirror and has drifted before.
-- **Re-run that diff rather than eyeballing it.**
+- **Current parity**, re-verified by character-level diffing (not regex — see the note below) after stripping comments and blank lines: `components-props` matches at 46 of 46 code lines; `conditional-rendering` matches at **63 of 63**, and the demo strips to 64 lines because the removed JSX comment leaves one empty `{}` line, so compare against the demo with that line removed; `event-handling` matches at **105 of 105**; `lists-and-keys` matches at **62 of 62** with the same one-line `{}` residue (demo strips to 63); `use-effect` matches at **64 of 64**; `jsx` matches at 9 except that the sample omits the leading `export` keyword (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability, 38 code lines down to 11; `forms` matches at **53 of 53**; `use-state-deep-dive` matches at **114 of 114**. **`NOTES.md` quotes the same snippets** — when a snippet changes, the notes' copy of it is part of the mirror and has drifted before.
+- **Re-run that diff rather than eyeballing it** — and write the checker carefully. Two plausible one-liners both lie: starting the strip at "the first `import`" returns **zero lines** for `jsx/demo.tsx`, which has no import, producing a false EXACT MIRROR; and a stripper that only removes `//` lines counts JSDoc blocks as code, inflating every demo by 8–10 lines. The reliable form tracks block-comment state character by character. Both mistakes were made in one session before the numbers reconciled.
+- **The reader is a stranger, not the learner.** Anything a visitor can see — every `longDescription`, the Sample Code panel, the Live Demo — must read as an ordinary tutorial page. **Never narrate the authoring process in reader-facing text.** No "this lesson shipped as a fix-it exercise", no "this is not a fix-it exercise because…", no "the two planted bugs were…", no "the demo and the sample are the same component", no "the exercise is fixed". A reader has no idea what any of that means, and it makes the page read like someone's homework file. The same goes for reasoning about `CLAUDE.md`, `NOTES.md` or a convention: those are for whoever maintains the repo, not for the person learning React.
+  - **Where that material belongs instead:** the lesson's `demo.tsx` header may carry a marker plus a short *teaching* paragraph (the rule the demo illustrates); the *why* of how the lesson was authored, what was once broken, and which gate forced a design change belongs in `HISTORY.md`, `NOTES.md` or this file. If a description currently justifies a lesson's existence by an internal rule, that sentence is a defect, not documentation.
+  - **Fixed 2026-10-07:** five reader-facing passages across `use-state-deep-dive`, `lists-and-keys`, `event-handling`, `forms` and `use-effect` carried this leak, and every `demo.tsx` header still narrated its fix-it history. All were rewritten to keep the *teaching* and drop the *process* — the descriptions now say what the code does, not how the lesson came to exist.
+
 - **Exception — fix-it exercises.** While a lesson ships deliberately broken, its snippet teaches the *correct* pattern instead of mirroring the buggy demo. Swap it for the real mirror once the exercise is fixed. **No lesson is currently in that state** — `use-state-deep-dive` was the most recent one and became a real mirror when its exercise was fixed, measured at 114 of 114 lines after regeneration.
 
 - **Fix-it exercises**: a lesson may be shipped deliberately broken to teach a concept. The rules: the marker says `Status: LD`; the file's header comment lists the **observed symptoms only** — never the bug locations or the fix — so the learner has to diagnose; every planted bug must still compile, keeping `tsc` and `npm run lint` green; the roadmap line is marked `IN PROGRESS`; and `NOTES.md` explains the concept-level rules, not the answers. When the learner reports it fixed, re-assess, verify `tsc`/lint, then flip the roadmap box and rewrite the notes entry as verified. Two hard-won rules: an exercise must **name its expected values** (otherwise a workaround is a reasonable answer), and its symptoms must be **simulated, never described from reading the code** (the first `conditional-rendering` header claimed the badge was missing from 1–5 reps, until a five-line simulation showed the real symptom is a gap at 0 reps with an overlap from 6). **Not every topic can be one:** if the mistake the lesson would teach is rejected by `tsc` or by an ESLint rule, no compiling version of it exists, so the lesson has to be an explainer instead. **Check a candidate bug against both gates *before* designing an exercise around it** — two lessons have now been converted after the fact. The rules responsible so far:

@@ -51,15 +51,16 @@ export const useEffectTopic: Topic = {
     "Deriving a value in an effect costs a second render and shows the reader a stale value for\n" +
     "one frame. The demo shows the pattern: the formatted clock is computed in the component\n" +
     "body, not in an effect, because it is a function of state that already exists.\n\n" +
-    "This lesson ships as a working reference rather than a fix-it exercise, because the two\n" +
-    "biggest `useEffect` mistakes here are rejected by the gates before they can run — see the\n" +
-    "module comment in `demo.tsx` for the exact rules.",
+    "Two `useEffect` mistakes are worth knowing by name, because both are easy to write and\n" +
+    "hard to spot. Deriving a value with an effect — `useEffect(() => setCount(prop), [prop])` —\n" +
+    "costs an extra render and briefly shows a stale value; compute it during render instead.\n" +
+    "And a dependency array that lies (`[]` when the effect reads something that changes) leaves\n" +
+    "the effect closing over a value frozen at the render it last ran in.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.
   //
-  // A real mirror of `./demo.tsx`. This is not a fix-it exercise — see the reasoning in
-  // the module comment of `demo.tsx` — so the two are kept in step.
+  // A real mirror of `./demo.tsx` — the two are kept in step.
   codeExample: `import { useEffect, useState } from "react";
 
 export function UseEffectDemo() {

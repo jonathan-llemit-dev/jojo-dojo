@@ -4,8 +4,7 @@
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //
-// This lesson began as a fix-it exercise and was verified on 2026-10-04. It now
-// demonstrates the two decisions conditional rendering is really made of:
+// The two decisions conditional rendering is really made of:
 //
 //   1. WHICH construct. A ternary when both outcomes are real — it cannot leave a
 //      gap. `&&` when there is only a "show it" and a "show nothing". Two separate

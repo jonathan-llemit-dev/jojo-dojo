@@ -10,6 +10,63 @@ Newest first.
 
 ## Session log
 
+### The lesson pages were narrating their own authoring — reader-facing cleanup (2026-10-07)
+
+**The learner's call, and it was right.** "When a topic is totally completed by me we should remove statements
+like *This lesson shipped as a fix-it exercise and is now fixed* … on other readers' POV it's just a simple web
+page with lectures and sample code. They don't have to know that I made it as a fix-it exercise for myself."
+
+**What was leaking.** Five reader-facing passages — not the one that was noticed:
+
+- `use-state-deep-dive` — "This lesson shipped as a fix-it exercise and is now fixed. The demo and the sample below are the same component."
+- `lists-and-keys` — "This lesson shipped as a fix-it exercise and has now been fixed…"
+- `event-handling` — "That is why this topic **has no fix-it exercise**: the convention for one requires the planted bug to compile and lint clean."
+- `forms` — "This lesson shipped as a fix-it exercise and is now fixed…"
+- `use-effect` — "This lesson ships as a working reference rather than a fix-it exercise, because the two biggest `useEffect` mistakes here are rejected by the gates…"
+
+The `event-handling` and `use-effect` ones were the worst of the set: they justified a lesson's *existence* by
+an internal rule, which reads as a note-to-self rather than a tutorial.
+
+**Rewritten, not deleted.** Each carried a real teaching point, so the point stayed and the process went:
+
+| Lesson | Kept |
+| --- | --- |
+| `lists-and-keys` | that the list is keyed by id, so state follows the item — plus the observation that made it click (press Done, then Rotate) |
+| `event-handling` | that the mistake never reaches the runtime because `tsc` and ESLint catch it as you type |
+| `use-effect` | the two named traps themselves — derived state through an effect, and a dependency array that lies — spelled out instead of pointing at a module comment |
+
+Nothing was lost from the record: all of it already lives in `NOTES.md`, `ROADMAP.md` and this file, which is
+where it belongs.
+
+**Also trimmed: every `demo.tsx` header.** Eight files still opened with `FIX-IT EXERCISE`, an `OBJECTIVE`, the
+symptoms that used to exist, or an argument about why the lesson could not be an exercise. None of that is
+*shown* to a reader — the Sample Code panel strips comments — but it was stale internal commentary, and
+`forms` still listed "the two planted bugs" months after they were fixed. Each header is now a topic marker
+plus a short paragraph on the rule the demo illustrates. `use-state-deep-dive`'s `Status` line was also wrong:
+it still read "verified by quiz, free-text explanation still owed", written before that explanation arrived.
+
+**A new convention, written into `CLAUDE.md`:** *the reader is a stranger, not the learner.* Anything a visitor
+can see must read as an ordinary tutorial page — no authoring history, no convention names, no reasoning about
+`NOTES.md` or `CLAUDE.md`. Those belong in the maintenance documents. A description that justifies a lesson's
+existence by an internal rule is now a defect, not documentation.
+
+**Two parity counts in `CLAUDE.md` were wrong, and finding out why took three attempts.** Verifying the trim
+meant re-running the snapshot/demo diff, and my first two checkers both lied:
+
+1. **v1 started the strip at "the first `import`"** → `jsx/demo.tsx` has no import, so it stripped to **zero
+   lines** and reported a false `EXACT MIRROR` for a file it had not read at all.
+2. **v2 removed only `//` lines** → every JSDoc block counted as code, inflating each demo by 8–10 lines, so
+   almost every lesson looked broken.
+3. **v3 walks characters and tracks block-comment state explicitly** → the numbers reconciled.
+
+With a correct checker the real counts are `conditional-rendering` **64** (not 65) and `lists-and-keys` **63**
+(not 64) — both sample counts were right, and both still match once the documented one-line `{}` residue from
+a stripped multi-line JSX comment is set aside. Every other figure held exactly. `CLAUDE.md` now carries the
+corrected numbers and a warning about how easy it is to write a checker that lies.
+
+**Verified:** `tsc` and `npm run lint` green throughout, and a sweep of `src/` for `fix-it`, `shipped as` and
+`planted bug` now returns nothing.
+
 ### `useState` deep dive — verified, after one word was pinned down (2026-10-07)
 
 **The box is ticked.** The exercise was fixed earlier in this session; the last thing owed was the

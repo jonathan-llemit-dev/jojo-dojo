@@ -1,25 +1,13 @@
 // ─────────────────────────────────────────────
 // Topic: Forms & Controlled Inputs — value + onChange, and preventDefault
-// Added: 2026-10-07 | Status: OK (verified — fixed and explained)
+// Added: 2026-10-07 | Status: OK
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //
-// FIX-IT EXERCISE — fixed 2026-10-07.
-//
-// OBJECTIVE (as set)
-//   Fill in Name and Email, press "Sign up", and a confirmation line should read
-//   "Welcome, <name> — we'll email you at <email>." without the page reloading.
-//
-// The two planted bugs, now fixed:
-//   1. The Name input's onChange wrote state back to itself — onChange={() => setName(name)}
-//      — instead of reading the typed value, so typing never changed state and the field
-//      looked frozen. Now it reads the event: onChange={(event) => setName(event.target.value)}.
-//   2. The submit handler took no event parameter and never called preventDefault(), so the
-//      browser ran its default submit (a page reload) and the confirmation was lost. Now it
-//      takes SubmitEvent<HTMLFormElement> and calls event.preventDefault() first.
-//
-// The Sample Code panel and this file are a real mirror — see "Sample code mirrors the
-// live demo" in CLAUDE.md.
+// A controlled input needs both halves: `value` makes the box follow state, and
+// `onChange` makes state follow the box. The submit handler calls
+// `event.preventDefault()` so the browser does not reload the page and throw the
+// state away.
 
 import { useState, type SubmitEvent } from "react";
 
