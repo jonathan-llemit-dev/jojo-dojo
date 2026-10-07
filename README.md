@@ -33,8 +33,8 @@ A dark, dojo-themed React learning journal forged with **Vite**, styled with **T
 
 ```bash
 # Clone the repo
-git clone https://github.com/jonathan-llemit-dev/my-react-app
-cd my-react-app
+git clone https://github.com/jonathan-llemit-dev/jojo-dojo
+cd jojo-dojo
 
 # Install dependencies
 npm install
@@ -61,7 +61,7 @@ Open [http://localhost:5173](http://localhost:5173) to see the dojo.
 ## 📁 Project Structure
 
 ```
-my-react-app/
+jojo-dojo/
 ├── public/                    # Static assets served as-is
 ├── src/
 │   ├── main.tsx               # React entry point (<BrowserRouter> + <App />)
@@ -121,7 +121,7 @@ Custom design tokens live in `src/index.css` under `@theme`, so they become real
 
 1. Push your repo to GitHub.
 2. Go to [vercel.com](https://vercel.com) → **Add New → Project**.
-3. Import your `my-react-app` repo.
+3. Import your `jojo-dojo` repo.
 4. Vercel auto-detects **Vite** — leave defaults.
 5. Click **Deploy**. Done in ~30 seconds.
 

@@ -28,7 +28,7 @@ export function TopNav() {
             Dojo
           </Link>
           <a
-            href="https://github.com/jonathan-llemit-dev/my-react-app"
+            href="https://github.com/jonathan-llemit-dev/jojo-dojo"
             target="_blank"
             rel="noreferrer"
             className="rounded-md border border-dojo-border px-2 py-1.5 text-dojo-muted transition hover:border-dojo-ember hover:text-dojo-ember sm:px-3"

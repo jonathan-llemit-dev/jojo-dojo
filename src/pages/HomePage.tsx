@@ -28,7 +28,7 @@ export function HomePage() {
             About
           </a>
           <a
-            href="https://github.com/jonathan-llemit-dev/my-react-app"
+            href="https://github.com/jonathan-llemit-dev/jojo-dojo"
             target="_blank"
             rel="noreferrer"
             className="px-3 py-1.5 rounded-md bg-dojo-ember text-black hover:bg-dojo-ember-bright transition font-medium"
