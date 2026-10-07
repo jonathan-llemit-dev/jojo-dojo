@@ -10,7 +10,7 @@ current state of play.
 
 **React Jojo Dojo** — a React skill journal and training ground by Jonathan Llemit Jr., begun as a personal practice space and since opened up to anyone learning React or revising the fundamentals. It is a **multi-page tutorial site** (W3Schools-style): a public landing page at `/` with an "Enter Dojo" CTA that navigates to the dojo at `/dojo`, where each React lesson lives behind a sidebar navigation. Clicking a topic shows its description, sample code, and a live working component in a main content panel.
 
-The **learning journal** is the primary goal — deploy-ability is secondary. The site is Vercel-ready (see `vercel.json`).
+The **learning journal** is the primary goal — deploy-ability is secondary, and in practice it is settled: the site has been live on Vercel since the beginning (see the deploy note below).
 
 ## Orientation — read this first
 
@@ -31,6 +31,14 @@ and explain concepts in his own words. The reviewer's job is the **written recor
 assign note-writing as learner work** — it was explicitly declined in favour of hands-on practice, and
 "write your study note" must never be asked of him. The learner's explanation comes out in **conversation**,
 often as a short quiz.
+
+**Do not commit. The learner makes every commit.** Stated directly on 2026-10-07, after the reviewer made two
+unrequested commits in one session. Editing files is the job — `NOTES.md`, the roadmap boxes, `HISTORY.md`,
+`CLAUDE.md`, lesson prose — but **staging, committing, amending and pushing are the learner's**, even when a
+change is obviously finished and even when an instruction like "install it" seems to imply the follow-up.
+Finish the work, leave it in the working tree, and say what changed. If a commit seems warranted, say so and
+let him make it. Checking state with `git status` / `git log` / `git diff` is always fine; the line is at
+*writing* history, not reading it.
 
 **A topic is verified only when both halves are met** — working code the learner wrote or directed
 (**demonstrated**), *and* a correct explanation in his own words or a non-guessable correct answer
@@ -236,9 +244,9 @@ stands as the reason the three artefacts must stay in step: a hand-picked `v0.1.
 
 - **NOTES.md** (at repo root): the **reviewer-written** study record — the Knowledge Snapshot, a numbered entry per topic, and a traps cheat-sheet. **The learner does not write here.** Their hands-on work IS the exercise; this file is what they read between sessions. Notes are never a homework task, and "write your study note" must never be asked of them. The reviewer keeps this file current.
 
-- **ROADMAP.md** (at repo root): a clean checklist of React topics, components, and project features to cover next. Boxes are marked by the **reviewer**, from the Knowledge Snapshot — not merely because a note was written or a lesson file exists. See "Reviewer Responsibilities" below.
+- **ROADMAP.md** (at repo root): a clean checklist of **React and TypeScript topics** to cover next — deliberately not a project-chore list. Boxes are marked by the **reviewer**, from the Knowledge Snapshot — not merely because a note was written or a lesson file exists. See "Reviewer Responsibilities" below.
 
-- **Deploy note**: `vercel.json` holds a catch-all **`rewrites`** entry to `index.html` so client-side URLs like `/dojo/topic/use-state` resolve after deployment. Do not remove it. It is deliberately a rewrite and not a redirect: rewrites are applied *after* Vercel checks the filesystem, so real files such as `/assets/*.js` are still served as themselves. A catch-all `redirects` entry is evaluated before that check and can answer a JavaScript request with `index.html`, which shows up in the browser as a blank page and `SyntaxError: Unexpected token '<'`.
+- **Deploy note**: **the site is already live** at <https://jojo-dojo.vercel.app/> — connected since the first commit, so every push to `main` publishes automatically and there is no deploy work to schedule. `vercel.json` still matters, because it holds a catch-all **`rewrites`** entry to `index.html` so client-side URLs like `/dojo/topic/use-state` resolve on a hard refresh or a direct link. Do not remove it. It is deliberately a rewrite and not a redirect: rewrites are applied *after* Vercel checks the filesystem, so real files such as `/assets/*.js` are still served as themselves. A catch-all `redirects` entry is evaluated before that check and can answer a JavaScript request with `index.html`, which shows up in the browser as a blank page and `SyntaxError: Unexpected token '<'`.
 
 ## Reviewer Responsibilities (AI assistant)
 
@@ -286,13 +294,22 @@ stands and what comes next.
 
 ### Next session objectives (priority order)
 
+The roadmap is **React and TypeScript topics only** (decided 2026-10-07) — infrastructure is not tracked
+there, and three items were removed from it: **Vercel** (already live and auto-deploying), **social links**
+(the GitHub link in `TopNav` is enough), and a **custom domain** (not happening). Do not re-add them.
+
 Ordering note: `Forms` is now verified, so it no longer appears among the open lines. The real fetch (loading
 + error states) that `useEffect` deferred to Forms is still deferred — there is no server in this project, so a
 fetch demo would have to fake its data. The remaining open lines, in priority order:
 
-1. **Deploy to Vercel** — the current version is `0.12.0` (see "Versioning" above; add `0.01` for each new topic and keep the badge in step). Confirm the SPA rewrite handles deep links on a real refresh.
-2. **`useContext` / `useReducer`** — the next hooks with no coverage, and the first topic that needs shared state rather than local state.
-3. **One left-over surface from the `useState` deep dive** — **lazy initialisers** (`useState(() => build())`) are written up in lesson 10's prose but have never been exercised, so they are the one part of that topic not on the "Solid" table. It needs a lesson of its own or a question in a future review, not a new claim.
+1. **`useContext` / `useReducer`** — the next hooks with no coverage, and the first topic that needs shared state rather than local state.
+2. **Custom hooks** — extracting a repeated hook sequence into one place.
+3. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them.
+4. **Portals** — rendering outside the parent DOM hierarchy.
+5. **One left-over surface from the `useState` deep dive** — **lazy initialisers** (`useState(() => build())`) are written up in lesson 10's prose but have never been exercised, so they are the one part of that topic not on the "Solid" table. It needs a lesson of its own or a question in a future review, not a new claim.
+
+Further out, and deliberately not scheduled: **Redux** and **Next.js**. Both are recorded in `ROADMAP.md`
+under "Later — not now" so they are known to have been considered rather than forgotten.
 
 *Closed line:* **`useRef`** — verified 2026-10-07. Lesson live at `/dojo/topic/use-ref`, both gates green, sample a true mirror at 77 of 77, and the hands-on half built (the Escape-to-close in `Sidebar.tsx`). It is an **explainer**, because thirteen probed candidates showed `react-hooks/refs` plus `tsc` reject every `useRef` mistake with an observable symptom (see the gate list under "Fix-it exercises"). The *explained* half took three passes and is the more interesting record: the learner held that refs are uninitialised until an effect runs, and what dislodged it was not a repeat of the correction but laying the answer against their own earlier wording — a box that holds nothing cannot be "one render behind". See entry 11.
 

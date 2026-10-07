@@ -10,6 +10,47 @@ Newest first.
 
 ## Session log
 
+### Roadmap narrowed to React + TypeScript; three project chores removed (2026-10-07)
+
+**The learner's call, and it corrected a long-standing wrong assumption in these docs.** Three roadmap items
+had been sitting open for many sessions — **Deploy to Vercel**, **Social links (GitHub, LinkedIn)**, and
+**Custom domain** — and the deploy line in particular had been carried as "the top priority" in
+`CLAUDE.md`'s objectives for at least three sessions. All three turned out to be settled or unwanted:
+
+- **Vercel** was never pending. The site has been deployed since the first commit and every push to `main`
+  publishes automatically at <https://jojo-dojo.vercel.app/>. Nothing was scheduled; the docs had simply
+  never recorded that it was already done.
+- **Social links** — the GitHub link in `TopNav` is enough, as a pointer for readers. No LinkedIn.
+- **Custom domain** — not happening. The Vercel URL is the address.
+
+**The instruction:** the roadmap should cover **pure React and TypeScript topics only**. So the whole
+`Project Features` section came out of `ROADMAP.md`, not just those three lines. It had been a chore list
+(Vite scaffold, Tailwind theme, landing page, mobile layout, routing, animations, theme toggle) mixed in with
+study topics, and it was the wrong thing to keep in a file whose purpose is tracking what has been *learned*.
+Checked-off chores are not progress a reader cares about, and leaving them invited more of the same.
+
+**What replaced it:**
+- `ROADMAP.md` now opens by stating the scope, and records these three decisions explicitly so a future
+  session does not helpfully re-add them.
+- The **remaining open React topics are ordered and complete**: `useContext`/`useReducer`, custom hooks,
+  `React.memo`/`useMemo`/`useCallback`, portals — plus the lazy-initialiser gap from lesson 10.
+- A new **"Later — not now"** section holds **Redux** and **Next.js**, which the learner mentioned as possible
+  future interests. They are recorded as deliberately unscheduled rather than forgotten — and the Next.js
+  entry notes the concrete reason it does not fit yet: this site has no server, so React Server Components do
+  not apply to it.
+- `Components to Build` kept only its unchecked items and gained a line saying *why* it is on a React
+  roadmap: it is practice in composition, props typing, `children`, and controlled inputs as a reusable API.
+
+**Docs updated to stop claiming deployment is work:** `CLAUDE.md`'s project overview ("Vercel-ready" →
+already live), its deploy note, and its objectives list, which no longer has a deploy entry at all. The
+README's *Deploying to Vercel* section — a full step-by-step "Option A / Option B" guide for connecting a repo
+— was replaced with a short Deployment section stating the site is live, keeping only the one detail worth
+preserving for a fork: why `vercel.json` must be a **rewrite** and not a redirect. That reasoning had cost a
+previous session real debugging and was worth not throwing away with the instructions around it.
+
+**Also worth recording:** the version-bump convention survives all of this unchanged. The version is a running
+`+0.01` per new topic — not tied to deploys, and not reset by this policy change.
+
 ### `useRef` cleared on the third pass — a misconception that needed contradicting, not correcting (2026-10-07)
 
 **The box is ticked, and it took three passes.** The *demonstrated* half was never in doubt: the demo (a DOM

@@ -3,7 +3,7 @@
 > **React Training Ground** — short lessons on React fundamentals, each with a live example you can click.
 > By [Jonathan Llemit Jr.](https://github.com/jonathan-llemit-dev)
 
-A dark, dojo-themed React learning journal forged with **Vite**, styled with **Tailwind CSS v4**, and ready to deploy on **Vercel**. The landing page is at `/`; every React lesson then lives at its own URL under `/dojo`. Every commit is a rep. Every deploy is a rank up.
+A dark, dojo-themed React learning journal forged with **Vite**, styled with **Tailwind CSS v4**, and live on **Vercel** at [jojo-dojo.vercel.app](https://jojo-dojo.vercel.app/). The landing page is at `/`; every React lesson then lives at its own URL under `/dojo`. Every commit is a rep. Every deploy is a rank up.
 
 **Version `0.12.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
 
@@ -16,7 +16,7 @@ A dark, dojo-themed React learning journal forged with **Vite**, styled with **T
 - 🧭 **React Router v7** — a lesson per URL, with a sidebar that stays put
 - 🟦 **TypeScript** — type-safe from day one
 - 🎨 **Tailwind CSS v4** — utility-first styling with a custom dojo theme
-- 🚀 **Vercel-ready** — push to `main`, deploy automatically
+- 🚀 **Live on Vercel** — push to `main`, deployed automatically in about a minute
 - 🌑 **Dark theme** — warm ember accents on deep charcoal
 - 📱 **Mobile-ready** — the lesson list collapses into a burger menu on small screens
 
@@ -89,7 +89,7 @@ jojo-dojo/
 │       └── use-ref/           # DOM handles & values that outlive a render
 ├── index.html                 # HTML shell
 ├── vite.config.ts             # Vite + Tailwind plugin config
-├── vercel.json                # SPA fallback so deep links work when deployed
+├── vercel.json                # SPA fallback so deep links resolve (site is live on Vercel)
 ├── CLAUDE.md                  # Architecture notes (written for AI assistants)
 ├── NOTES.md                   # Per-topic study notes
 ├── ROADMAP.md                 # What to learn and build next
@@ -116,27 +116,17 @@ Custom design tokens live in `src/index.css` under `@theme`, so they become real
 
 ---
 
-## ☁️ Deploying to Vercel
+## ☁️ Deployment
 
-### Option A — Dashboard (recommended)
+**Live at [jojo-dojo.vercel.app](https://jojo-dojo.vercel.app/)** — connected to Vercel since the first
+commit. Every push to `main` deploys to production automatically, and every PR gets a preview URL. No manual
+deploy step.
 
-1. Push your repo to GitHub.
-2. Go to [vercel.com](https://vercel.com) → **Add New → Project**.
-3. Import your `jojo-dojo` repo.
-4. Vercel auto-detects **Vite** — leave defaults.
-5. Click **Deploy**. Done in ~30 seconds.
-
-### Option B — CLI
-
-```bash
-npm i -g vercel
-vercel          # preview deploy
-vercel --prod   # production deploy
-```
-
-### Continuous Deployment
-
-Once connected, **every push to `main` auto-deploys to production**, and every PR gets a unique preview URL.
+The one thing worth knowing if you fork this: `vercel.json` holds a catch-all **`rewrites`** entry to
+`index.html`, so a direct link or a hard refresh on `/dojo/topic/use-state` resolves instead of 404-ing. It
+must be a *rewrite*, not a redirect — rewrites run after Vercel checks the filesystem, so real files like
+`/assets/*.js` are still served as themselves, whereas a catch-all redirect can hand a JavaScript request
+`index.html` and produce a blank page.
 
 ---
 
@@ -145,18 +135,18 @@ Once connected, **every push to `main` auto-deploys to production**, and every P
 This is the visitor-facing summary. The **master checklist — every study topic included — is
 `ROADMAP.md`**, and that is the file to edit. Keep this list short and accurate.
 
-- [x] Vite + React + TypeScript scaffold
-- [x] Tailwind CSS v4 with custom dojo theme
-- [x] Landing page (hero + about)
-- [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug`
-- [x] Mobile-responsive layout — burger topic menu below `md`
+This project is **about React and TypeScript**, so the roadmap tracks topics rather than chores.
+
 - [x] Ten lessons verified — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling, `useEffect`, forms & controlled inputs, `useState` deep dive (object & array state), `useRef`
-- [ ] Deploy to Vercel — current version `0.12.0` (each new topic adds `0.01`)
-- [ ] More lessons (the open topics are listed in `ROADMAP.md`)
-- [ ] Framer Motion animations
-- [ ] Light/dark theme toggle
-- [ ] Social links (GitHub, LinkedIn)
-- [ ] Custom domain
+- [ ] `useContext` / `useReducer` — shared state across a tree
+- [ ] Custom hooks — extracting reusable logic
+- [ ] `React.memo` / `useMemo` / `useCallback` — performance, and when not to reach for it
+- [ ] Portals — rendering outside the parent DOM hierarchy
+- [ ] Reusable UI kit — cards, buttons, modals, form components
+- [ ] Later, not now: Redux and Next.js (see `ROADMAP.md`)
+
+Live at <https://jojo-dojo.vercel.app/> — deployed since the first commit, and every push to `main`
+publishes automatically. The version is a running number (`0.12.0` today; one new topic adds `0.01`).
 
 ---
 

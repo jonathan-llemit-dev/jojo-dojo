@@ -8,6 +8,17 @@ yours. See "Reviewer responsibilities" in `CLAUDE.md`.
 Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting the fix ·
 `quiz-passed` = concept understood, needs a lesson · `GAP` = answered wrong or never used.
 
+**This roadmap covers React and TypeScript topics only** (decided 2026-10-07). Infrastructure is not
+tracked here, and the three items that used to sit at the bottom are settled rather than pending:
+
+- **Vercel** — deployed since the beginning; every push to `main` publishes automatically at
+  <https://jojo-dojo.vercel.app/>. Nothing to schedule.
+- **Social links** — the GitHub link in `TopNav` is enough. No LinkedIn, no others.
+- **Custom domain** — not happening; the Vercel URL is the address.
+
+Do not re-add these to a future roadmap. If a session needs the deployment *mechanics*, they live in
+`CLAUDE.md`'s deploy note and the README's Deployment section.
+
 ## React Core Topics
 
 - [x] JSX — syntax, expressions, `className` — lesson live at `/dojo/topic/jsx`
@@ -19,34 +30,31 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] Lists & keys — `map()`, why keys matter — lesson live at `/dojo/topic/lists-and-keys`; fixed and explained (entry 06)
 - [x] Forms & controlled components — input state, validation — lesson live at `/dojo/topic/forms`; fixed and explained (entry 09)
 - [x] `useEffect` — side effects, dependency array, cleanup — lecture live at `/dojo/topic/use-effect`; verified by quiz (data fetching deferred to Forms)
+- [x] `useRef` — DOM access and mutable values — explainer live at `/dojo/topic/use-ref`; thirteen candidates probed against both gates and every one with a diagnosable symptom was rejected, so the hands-on half was the Escape-to-close in `Sidebar.tsx`. Verified 2026-10-07, after three passes past the "refs aren't initialised until effects run" misconception (entry 11)
 - [ ] `useContext` / `useReducer` — global state patterns — **GAP**: never used
 - [ ] Custom hooks — extracting reusable logic — **GAP**: never used
 - [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization — **GAP**: never used
-- [x] `useRef` — DOM access and mutable values — explainer live at `/dojo/topic/use-ref`; thirteen candidates probed against both gates and every one with a diagnosable symptom was rejected, so the hands-on half was the Escape-to-close in `Sidebar.tsx`. Verified 2026-10-07, after three passes past the "refs aren't initialised until effects run" misconception (entry 11)
 - [ ] Portals — rendering outside the parent DOM hierarchy — **GAP**: never used
 
 ## Components to Build (reusable UI kit)
 
+React and TypeScript practice: composition, props typing, `children`, and controlled inputs as a
+reusable API rather than one-off markup.
+
 - [ ] Cards, buttons, modals
-- [x] Navbar / layout shell — `TopNav` + `Sidebar` + `TutorialLayout`
 - [ ] Form components (Input, Select, Textarea)
 
-## Project Features (from the README)
+## Later — not now
 
-- [x] Vite + React + TypeScript scaffold
-- [x] Tailwind CSS v4 with the custom dojo theme
-- [x] Landing page (hero + About + footer)
-- [x] Mobile-responsive layout — the topic list is a burger dropdown below `md`, and padding/headings scale
-- [ ] Deploy to Vercel — the version is a running number (**`0.12.0`** today): add `0.01` for each new topic, and match the `HomePage` badge before deploying
-- [ ] Framer Motion animations
-- [ ] Light/dark theme toggle
-- [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug` with nested layout route + sidebar
-- [ ] Social links (GitHub, LinkedIn) — GitHub is in `TopNav` / `HomePage`; LinkedIn still to add
-- [ ] Custom domain
+Deliberately out of scope while the focus is React and TypeScript. Listed so a future session knows
+they were considered rather than forgotten.
+
+- [ ] Redux — a bigger state library than `useContext`/`useReducer`; revisit once shared state actually hurts
+- [ ] Next.js — routing and React Server Components; this site has no server, so the RSC material does not apply to it
 
 ---
 
-_Last updated: 2026-10-07 (ten lessons live, all ten verified)_
+_Last updated: 2026-10-07 (ten lessons live, all ten verified — scope narrowed to React + TypeScript topics)_
 
 **Why the `useState` deep dive is a fix-it exercise with three array bugs, not an object bug.** The
 characteristic mistake it teaches — writing a field on an object held in state — cannot be shipped at all:
