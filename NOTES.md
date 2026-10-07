@@ -35,6 +35,7 @@ assessment rather than a marker):
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
 | Forms & controlled inputs | Fixed both bugs in the `forms` exercise — the no-op `onChange` and the missing `preventDefault` — and corrected a `FormData` detour by explaining controlled vs read-at-submit. Entry 09 |
 | `useState` deep dive | Fixed all three bugs in the `use-state-deep-dive` exercise unaided — updater form for the double setter, `[...techniques, newTechnique]` for the add, `techniques.slice().sort(...)` for the sort — then explained the snapshot mechanism in their own words: both `setReps(reps + 1)` lines read the same render's value, so both compute the same number. Entry 10 |
+| `useRef` | Built the Escape-to-close and focus-into-panel behaviour in `Sidebar.tsx`: a DOM ref, a keydown listener, and an effect with real cleanup and an honest dependency array. Explained both directions of the rule — a ref change re-renders nothing, so a ref value must not be rendered; and a render-time read can't be trusted, because a render may be repeated or discarded. Took three passes to get past "refs aren't initialised until effects run" (they are — `useRef(1)` holds 1 during the first render). Entry 11 |
 
 *Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
 originally recorded on code evidence alone, which contradicted the reviewer's own standard — a
@@ -71,15 +72,7 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### In progress — lesson live, verification outstanding
 
-**`useRef` (entry 11) — the *demonstrated* half is done, the *explained* half is owed.** The lesson at
-`/dojo/topic/use-ref` is live, both gates are green, the Sample Code panel is a true mirror at **77 of 77**
-lines, and the hands-on work exists: the Escape-to-close and focus-into-panel behaviour in `Sidebar.tsx`,
-built with a DOM ref and a keydown listener that unsubscribes. What is missing is the own-words explanation —
-**a ref value must not be rendered, and a ref must not be read during render** — so the box stays unticked and
-the entry stays here rather than on the "Solid" table. This is the evidence standard doing its job: the code
-being finished is not the same as the topic being verified.
-
-*(Every other registered lesson is verified.)*
+*(Empty. Every registered lesson is verified.)*
 
 ### Gaps — the honest list
 
@@ -770,7 +763,7 @@ numbers were simply wrong.
 
 **Fixed 2026-10-07.** Status is `OK` in the marker, `tsc` and `npm run lint` are green, and the Sample Code
 panel is a true mirror of the demo at **114 of 114** lines. See the "How it was verified" section at the end
-of this entry for what is proven and what is still owed.
+of this entry.
 
 ### The rule the whole lesson turns on
 
@@ -882,7 +875,7 @@ rather than offered as something to repair. The full probe result is in `ROADMAP
 
 ## 11 — `useRef` (DOM Handles & Values That Outlive a Render)
 
-- **Status:** RV (Reviewing) — lesson live, *explained* half still owed
+- **Status:** OK (Mastered) — verified 2026-10-07
 - **Added:** 2026-10-07
 - **Belt:** white
 - **Marker file:** `src/topics/use-ref/demo.tsx`
@@ -972,7 +965,7 @@ behind on the burger) and an **effect that subscribes**, with the unsubscribe on
 `currentLabel` is in the dependency array because the effect body reads it — tapping a lesson closes
 the menu, and the label under the burger changes with it.
 
-### Status — 2026-10-07: demonstrated, explained still owed
+### Status — verified 2026-10-07, after the misconception was actually cleared
 
 **Demonstrated — done.** The lesson's `demo.tsx` focuses an input on mount through a DOM ref and keeps a
 running `{ renders, lastReps }` tally in a ref that is written by an effect and read by a click handler,
@@ -980,32 +973,44 @@ never during render. `tsc` and `npm run lint` are green, and the Sample Code pan
 **77 of 77** lines, measured rather than estimated. The Sidebar change adds the Escape key and
 focus-into-panel behaviour, also with both gates green.
 
-**Explained — a first pass on 2026-10-07, and it is not there yet.** Two questions were asked; the run is
-recorded below rather than smoothed over, because the wrong answer is the useful part.
+**Explained — this took three passes, and the wrong answers are the entry's real content.** The first two
+attempts rested on the same misconception, and it did not shift under a plain correction: it had to be shown
+to be self-contradictory before it moved.
 
 | # | Question | Result |
 | --- | --- | --- |
-| 1 | A handler does `tally.current = 5` and nothing else — what does the screen show? | **Correct.** "It keeps showing the old value, because a ref change never causes a re-render." That is the render-side rule, and it is the half that matters most. |
-| 2 | Why is *reading* `ref.current` during render wrong, even if the value is never displayed? | **Wrong.** Answered that refs are "not initialised until effects run, so the read is always undefined or null". **Refs are not initialised by effects** — the ref object exists from the first render, already holding its initial value. What starts `null` is a *DOM* ref's `.current`, and that is because React has not attached the element yet, not because an effect has not run. The real reason is timing: `.current` is shared mutable state that is not a fact about the current render — React may render twice, discard a render, and writes the DOM ref during the commit *after* the render function has returned. |
-| 3 | `useEffect(() => { counts.current = value; })` with **no** dependency array — what is `counts.current` after one update from 0 to 1? | **Wrong.** Answered "0, because an empty dependency array means the effect only ever runs once" — but the array was **omitted**, not empty. No array means the effect runs after **every** render, so it runs again after the update and `counts.current` is **1**. |
-| 4 | `useEffect(fn, [])` versus `useEffect(fn)` with no array — how often does each run? | **Correct**, after the feedback: "Once, and after every render." |
+| 1 | A handler does `tally.current = 5` and nothing else — what does the screen show? | **Correct.** "It keeps showing the old value, because a ref change never causes a re-render." The render-side rule, first time. |
+| 2 | Why is *reading* `ref.current` during render wrong? | **Wrong.** "Refs are not initialised until effects run, so the read is always undefined or null." |
+| 3 | When does an effect run, relative to the render — and could that create a gap? | **Wrong.** Answered "0, because an empty dependency array means the effect only ever runs once", conflating an *omitted* array with an empty one. Corrected: no array means every render. |
+| 4 | `useEffect(fn, [])` vs `useEffect(fn)` — how often does each run? | **Correct**, after feedback: "once, and after every render". |
+| 5 | A component reads `inputRef.current` in the body only for a `console.log` — what is genuinely wrong? | **Passed on** ("clarify the question"), which was fair — the question was tangled. |
+| 6 | Walk through the `useRef(value)` tracker: after `value` goes 1 → 2, what does the paragraph print? | **Wrong, same misconception.** "Now 2, previously undefined — the ref has no value yet because the effect hasn't run." |
+| 7 | Forget the effect: during the FIRST render, what is `useRef(1).current`? | **Correct — and this is the correction landing.** "It holds 1 right away — that's what `useRef(value)` set it to, and the effect is only there to keep it updated for later renders." |
+| 8 | Setting lag aside, why is a render-time read unsafe in principle? | **Correct.** "A render can be repeated or discarded, so what you read may come from a pass that never became the real one." |
 
-**The lesson in the wrong answers, kept deliberately.** Q3 repeated the exact confusion that showed up in the
-`useEffect` session from the opposite direction: there an empty `[]` was believed to re-run when a value
-changed; here an omitted array was believed to run once. Both are the same rule read wrongly — **`[]` is a
-restriction, and omitting the array applies no restriction.** That trap is now in the cheat-sheet.
+**The misconception, stated exactly, because it lasted two rounds.** The belief was that a ref is
+*uninitialised* until an effect runs — that the argument to `useRef` is not a value you get, but a recipe for
+one. It is not: `useRef(1)` produces `{ current: 1 }` during the first render. What genuinely starts `null`
+is a **DOM** ref's `.current`, and that is because React has not attached the element yet — a different cause
+that was being folded into the same belief.
 
-**What is still owed.** The read-side reason, asked again as a fresh question rather than a repeat of Q2. The
-answer to look for is about *timing and shared mutable state* — that a render-time read is not a fact about
-that render, that React can render twice or discard a render, and that a DOM ref is written after the render
-returns. When that lands, flip this entry to the "Solid" table, set the marker to `OK`, tick the roadmap box,
-and move the line in `CLAUDE.md` from *pending* to *closed*.
+**What finally moved it.** Not repeating the correction. The answer was laid against the learner's *own*
+earlier wording — they had chosen "the ref is one render behind" at one point, and a box that holds nothing
+cannot be one render behind — and the contradiction did the work. Q7 then answered itself correctly, and Q8
+gave the mechanism rather than the rule.
 
-**Where it stands as of hand-off (2026-10-07).** The learner is working through this topic themselves and has
-asked to be checked when they report back — so **do not re-open it unprompted, and do not fill the gap in for
-them.** When they say they are done: re-read `src/topics/use-ref/demo.tsx` and the `Sidebar.tsx` change to see
-what they actually altered, verify `tsc` / `npm run lint` / `npm run check:prose`, then ask the read-side
-question fresh. Only then decide the box.
+**Verdict: verified.** Both halves are on the record: working code (the demo, the `Sidebar` Escape-to-close,
+gates green, sample a true mirror at 77 of 77) and the rule explained in both directions — a ref change
+renders nothing, and a render-time read cannot be trusted because a render may be repeated or discarded.
+
+**Worth re-testing in a future review.** The initial-value point (Q7) is the one to revisit, not the
+render-discard point — it took deliberate effort to dislodge, and it is the sort of belief that can quietly
+return.
+
+**The `useEffect` overlap, kept because it happened twice.** Q3 repeated the confusion from the `useEffect`
+session from the opposite direction: there an empty `[]` was believed to re-run when a value changed; here an
+omitted array was believed to run once. Same rule read wrongly both ways — **`[]` is a restriction, and
+omitting the array applies no restriction.** It is in the cheat-sheet.
 
 ---
 

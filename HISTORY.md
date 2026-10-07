@@ -10,6 +10,43 @@ Newest first.
 
 ## Session log
 
+### `useRef` cleared on the third pass — a misconception that needed contradicting, not correcting (2026-10-07)
+
+**The box is ticked, and it took three passes.** The *demonstrated* half was never in doubt: the demo (a DOM
+ref focused on mount, a `{ renders, lastReps }` tally written by an effect and read by a handler), the
+Escape-to-close in `Sidebar.tsx`, `tsc` and `npm run lint` green, and the Sample Code panel a true mirror at
+**77 of 77**. What took the work was the *explained* half.
+
+**The misconception, stated exactly, because it is the whole story.** The learner believed a ref is
+**uninitialised until an effect runs** — that the argument to `useRef` is a recipe for a value rather than the
+value itself. It is not: `useRef(1)` produces `{ current: 1 }` during the very first render. What genuinely
+starts `null` is a **DOM** ref's `.current`, because React has not attached the element yet — a different
+cause that was being folded into the same belief. (There was a second, unrelated slip along the way: an
+*omitted* dependency array mistaken for an empty `[]`, which is the `useEffect` confusion read backwards and
+is now a cheat-sheet row.)
+
+**What did not work: repeating the correction.** The learner said "refs aren't initialised until effects run"
+on two separate attempts, with a correct answer to a different question in between. Stating the fact again
+changed nothing.
+
+**What worked: laying the answer against their own earlier wording.** They had, at one point, accepted the
+phrase *"the ref is one render behind"*. So the contradiction was put to them directly — **a box that holds
+nothing cannot be one render behind** — and that did more than the correction had in two rounds. The next
+question ("what is `useRef(1).current` during the first render, before any effect?") was then answered
+correctly, and the one after it gave the *mechanism* rather than the rule: a render can be repeated or
+discarded, so a render-time read may come from a pass that never reached the screen.
+
+**The transferable lesson, and the reason this is written down.** When a wrong belief survives a plain
+correction, correcting harder is not the move — find the learner's own words that the belief cannot coexist
+with, and let the contradiction do the work. The one question that had to be *voided* is part of the same
+lesson: the first attempt at the read-side question was tangled enough that the learner asked for it to be
+clarified, which is a fair response to a badly-formed question. Rewritten as a walkthrough of real code, it
+worked.
+
+**Recorded honestly in `NOTES.md`:** entry 11 carries the full eight-question run, wrong answers included,
+and flags the initial-value point as the one to re-test in a future review — it took deliberate effort to
+dislodge and is the kind of belief that can quietly return.
+
 ### The descriptions had gone "pure AI" — all ten rewritten (2026-10-07)
 
 **The learner's note.** *"I see your long descriptions hard to understand… your explanation sounds like pure

@@ -150,7 +150,7 @@ This is the visitor-facing summary. The **master checklist — every study topic
 - [x] Landing page (hero + about)
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug`
 - [x] Mobile-responsive layout — burger topic menu below `md`
-- [x] Ten lessons built — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling, `useEffect`, forms & controlled inputs, `useState` deep dive (object & array state), `useRef` (the last of these is written and live, and is being reviewed)
+- [x] Ten lessons verified — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling, `useEffect`, forms & controlled inputs, `useState` deep dive (object & array state), `useRef`
 - [ ] Deploy to Vercel — current version `0.12.0` (each new topic adds `0.01`)
 - [ ] More lessons (the open topics are listed in `ROADMAP.md`)
 - [ ] Framer Motion animations

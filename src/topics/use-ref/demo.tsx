@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // Topic: useRef — a mutable box that survives renders, and a handle on a DOM node
-// Added: 2026-10-07 | Status: RV (Reviewing)
+// Added: 2026-10-07 | Status: OK (verified)
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //

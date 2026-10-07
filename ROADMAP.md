@@ -22,7 +22,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [ ] `useContext` / `useReducer` — global state patterns — **GAP**: never used
 - [ ] Custom hooks — extracting reusable logic — **GAP**: never used
 - [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization — **GAP**: never used
-- [ ] `useRef` — DOM access and mutable values — explainer live at `/dojo/topic/use-ref` — **IN PROGRESS**: thirteen candidates probed against both gates and every one with a diagnosable symptom was rejected, so the hands-on half is the Escape-to-close in `Sidebar.tsx`. Both gates green and the sample is a true mirror at 77 of 77; the *explained* half is still owed (entry 11)
+- [x] `useRef` — DOM access and mutable values — explainer live at `/dojo/topic/use-ref`; thirteen candidates probed against both gates and every one with a diagnosable symptom was rejected, so the hands-on half was the Escape-to-close in `Sidebar.tsx`. Verified 2026-10-07, after three passes past the "refs aren't initialised until effects run" misconception (entry 11)
 - [ ] Portals — rendering outside the parent DOM hierarchy — **GAP**: never used
 
 ## Components to Build (reusable UI kit)
@@ -46,7 +46,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 
 ---
 
-_Last updated: 2026-10-07 (ten lessons live; nine verified, `useRef` awaiting its explanation)_
+_Last updated: 2026-10-07 (ten lessons live, all ten verified)_
 
 **Why the `useState` deep dive is a fix-it exercise with three array bugs, not an object bug.** The
 characteristic mistake it teaches — writing a field on an object held in state — cannot be shipped at all:

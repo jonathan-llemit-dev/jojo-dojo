@@ -38,7 +38,7 @@ often as a short quiz.
 how to check knowledge, are under "Reviewer Responsibilities" below. That is the rule most likely to be
 misread by a fresh session: **do not tick a box because a lesson file exists.**
 
-**Current state, one line:** ten lessons registered; nine verified, one awaiting its explanation.
+**Current state, one line:** ten lessons registered and all ten verified.
 
 ## Commands
 
@@ -275,7 +275,7 @@ stands and what comes next.
 ### Current project state
 - Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
 - **Version `0.12.0`** — a running number, advanced by `0.01` for each new topic and adjustable deliberately. See "Versioning" below. The badge in `HomePage.tsx` shows the short form `v0.12`.
-- **Ten lessons registered; nine verified, one pending.** `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys`, `event-handling`, `use-effect`, `forms` and `use-state-deep-dive` are verified. **`useRef` is not** — its lesson is live and both halves of its *demonstrated* evidence exist (the demo, and the Escape-to-close in `Sidebar.tsx`), but the *explained* half is still owed, so its box is unticked and it sits in the roadmap as `IN PROGRESS`. A tick resting on code evidence alone is the contradiction the evidence standard forbids. All ten are added through the registry, with no new routes written.
+- **Ten lessons registered, all ten verified**: `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys`, `event-handling`, `use-effect`, `forms`, `use-state-deep-dive` and `useRef`. `use-state-deep-dive` was a fix-it exercise, fixed by the learner with both gates green and its sample now a true mirror. `useRef` became the tenth and took three passes to clear — the barrier was a real misconception, not a wording slip: it held that refs are *uninitialised* until an effect runs, when `useRef(1)` already holds `1` during the first render. Both are verified because the mechanism was explained in their own words. All ten are added through the registry, with no new routes written.
 - **Four lessons are not fix-it exercises** — `event-handling`, `use-effect` and `useRef` are explainers, because their characteristic mistakes cannot be shipped as compiling, lint-clean bugs. `use-state-deep-dive` *was* a fix-it exercise, but its *object*-state bug had to be dropped for the same reason (see the gate list under "Fix-it exercises"); its three array-shaped bugs are now fixed.
 - **Layout is mobile-responsive**, confirmed by the learner at phone width: below `md` the topic list is a burger dropdown, and the nav/padding/headings scale down. The reviewer can now re-check this directly in the browser (see the browser-automation note below).
 - A scratch routing playground lives at `/test/:student/:name/:subjects` (`components/sandbox/TestGreeting.tsx`), kept deliberately as a labelled demonstration of the `:param` ↔ `useParams()` name contract.
@@ -294,7 +294,7 @@ fetch demo would have to fake its data. The remaining open lines, in priority or
 2. **`useContext` / `useReducer`** — the next hooks with no coverage, and the first topic that needs shared state rather than local state.
 3. **One left-over surface from the `useState` deep dive** — **lazy initialisers** (`useState(() => build())`) are written up in lesson 10's prose but have never been exercised, so they are the one part of that topic not on the "Solid" table. It needs a lesson of its own or a question in a future review, not a new claim.
 
-*Pending line:* **`useRef`** — lesson live at `/dojo/topic/use-ref`, both gates green, sample a true mirror at 77 of 77, and the hands-on half built (the Escape-to-close in `Sidebar.tsx`). It is an **explainer**, because thirteen probed candidates showed `react-hooks/refs` plus `tsc` reject every `useRef` mistake with an observable symptom (see the gate list under "Fix-it exercises"). **The *explained* half is still owed**, which is the only thing keeping the box unticked: ask the render-side and read-side questions in the next review.
+*Closed line:* **`useRef`** — verified 2026-10-07. Lesson live at `/dojo/topic/use-ref`, both gates green, sample a true mirror at 77 of 77, and the hands-on half built (the Escape-to-close in `Sidebar.tsx`). It is an **explainer**, because thirteen probed candidates showed `react-hooks/refs` plus `tsc` reject every `useRef` mistake with an observable symptom (see the gate list under "Fix-it exercises"). The *explained* half took three passes and is the more interesting record: the learner held that refs are uninitialised until an effect runs, and what dislodged it was not a repeat of the correction but laying the answer against their own earlier wording — a box that holds nothing cannot be "one render behind". See entry 11.
 
 *Closed line:* **`useState` deep dive** — verified 2026-10-07. The exercise at `/dojo/topic/use-state-deep-dive` was fixed by the learner, both gates are green, its Sample Code panel is a true mirror (114 of 114), and the snapshot mechanism was explained in their own words. That lesson also corrected a gap stated too broadly in the old notes: `lists-and-keys` already held an **array** of objects and `event-handling` / `use-effect` already called two setters in one handler.
 
