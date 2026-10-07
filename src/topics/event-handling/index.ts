@@ -10,41 +10,39 @@ export const eventHandlingTopic: Topic = {
   description:
     "Name your handlers, pass them by reference, and wrap them in an arrow when they need an argument.",
   longDescription:
-    "A handler is just a function you give React to call later. There are two ways to write\n" +
-    "one, and both are correct:\n\n" +
+    "A handler is just a function you hand React to call later. You can write it two ways,\n" +
+    "and both are correct:\n\n" +
     "```\n// inline arrow — can read the surrounding values directly\n<button onClick={() => setReps((r) => r + 1)}>Log a rep</button>\n\n" +
     "// named function — passed by reference\nfunction handleReset() {\n  setExercises(EXERCISES);\n}\n<button onClick={handleReset}>Reset</button>\n```\n\n" +
-    "The inline arrow is shorter and closes over whatever is in scope. A named function is\n" +
-    "reusable, easier to read once the body grows past one line, and the only form you can\n" +
-    "hand down as a prop. Choose per case — but the convention in this repo is worth\n" +
-    "keeping: a prop that carries a callback is named `onSomething` (`onLogRep`), and the\n" +
+    "The arrow is shorter, and it can read anything in scope around it. A named function is\n" +
+    "reusable, reads better once the body is longer than a line, and is the only form you can\n" +
+    "pass down to another component. Pick per case.\n\n" +
+    "One naming habit is worth copying, because it makes a component's API obvious at a\n" +
+    "glance: a prop that carries a callback is called `onSomething` (`onLogRep`), and the\n" +
     "function it points at is named for what it does (`handleRemoveExercise`).\n\n" +
-    "What matters is the difference between the next two lines. One gives React a function;\n" +
-    "the other calls a function while the component is still rendering:\n\n" +
+    "Now the difference that matters. These two lines look almost identical, but one hands\n" +
+    "React a function and the other calls the function immediately, while the component is\n" +
+    "still rendering:\n\n" +
     "```\n<button onClick={handleReset}>   {/* a reference — React calls it on click */}\n<button onClick={handleReset()}> {/* CALLED now, during render */}\n```\n\n" +
-    "In this project that mistake never reaches the browser. TypeScript refuses it, because\n" +
-    "`handleReset` returns `void` and `onClick` wants a function:\n\n" +
+    "The second one is dangerous: if the handler sets state, it sets it during every render,\n" +
+    "which sends React round and round in a loop.\n\n" +
+    "Good news — in this project you cannot ship that by accident. TypeScript rejects it,\n" +
+    "because `handleReset` returns `void` and `onClick` wants a function:\n\n" +
     "```\nType 'void' is not assignable to type 'MouseEventHandler<HTMLButtonElement> | undefined'.\n```\n\n" +
-    "and ESLint's `react-hooks/set-state-in-render` rule flags the same line, because a\n" +
-    "handler that sets state would otherwise run during every render. So the mistake never\n" +
-    "reaches the browser — it is caught as you type, which is better than debugging it at\n" +
-    "runtime.\n\n" +
+    "ESLint flags the same line through `react-hooks/set-state-in-render`, so the mistake\n" +
+    "surfaces as you type rather than as a frozen browser tab.\n\n" +
     "The case that catches people is a handler that needs an argument. The fix is not fewer\n" +
-    "parentheses; it is one more layer — an arrow that is itself the handler:\n\n" +
+    "parentheses — it is one more layer, an arrow that *is* the handler:\n\n" +
     "```\n<button onClick={() => handleRemoveExercise(exercise.id)}>Remove</button>\n```\n\n" +
-    "Now `onClick` receives a function, and the id is supplied when React eventually calls\n" +
-    "it. The rule covering both cases: what you put in `onClick` must be a function, not the\n" +
-    "result of calling one. The way to check is to ask whether that expression would do\n" +
-    "anything if the component never re-rendered.\n\n" +
-    "The Live Demo below shows all three wirings in one component: an inline arrow that\n" +
-    "closes over a row's id, a named handler passed by reference (`Reset`), and a named\n" +
-    "handler taking an argument through an arrow (`Remove` and `Focus`).",
+    "Now `onClick` receives a function, and the id is filled in when React calls it. The rule\n" +
+    "for both cases is the same: what goes in `onClick` must be a function, not the result of\n" +
+    "calling one. To check an expression, ask whether it would do anything if the component\n" +
+    "never re-rendered.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.
   //
   // A real mirror of `./demo.tsx` — the two are kept in step.
-  // reasoning in the module comment of `demo.tsx` — so the two are kept in step.
   codeExample: `import { useState } from "react";
 
 type Exercise = {

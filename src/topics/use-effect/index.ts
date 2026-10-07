@@ -10,52 +10,36 @@ export const useEffectTopic: Topic = {
   description:
     "Run code after render to talk to something outside React — with an honest dependency array and a cleanup that undoes it.",
   longDescription:
-    "Everything you have written so far happens during render: React calls your component, it\n" +
-    "returns elements, React puts them on screen. `useEffect` is for what happens after that —\n" +
-    "talking to something outside React.\n\n" +
-    "That outside thing is the point of the hook, and it is the fastest way to know when you\n" +
-    "need one. Timers, event listeners, network requests, `document.title`, third-party\n" +
-    "widgets: none of them are React, so none of them can happen during render, and none of\n" +
-    "them update themselves when your state changes. An effect is the bridge.\n\n" +
-    "An effect runs after the render it belongs to, never during it. That ordering is why the\n" +
-    "demo's clock can be driven by state: the interval calls a setter, React re-renders, the\n" +
-    "new time is on screen.\n\n" +
-    "The second argument decides when the effect runs, and the rest of the lesson is that one\n" +
-    "decision:\n" +
-    "- `[]` — run once after the first render. Right for setup that never depends on a value.\n" +
-    "- `[isRunning]` — run after the first render, and again whenever `isRunning` changes.\n" +
-    "  This is the common case, and the array is a promise: every value the effect reads from\n" +
-    "  the component must appear in it.\n" +
-    "- no array at all — run after every render. Almost never what you want.\n\n" +
-    "`react-hooks/exhaustive-deps` checks that promise for you and names the value you left\n" +
-    "out. Take the warning seriously rather than silencing it: a missing dependency is how an\n" +
-    "effect ends up reading a stale value forever.\n\n" +
-    "Cleanup is the half people skip, and it is the half that bites. An effect may return a\n" +
-    "function, which React runs before the next run of that effect and once more when the\n" +
-    "component unmounts. Whatever the body started, the cleanup stops:\n\n" +
+    "Say you want a clock that counts up while you train. You write the interval, you render the\n" +
+    "seconds — and nothing appears, because React has no idea your timer exists.\n\n" +
+    "That is what `useEffect` is for. Your component's job is to return what should be on\n" +
+    "screen; an effect is for everything else you need to do — starting a timer, listening for\n" +
+    "an event, fetching data, changing `document.title`. None of those are React, so none of\n" +
+    "them can happen while your component is rendering.\n\n" +
+    "An effect also runs *after* the render, never during it. That timing is what makes the\n" +
+    "clock work: the timer ticks, calls `setSeconds`, React re-renders, and the new number is\n" +
+    "on screen.\n\n" +
+    "The second argument decides when your effect runs, and it is the part people get wrong:\n" +
+    "- `[]` — once, after the first render.\n" +
+    "- `[isRunning]` — after the first render, and again whenever `isRunning` changes.\n" +
+    "- no array at all — after every single render.\n\n" +
+    "When your effect reads something from the component, name it in that array. ESLint's\n" +
+    "`react-hooks/exhaustive-deps` rule tells you what you missed. If naming it makes the\n" +
+    "effect run too often, reach for the updater form instead — `setSeconds((s) => s + 1)`\n" +
+    "needs no dependency on `seconds`.\n\n" +
+    "Now the part that bites, and it is the half people skip: cleaning up. An effect can\n" +
+    "return a function, and React runs it before the next run of that effect:\n\n" +
     "```\nuseEffect(() => {\n  const id = setInterval(() => setSeconds((s) => s + 1), 1000);\n  return () => clearInterval(id);\n}, [isRunning]);\n```\n\n" +
-    "Delete that `return` line and nothing breaks immediately — which is exactly the problem.\n" +
-    "Each change to `isRunning` leaves the previous interval alive and starts another, so the\n" +
-    "clock ticks twice as fast, then three times as fast. A leak is not a thing that shrinks\n" +
-    "your app; it is a thing that compounds. The symptom arrives a few interactions after the\n" +
-    "mistake, which is why this bug survives so long in real code.\n\n" +
-    "Two rules of thumb worth keeping:\n" +
-    "- If the effect body reads a prop or a piece of state, name it in the dependencies. If\n" +
-    "  that makes the effect re-run too often, the fix is usually the updater form of the\n" +
-    "  setter — `setSeconds((s) => s + 1)` — rather than leaving the value out.\n" +
-    "- If the effect body starts something, return the thing that stops it. Fetching needs an\n" +
-    "  `AbortController`; a listener needs `removeEventListener`; a timer needs `clearInterval`.\n\n" +
-    "There is a third rule, and it is the one React's own documentation leads with: you might\n" +
-    "not need an effect at all. If you are reaching for `useEffect` to compute a value from\n" +
-    "props or state, you almost certainly do not want one — compute it during render instead.\n" +
-    "Deriving a value in an effect costs a second render and shows the reader a stale value for\n" +
-    "one frame. The demo shows the pattern: the formatted clock is computed in the component\n" +
-    "body, not in an effect, because it is a function of state that already exists.\n\n" +
-    "Two `useEffect` mistakes are worth knowing by name, because both are easy to write and\n" +
-    "hard to spot. Deriving a value with an effect — `useEffect(() => setCount(prop), [prop])` —\n" +
-    "costs an extra render and briefly shows a stale value; compute it during render instead.\n" +
-    "And a dependency array that lies (`[]` when the effect reads something that changes) leaves\n" +
-    "the effect closing over a value frozen at the render it last ran in.",
+    "Delete that `return` line and nothing breaks straight away. But each time `isRunning`\n" +
+    "changes, the old interval is still running and a new one starts too. Now the clock counts\n" +
+    "two seconds per second. Toggle it again and it counts three.\n\n" +
+    "That is why this mistake survives so long in real code: nothing looks wrong at first, and\n" +
+    "the damage builds up. Whatever your effect starts, return the thing that stops it —\n" +
+    "`clearInterval` for a timer, `removeEventListener` for a listener.\n\n" +
+    "One last thing, and React's own docs start with it: you often do not need an effect at\n" +
+    "all. If you are using one to calculate a value from state or props, do that calculation\n" +
+    "while rendering instead. An effect for it costs an extra render and briefly shows a stale\n" +
+    "number.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.

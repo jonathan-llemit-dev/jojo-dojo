@@ -10,6 +10,167 @@ Newest first.
 
 ## Session log
 
+### The descriptions had gone "pure AI" — all ten rewritten (2026-10-07)
+
+**The learner's note.** *"I see your long descriptions hard to understand… your explanation sounds like pure
+AI, no humanity in it, no compassion, no consideration that there're maybe some other people that will read
+it."* They said they understood it personally — the complaint was about everyone else who would land on the
+page. It was correct, and it applied to lessons they had already passed, not just the new one.
+
+**The first measurement was a trap, and worth recording on its own.** Flesch reading ease was run across all
+ten descriptions, expecting the numbers to confirm the complaint. They did the opposite: `use-ref` scored
+**81** — the *easiest* of the ten. Flesch counts word and sentence length, so it is blind to the thing that
+was actually wrong, which was **abstraction**. Had the score been believed, the session would have
+"verified" that the prose was fine.
+
+**So a second audit measured what matters** — longest paragraph, paragraphs over 60 words, editor-tics
+("worth naming", "is not defensive noise", "the rule that keeps X honest"), abstract nouns, and
+narrating-the-document. The pattern was clean and it was a trend, not noise:
+
+| Lesson | Longest paragraph | Blocks over 60 words | Editor-tics |
+| ------ | ----------------- | -------------------- | ----------- |
+| `use-state-deep-dive` | **146 words** | 2 | 1 |
+| `use-ref` | **114 words** | 4 | **8** |
+| `use-effect` | 97 words | 5 | 5 |
+| `use-state`, `jsx`, `forms` | 55–59 words | 0 | 0 |
+
+**The three worst were the three written most recently.** The early short lessons were fine; the prose got
+worse as it got more confident. `use-ref` — the lesson the learner had just flagged — had by far the most
+tics.
+
+**The four faults, named:**
+1. **Announcing instead of explaining.** "Two jobs come out of it, and they are worth naming separately"
+   promises insight and delivers none.
+2. **Hollow one-liners.** "That optional chaining is not defensive noise." "The rule that keeps refs honest."
+   They read as wisdom and contain nothing actionable.
+3. **Rules before any reason to care.** The old `use-ref` opened on "returns a single object with one
+   property, `current`" — a fact with no problem attached.
+4. **Hedges that blame the reader.** "a consequence worth expecting rather than debugging" implies they
+   would have got it wrong.
+
+**What replaced them, in one comparison.** Before: *"React does not watch a ref. Writing to `.current`
+schedules no re-render, so a number the screen depends on would sit there out of date."* After: *"If you
+keep a score in a ref and show it on screen, you can add a point and watch the screen hold the old number.
+Anything the user can see belongs in `useState`."* Same fact, one concrete consequence, no announcement.
+
+**Two findings beyond the voice.** The two oldest lessons (`jsx`, `use-state`) were in an entirely different
+register — encyclopedic rather than instructional. `jsx` opened with *"a syntax extension for JavaScript that
+allows you to write HTML-like code"*, which is a dictionary definition, and it listed "components can be
+defined as functions or classes", which is not true of this project and not useful to a beginner. Both were
+rewritten to start from what the reader will actually meet. And `event-handling` said the same sentence
+twice — "never reaches the browser", once before the TypeScript block and once after it — with a stale
+duplicated comment in its `index.ts` as well. Both removed.
+
+**Verification, not vibes.** A `prose-check` script enforces the RichText safety rules (balanced backticks,
+even code fences, no risky asterisks) *and* the hard voice limits (70 words per block, max 2 tics, 0 hollow
+phrases), measuring each bullet separately since a reader meets bullets one at a time. All ten now pass with
+zero safety and zero voice failures, and the longest block anywhere is **67 words** — down from 146. The
+lesson `codeExample` mirrors were re-verified afterwards and every one is unchanged
+(`use-ref` still 77 of 77, `use-state-deep-dive` still 114 of 114), so no sample moved while the prose did.
+`tsc` and `npm run lint` green throughout.
+
+**Three errors in the tooling itself, all caught by output rather than by review.** The first checker
+collapsed the source's line wrapping and then reported phantom double-spaces; the `longDescription`
+extractor searched for a `//` comment to find the end of the string, which truncated any lesson whose prose
+contains a fenced code block; and the same extractor only matched double-quoted strings, so `components-props`
+— which uses single quotes for its fence — silently lost a chunk of text. Each wrong version produced
+confident, plausible numbers. The fourth pass was right, and the fix was to bound the value at the
+`codeExample:` key and match both quote styles.
+
+**A new convention, written into `CLAUDE.md`:** *write to a person, not to a compiler.* Open with a
+situation rather than a definition, use "you", never announce the explanation, keep every block under 70
+words, and prefer a concrete consequence to an abstract claim. The Flesch trap is recorded there too, so a
+future session does not repeat the mistake of measuring the wrong thing and concluding the prose is fine.
+
+### `useRef` — probed first, and the probe is why it is an explainer (2026-10-07)
+
+**The instruction was to clear the gates before promising a fix-it exercise**, because `use-effect` had
+already been forced into a lecture by exactly this problem. That was the right call, and it paid off harder
+than expected: thirteen candidates were probed in an isolated harness, and **seven were rejected**.
+
+| # | Candidate bug | Killed by |
+| - | ------------- | --------- |
+| 01 | ref written during render to memoise a derived value | `react-hooks/refs` |
+| 02 | ref used where state belongs, read in JSX | `react-hooks/refs` |
+| 03 | DOM ref passed to a function component | `tsc` **TS2322** |
+| 04 | DOM ref read in a handler with no null guard | `tsc` **TS18047** |
+| 05 | the "latest value" ref trick, written during render | `react-hooks/refs` |
+| 06 | timer handle kept in `useState` | `react-hooks/set-state-in-effect` |
+| 07 | ref callback returning a value | `tsc` **TS2322** |
+
+**The rule's boundary was measured, not assumed.** One control file read `ref.current` in the component
+body and was rejected; an otherwise identical file reading the same ref only in an effect and a handler
+passed. **Body or JSX → rejected, effect or handler → allowed.**
+
+**Why that makes the exercise impossible rather than merely awkward.** Every `useRef` mistake with an
+*observable symptom* has one shape — a ref value reached the render — which is precisely what
+`react-hooks/refs` rejects. So a bug that passes both gates has **no symptom**, and an exercise with no
+observable symptom fails this project's own rule that a planted bug must name its expected values and show
+simulated symptoms. What passed both gates was either correct code or a mistake that is not about `useRef`:
+a keydown listener with no cleanup (the same one-in-two-shapes bug that already made `use-effect` a lecture)
+and a ref incremented in a handler but never displayed, invisible by construction. **This is a stronger case
+than `use-effect`, which at least had one shippable mistake.**
+
+**The probe harness had two bugs of its own, both worth remembering.** ESLint ignores dotfolders, so
+`probe-tmp/` had to lose its leading dot — and **`globalIgnores` in the probe config listed the probe folder
+itself**, which silently made every probe file "ignored" and would have reported a clean bill of health for
+thirteen files nothing had read. Copying the real config's ignore list is what did it.
+
+**The lesson shipped as an explainer with a build task, per the learner's choice.** The *demonstrated* half
+is the Escape-to-close that `Sidebar.tsx` had been deferring in its own header comment since the `useEffect`
+session: a DOM ref focused on open, a keydown listener, and a real unsubscribe — plus `currentLabel` in the
+dependency array because the effect body reads it.
+
+**It is *not* ticked yet, and that is the standard working.** The first draft of these records said `useRef`
+was verified, which was wrong: the *explained* half is the learner saying the rule in their own words, and
+that had not happened. The records were corrected before anything was announced — marker set to
+`RV (Reviewing)`, roadmap box left unticked with `IN PROGRESS`, the entry moved off the "Solid" table into
+"In progress", and the one-line state changed to *nine verified, one pending*. Writing "verified" into the
+notes because the code is finished is exactly the failure `CLAUDE.md` names first: **do not tick a box
+because a lesson file exists.**
+
+**The questions were then asked, and the topic stayed open — correctly.** Four questions, two right:
+
+| # | Question | Result |
+| - | -------- | ------ |
+| 1 | A handler sets `tally.current = 5` and nothing else — what does the screen show? | **Correct** — "keeps showing the old value, because a ref change never causes a re-render". The render-side rule is in place. |
+| 2 | Why is *reading* `ref.current` during render wrong, even if never displayed? | **Wrong** — "refs are not initialised until effects run, so the read is always undefined or null". The ref object exists from the first render; what starts `null` is a DOM ref's `.current`. The real reason is timing, not initialisation. |
+| 3 | `useEffect` with **no** dependency array — how many runs? | **Wrong** — "0, because an empty dependency array means the effect only ever runs once", conflating an *omitted* array with an *empty* one. |
+| 4 | `useEffect(fn, [])` versus `useEffect(fn)` — how often does each run? | **Correct** after feedback — "once, and after every render". |
+
+**Q3 is the same rule as the `useEffect` session's wrong answer, read backwards.** There, an empty `[]` was
+believed to re-run when a value changed; here, an omitted array was believed to run once. Both invert the
+truth that **`[]` restricts and omitting the array does not**. A new cheat-sheet row records it, since this
+is now the second time the dependency array has produced a wrong direction rather than a wrong detail.
+
+**What remains owed is one question**, not a lesson: the read-side reason — timing and shared mutable state,
+React rendering twice or discarding a render, and a DOM ref being written after the render returns. The box
+stays unticked until that answer lands.
+
+**Two of my own errors were caught by the checks rather than by review.** The probe harness listed the probe
+folder in `globalIgnores`, which silently ignored all thirteen files; and the same class of mistake that
+`CLAUDE.md` documents — a regex that lies — reported the new lesson's parity as 62 and then 75 before a
+character-walking stripper found the real figure, **77**, after a later edit split the demo's effect in two.
+Every number in the docs is now the measured one.
+
+**The teaching point the gates leave behind:** the "latest value ref" escape hatch for dodging a stale
+closure, still recommended by plenty of tutorials, is unavailable in this project — and not arbitrarily. A
+ref the render depends on is a ref the render will show stale.
+
+**Repo verification first, and it found no drift.** Both gates were green at the start; a script confirmed
+nine lessons, nine folders, nine unique slugs, `0.11.0` in all three version fields, `v0.11` once in
+`HomePage.tsx`, every file named in the `CLAUDE.md` tree on disk, and **every parity number in `CLAUDE.md`
+exactly** — including `use-state-deep-dive` at 114 of 114.
+
+**And the parity checker nearly repeated a documented mistake.** My first attempt used a regex for the
+`codeExample` template literal, which truncated at the first escaped `` \` `` and reported four lessons as
+"sample 0 lines" and the deep dive at **110**. CLAUDE.md warns about exactly this. The fix was a
+character-walking extractor plus a character-walking stripper, and the docs turned out to be right all
+along. Then the same discipline caught my *own* error: I wrote **62** for the new `use-ref` count in
+`CLAUDE.md` without measuring it, and the check printed **75 of 75**. A later edit split the demo's single
+effect in two, which moved the real figure to **77**, and the docs were corrected again from the measured
+output rather than from memory. The number in the doc is now the measured one.
+
 ### The browser gap closed, and a lesson page caught printing its own asterisks (2026-10-07)
 
 **For the first time, a lesson demo was driven in a real browser.** Every prior session had type-checked its

@@ -8,17 +8,26 @@ export const jsxTopic: Topic = {
   shortTitle: "JSX",
   belt: "white",
   description:
-    "JSX is a syntax extension for JavaScript that allows you to write HTML-like code within your React components.",
+    "Write your UI in JavaScript with JSX — curly braces for expressions, className for classes, and one root element per return.",
   longDescription:
-    "JSX (JavaScript XML) is a syntax extension for JavaScript that allows you to write HTML-like code within your React components. " +
-    "It is not a string or HTML, but a syntax that gets transformed into JavaScript function calls. " +
-    "JSX makes it easier to visualize the structure of your UI and allows you to embed expressions and components seamlessly.\n\n" +
-    "Key points:\n" +
-    "- You write `className`, not `class`. React maps it to the DOM's real class attribute for you.\n" +
-    "- You can embed any JavaScript expression inside curly braces: `{2 + 2}`, " +
-    "`{new Date().toLocaleDateString()}`, `{user.name}`.\n" +
-    "- Components can be defined as functions or classes and can accept props to customize their behavior.\n" +
-    "- JSX allows for conditional rendering and dynamic content based on state or props.",
+    "Open your first React file and it looks like HTML sitting inside a JavaScript function. That is JSX, " +
+    "and the reason it surprises people is that it is neither HTML nor a string. It is a shorthand the " +
+    "compiler turns into function calls that build the page.\n\n" +
+    "Knowing that explains the differences you will bump into:\n" +
+    "- You write `className` instead of `class`. `class` is a reserved word in JavaScript, so JSX uses " +
+    "another name and React maps it across for you.\n" +
+    "- Curly braces mean \"now run some JavaScript\". Nothing in them is special: `{2 + 2}` shows `4`, " +
+    "`{new Date().toLocaleDateString()}` shows today's date, `{user.name}` shows a property.\n\n" +
+    "```\n<p className=\"score\">{2 + 2} minutes in.</p>\n```\n\n" +
+    "Because braces expect an expression, you cannot put an `if` or a `for` inside them. You choose " +
+    "between things with a ternary, and you build lists with `map()` — both of which get their own " +
+    "lessons.\n\n" +
+    "Two more things to know on day one. A comment inside JSX is written `{/* like this */}`, because a " +
+    "plain `//` would just be JavaScript and would never appear on the page. And a component returns " +
+    "one element, so wrap any siblings in a `<div>` or a fragment `<>…</>`.\n\n" +
+    "JSX also tells your components apart from HTML tags by capitalisation. `<div>` is a real element; " +
+    "`<JsxDemo>` is one of yours. That single capital letter is the difference, and it is why a " +
+    "component name has to start with one.",
   // A template literal keeps this snippet readable: what you see here is what
   // renders in the "Sample Code" panel, indentation and line breaks included.
   codeExample: `function JsxDemo() {

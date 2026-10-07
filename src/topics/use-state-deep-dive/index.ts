@@ -11,7 +11,39 @@ export const useStateDeepDiveTopic: Topic = {
     "Replace object and array state instead of changing it, initialise state lazily, and know what two setters in one handler do.",
 
   longDescription:
-    "Primitive state — a number, a string, a boolean — is the easy case: hand the setter a new value and React re-renders. The moment state is an object or an array, a second question appears, and it is the one this lesson is about: is the value you handed the setter actually *different* from the one it already had?\n\nReact answers that by reference. Hand it back the very same object or the very same array and it sees no change worth re-rendering for, so it does nothing at all. That is why every fix in this lesson is the same three words: **replace, do not mutate**.\n- Objects: pass a new object built from the old one — `setStudent((current) => ({ ...current, name: next }))`.\n- Arrays: pass a new array built from the old one — `setEntries((current) => [...current, entry])`. `push`, `sort` and `splice` all change the array you already have, so none of them is an update. `sort` is the sharpest case: it returns *the same array*, which is why the demo sorts a `.slice()` copy.\n- The **updater form** — handing the setter a function instead of a value — is what makes this safe, because each call receives the latest state rather than the value captured when the handler was written.\n\n**A lazy initialiser is a function you hand to `useState` instead of a value.** `useState(buildPlan())` calls `buildPlan` on every single render and throws away every result except the first, which is wasted work at best. `useState(() => buildPlan())` calls it once, for the first render only. The tell is the arrow: React cannot guess whether a function is your starting value or the thing that produces it, so a bare function counts as an initialiser only when it is *passed as* the initialiser. It earns its keep when building the value is expensive, and it costs nothing when it is not.\n\n**Two setters in one handler.** React batches the updates a handler makes, so nothing re-renders between them — and every line in the handler still reads the state as it was for the render it came from. That produces two very different outcomes from code that looks equally reasonable:\n\n```\nsetReps(reps + 1);\nsetReps(reps + 1);   // still reads the OLD reps, so it computes the same value again\n```\n\nBoth lines work out the same number, the second replaces the first, and the count rises by **1**. The updater form fixes it, because each call is handed the result of the one before it:\n\n```\nsetReps((current) => current + 1);\nsetReps((current) => current + 1);   // receives 1, returns 2\n```\n\nUse the updater form whenever the next value depends on the current one. It is right whether the handler sets state once or several times, which is why it is the default in this project.",
+    "Numbers and strings are the easy case. You hand the setter a new value, React re-renders,\n" +
+    "and the screen updates. Objects and arrays have a catch that costs people a lot of time.\n\n" +
+    "Try this and watch it do nothing:\n\n" +
+    "```\nstudent.name = \"Jojo\";\nsetStudent(student);\n```\n\n" +
+    "The name really did change. The problem is that `student` is still the *same object* as\n" +
+    "before, and React compares the old value with the new one to decide whether to re-render.\n" +
+    "Same object, so it sees no change, and your edit never reaches the screen.\n\n" +
+    "The rule is **replace, do not mutate**. Build a new value instead of editing the one you\n" +
+    "have:\n" +
+    "- Object: `setStudent((current) => ({ ...current, name: next }))`\n" +
+    "- Array: `setEntries((current) => [...current, entry])`\n" +
+    "- Sorted array: `setEntries((current) => [...current].sort(byName))`\n\n" +
+    "`push`, `sort` and `splice` all edit the array you already have, so none of them counts as\n" +
+    "an update. `sort` is the sneakiest: it hands back the very same array, which is why the\n" +
+    "copy comes first.\n\n" +
+    "The updater form is what makes all of this safe. Handing the setter a function instead of\n" +
+    "a value means it receives the latest state, not the value that was captured when the\n" +
+    "handler was written.\n\n" +
+    "That matters most when you set state twice in one handler:\n\n" +
+    "```\nsetReps(reps + 1);\nsetReps(reps + 1);   // still the OLD reps, so it computes the same number\n```\n\n" +
+    "Both lines work out the same figure, so the second replaces the first and the count rises\n" +
+    "by **1**. React does not re-render between them, so `reps` never changes in between. With\n" +
+    "the updater form, each call receives the result of the one before it and the count rises\n" +
+    "by 2:\n\n" +
+    "```\nsetReps((current) => current + 1);\nsetReps((current) => current + 1);   // receives 1, returns 2\n```\n\n" +
+    "Two *different* setters in one handler are fine — they are separate values. The trap is\n" +
+    "the same setter twice, or anything computed from state another line has already changed.\n\n" +
+    "One more shape worth knowing. When building a value is expensive, you can hand `useState`\n" +
+    "a function to run once instead of a value to store:\n\n" +
+    "```\nuseState(buildPlan());        // runs buildPlan on EVERY render, keeps only the first\nuseState(() => buildPlan());  // runs it once, for the first render\n```\n\n" +
+    "The arrow is the whole difference, and it is easy to miss. `useState(buildPlan)` — passing\n" +
+    "the function itself, no arrow and no call — is the one that really surprises people:\n" +
+    "`buildPlan` becomes the state, and React calls it for you when it needs the first value.",
 
   // Flush against the left margin on purpose: a template literal preserves indentation,
   // so indenting this to match the surrounding code would render as ragged leading

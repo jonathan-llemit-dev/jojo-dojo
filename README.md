@@ -5,7 +5,7 @@
 
 A dark, dojo-themed React learning journal forged with **Vite**, styled with **Tailwind CSS v4**, and ready to deploy on **Vercel**. The landing page is at `/`; every React lesson then lives at its own URL under `/dojo`. Every commit is a rep. Every deploy is a rank up.
 
-**Version `0.11.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
+**Version `0.12.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
 
 ---
 
@@ -81,11 +81,12 @@ jojo-dojo/
 │       ├── components-props/  # One folder per lesson: demo.tsx + index.ts
 │       ├── conditional-rendering/  # One folder per lesson: demo.tsx + index.ts
 │       ├── event-handling/    # One folder per lesson: demo.tsx + index.ts
-│       ├── lists-and-keys/    # One folder per lesson: demo.tsx + index.ts (fix-it exercise, fixed)
+│       ├── lists-and-keys/    # One folder per lesson: demo.tsx + index.ts
 │       ├── use-effect/        # One folder per lesson: demo.tsx + index.ts
-│       ├── forms/             # One folder per lesson: demo.tsx + index.ts (fix-it exercise, fixed)
+│       ├── forms/             # One folder per lesson: demo.tsx + index.ts
 │       ├── use-state/         # One folder per lesson: demo.tsx + index.ts
-│       └── use-state-deep-dive/# Object & array state — fix-it exercise, fixed
+│       ├── use-state-deep-dive/  # Object & array state, lazy initialisers, two setters
+│       └── use-ref/           # DOM handles & values that outlive a render
 ├── index.html                 # HTML shell
 ├── vite.config.ts             # Vite + Tailwind plugin config
 ├── vercel.json                # SPA fallback so deep links work when deployed
@@ -149,8 +150,8 @@ This is the visitor-facing summary. The **master checklist — every study topic
 - [x] Landing page (hero + about)
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug`
 - [x] Mobile-responsive layout — burger topic menu below `md`
-- [x] Nine lessons verified — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling, `useEffect`, forms & controlled inputs, `useState` deep dive (object & array state)
-- [ ] Deploy to Vercel — current version `0.11.0` (each new topic adds `0.01`)
+- [x] Ten lessons built — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling, `useEffect`, forms & controlled inputs, `useState` deep dive (object & array state), `useRef` (the last of these is written and live, and is being reviewed)
+- [ ] Deploy to Vercel — current version `0.12.0` (each new topic adds `0.01`)
 - [ ] More lessons (the open topics are listed in `ROADMAP.md`)
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle

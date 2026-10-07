@@ -22,7 +22,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [ ] `useContext` / `useReducer` — global state patterns — **GAP**: never used
 - [ ] Custom hooks — extracting reusable logic — **GAP**: never used
 - [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization — **GAP**: never used
-- [ ] `useRef` — DOM access and mutable values — **GAP**: never used
+- [ ] `useRef` — DOM access and mutable values — explainer live at `/dojo/topic/use-ref` — **IN PROGRESS**: thirteen candidates probed against both gates and every one with a diagnosable symptom was rejected, so the hands-on half is the Escape-to-close in `Sidebar.tsx`. Both gates green and the sample is a true mirror at 77 of 77; the *explained* half is still owed (entry 11)
 - [ ] Portals — rendering outside the parent DOM hierarchy — **GAP**: never used
 
 ## Components to Build (reusable UI kit)
@@ -37,7 +37,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 - [x] Tailwind CSS v4 with the custom dojo theme
 - [x] Landing page (hero + About + footer)
 - [x] Mobile-responsive layout — the topic list is a burger dropdown below `md`, and padding/headings scale
-- [ ] Deploy to Vercel — the version is a running number (**`0.11.0`** today): add `0.01` for each new topic, and match the `HomePage` badge before deploying
+- [ ] Deploy to Vercel — the version is a running number (**`0.12.0`** today): add `0.01` for each new topic, and match the `HomePage` badge before deploying
 - [ ] Framer Motion animations
 - [ ] Light/dark theme toggle
 - [x] Multi-page routing (React Router v7) — `/`, `/dojo`, `/dojo/topic/:slug` with nested layout route + sidebar
@@ -46,7 +46,7 @@ Status markers used on unverified lines: `IN PROGRESS` = exercise live, awaiting
 
 ---
 
-_Last updated: 2026-10-07 (nine lessons live, all nine verified)_
+_Last updated: 2026-10-07 (ten lessons live; nine verified, `useRef` awaiting its explanation)_
 
 **Why the `useState` deep dive is a fix-it exercise with three array bugs, not an object bug.** The
 characteristic mistake it teaches — writing a field on an object held in state — cannot be shipped at all:
@@ -87,3 +87,37 @@ this project. TypeScript rejects it (`Type 'void' is not assignable to type
 rejects it, so it never reaches runtime. A fix-it exercise must compile and lint clean, which
 leaves nothing to plant. Verified with a throwaway probe, not assumed. Clearance for the box
 came from a three-question quiz instead of a repair.
+
+**Why `useRef` is an explainer with no fix-it shape at all — the strongest case yet (2026-10-07).**
+Thirteen candidates were probed against both gates in an isolated harness with the identical rule set.
+Seven were rejected outright:
+
+| # | Candidate | Killed by |
+| - | --------- | --------- |
+| 01 | ref written during render to memoise a derived value | `react-hooks/refs` |
+| 02 | ref where state belongs, read in JSX | `react-hooks/refs` |
+| 03 | DOM ref passed to a function component | `tsc` **TS2322** |
+| 04 | DOM ref read in a handler with no null guard | `tsc` **TS18047** |
+| 05 | the "latest value" ref trick, written during render | `react-hooks/refs` |
+| 06 | timer handle kept in `useState` | `react-hooks/set-state-in-effect` |
+| 07 | ref callback returning a value | `tsc` **TS2322** |
+
+**The rule's boundary is exact, and it was measured rather than assumed.** A control file put
+`ref.current` in the component body and was rejected; an otherwise identical file reading the same
+ref only inside an effect and a handler passed. So: **body or JSX → rejected, effect or handler →
+allowed.**
+
+**Why that removes the whole exercise.** Every `useRef` mistake with an *observable symptom* has the
+same shape — a ref value reached the render — which is precisely what `react-hooks/refs` rejects. A
+bug that passes both gates therefore has **no symptom at all**, and an exercise whose symptoms cannot
+be observed fails the project's own rule that a planted bug must name its expected values and show
+simulated symptoms. What did pass both gates was either correct code (nothing to repair), or a
+mistake that is not about `useRef`: a keydown listener with no cleanup — the same one-in-two-shapes
+bug that already forced `use-effect` to a lecture and failed the "needs diagnosis" test on its own —
+and a ref incremented in a handler but never displayed, which is *invisible by construction*. The
+`useRef`-specific content therefore ships as a lecture and a working reference, with the
+Escape-to-close in `Sidebar.tsx` as the hands-on half.
+
+**The teaching point this gate leaves behind.** The "latest value ref" escape hatch for dodging a
+stale closure — still recommended by plenty of tutorials — is unavailable in this project, and the
+reason is not arbitrary: a ref the render depends on is a ref the render will show stale.

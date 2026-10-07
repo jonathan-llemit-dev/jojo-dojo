@@ -10,25 +10,27 @@ export const componentsPropsTopic: Topic = {
   description:
     "Pass data into a component with props, and learn why props are read-only snapshots you must never copy into state.",
   longDescription:
-    "Props are the arguments you hand to a component, written in JSX like HTML attributes:\n\n" +
+    "Props are how you pass data into a component. You write them in JSX like HTML attributes:\n\n" +
     '```\n<Drill label="Roundhouse kicks" reps={5} />\n```\n\n' +
-    "Inside the component they arrive as one object, which you normally destructure right in the " +
+    "Inside the component they arrive together as one object, which you normally unpack right in the " +
     "parameter list:\n\n" +
     "```\nfunction Drill({ label, reps }: DrillProps) { … }\n```\n\n" +
-    "Props flow in ONE direction — down, from parent to child. A child cannot change the props it " +
-    "receives, because they are a fresh snapshot handed to it on every render; only the parent can " +
-    "pass something different. So when a child needs to change a value, the parent owns that value in " +
-    "`useState` and passes down BOTH the value and a function to change it. The child calls the " +
-    "function, the parent's state updates, and the new value flows back down as props. That is the " +
-    "entire loop: data down, events up.\n\n" +
-    "Two rules worth burning in:\n" +
-    '- Never copy a prop into `useState` to "keep" it. `useState(prop)` reads that prop only on the ' +
-    "FIRST render; from then on the copy is frozen while the real value moves on, and the two drift " +
-    "apart forever. Use the prop directly.\n" +
-    "- An optional prop (`label?: string`) is a promise that the component still works without it. " +
-    "If the component renders it blindly, forgetting to pass it produces a silently blank heading " +
-    "instead of an error. When a component cannot work without a prop, make it required — as " +
-    "`label: string` is in the sample below — so TypeScript catches the omission for you.",
+    "The part that catches people out: a child **cannot** change the props it receives. Try to, and " +
+    "your edit is silently thrown away on the next render. Props only ever travel one way — from the " +
+    "parent down to the child.\n\n" +
+    "So what do you do when a child needs to change something? The parent owns the value in " +
+    "`useState`, and hands the child two things: the value, and a function that changes it. The child " +
+    "calls that function, the parent's state updates, and the new value comes back down as props.\n\n" +
+    "That round trip is the whole idea, and it has a name worth remembering: **data down, events " +
+    "up**.\n\n" +
+    "Two mistakes are worth avoiding here.\n" +
+    "- Do not copy a prop into `useState` to keep it. `useState(prop)` reads that prop once, on the " +
+    "first render. After that the copy is frozen while the real value moves on, so the two drift " +
+    "apart for good. Use the prop itself.\n" +
+    "- Do not make a prop optional unless the component really works without it. `label?: string` " +
+    "promises that a drill with no name is fine — so forgetting to pass it gives you a blank heading " +
+    "instead of an error. If the component needs it, write `label: string` and let TypeScript find " +
+    "the call site you missed.",
   // The snippet below is deliberately flush against the left margin, which looks
   // wrong in this file but is correct on screen: a template literal preserves
   // whatever indentation you type, so indenting it here would render as ragged

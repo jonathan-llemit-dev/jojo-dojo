@@ -71,18 +71,26 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### In progress — lesson live, verification outstanding
 
-*(Empty. Every registered lesson is verified.)*
+**`useRef` (entry 11) — the *demonstrated* half is done, the *explained* half is owed.** The lesson at
+`/dojo/topic/use-ref` is live, both gates are green, the Sample Code panel is a true mirror at **77 of 77**
+lines, and the hands-on work exists: the Escape-to-close and focus-into-panel behaviour in `Sidebar.tsx`,
+built with a DOM ref and a keydown listener that unsubscribes. What is missing is the own-words explanation —
+**a ref value must not be rendered, and a ref must not be read during render** — so the box stays unticked and
+the entry stays here rather than on the "Solid" table. This is the evidence standard doing its job: the code
+being finished is not the same as the topic being verified.
+
+*(Every other registered lesson is verified.)*
 
 ### Gaps — the honest list
 
-- **Never used at all:** `useContext` / `useReducer`, custom hooks, `useMemo` / `useCallback`, `useRef`, portals.
+- **Never used at all:** `useContext` / `useReducer`, custom hooks, `useMemo` / `useCallback`, portals.
 - **Taught in code but not yet exercised by a lesson of its own:** **lazy initialisers** (`useState(() => build())`). The mechanism is written up in entry 10 and appears in that lesson's prose, but no exercise has tested it, so it is not on the "Solid" table. Everything else the `useState` deep dive set out to cover — object/array replacement and the double-setter collapse — is now verified.
 
 ### Next, in order
 
-1. **`useRef`** — the next hook with an obvious use: `Sidebar.tsx` deliberately has no Escape-to-close, and the keydown listener it needs is a natural `useEffect` + `useRef` job.
-2. **`useContext` / `useReducer`** — worth learning once a lesson genuinely needs shared state.
-3. **Deploy to Vercel** — the current version is **`0.11.0`**: a running number that gains `0.01` with every new topic (and can be adjusted deliberately). Keep the `HomePage` badge (`v0.11`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
+1. **Deploy to Vercel** — the current version is **`0.12.0`**: a running number that gains `0.01` with every new topic (and can be adjusted deliberately). Keep the `HomePage` badge (`v0.12`) in step. Then confirm the SPA rewrite handles deep links on a real refresh.
+2. **`useContext` / `useReducer`** — the next hooks with no coverage, and the first topic that genuinely needs shared state rather than local state.
+3. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
 
 ---
 
@@ -872,6 +880,129 @@ rather than offered as something to repair. The full probe result is in `ROADMAP
 
 ---
 
+## 11 — `useRef` (DOM Handles & Values That Outlive a Render)
+
+- **Status:** RV (Reviewing) — lesson live, *explained* half still owed
+- **Added:** 2026-10-07
+- **Belt:** white
+- **Marker file:** `src/topics/use-ref/demo.tsx`
+- **Route:** `/dojo/topic/use-ref`
+
+### Explanation
+
+`useRef` returns one object with a single property, `current` — and it is **the same object on
+every render**. Two jobs fall out of that one fact:
+
+| Job | How it looks | Why it works |
+| --- | --- | --- |
+| A handle on a DOM node | `const inputRef = useRef<HTMLInputElement>(null);` then `<input ref={inputRef} />` | React fills in `.current` once the element exists |
+| A mutable value that survives a render | `const tally = useRef(0);` then `tally.current += 1` | The component function starts over each render, so a plain `let` would reset |
+
+The DOM half has one consequence worth expecting rather than debugging: **a ref starts as `null`.**
+The element does not exist until React has rendered it, so the first render always sees nothing.
+Every read admits it — `inputRef.current?.focus()` — and TypeScript enforces that, because
+`useRef<HTMLInputElement>(null)` makes `.current` genuinely possibly `null`.
+
+### The rule that keeps refs honest
+
+**A ref holds values that are not needed for rendering.** React does not watch a ref, so writing to
+`.current` schedules **no re-render**. A number the screen depends on would sit there out of date
+while the rest of the page moved on. That is what `useState` is for, and reaching for a ref when you
+meant state is the mistake this hook invites.
+
+The rule has a second half, and it is the one that catches people who already know the first:
+**do not read a ref during render either.** Not in the component body, not in JSX, not in a value
+derived from one. Effects and event handlers are where reads belong. In this project
+`react-hooks/refs` reports a render-time read as an **error**, which is why the demo's reads all sit
+in a mount effect and two click handlers.
+
+### Why this lesson has no fix-it exercise — the strongest case in the journal
+
+Thirteen candidate bugs were probed against both gates before the lesson was designed. **Seven were
+rejected**, and the rejections are not random:
+
+| Candidate bug | Killed by |
+| --- | --- |
+| Ref written during render to memoise a derived value | `react-hooks/refs` |
+| Ref used where state belongs, read in JSX | `react-hooks/refs` |
+| DOM ref passed to a function component | `tsc` **TS2322** |
+| DOM ref read in a handler with no null guard | `tsc` **TS18047** |
+| The "latest value" ref trick, written during render | `react-hooks/refs` |
+| Timer handle kept in `useState` | `react-hooks/set-state-in-effect` |
+| Ref callback returning a value | `tsc` **TS2322** |
+
+**The rule's boundary is exact, and it was measured.** A control file reading `ref.current` in the
+component body was rejected; an otherwise identical file reading the same ref only inside an effect
+and a handler passed. Body or JSX → rejected. Effect or handler → allowed.
+
+**Why that removes the whole exercise.** Every `useRef` mistake with an *observable symptom* has the
+same shape — a ref value reached the render — which is exactly what `react-hooks/refs` rejects. So a
+bug that passes both gates has **no symptom at all**, and an exercise whose symptoms cannot be
+observed fails the project's own rule that a planted bug must name its expected values and show
+simulated symptoms.
+
+What did pass both gates was either correct code (nothing to repair) or a mistake that is not about
+`useRef` at all: a keydown listener with no cleanup — the same one-in-two-shapes bug that already
+forced `use-effect` to a lecture — and a ref incremented in a handler but never displayed, which is
+invisible by construction.
+
+**The teaching point this leaves behind:** the "latest value ref" escape hatch for dodging a stale
+closure — still recommended by plenty of tutorials — is unavailable in this project, and the reason
+is not arbitrary. A ref the render depends on is a ref the render will show stale.
+
+### The hands-on half — `Sidebar.tsx`
+
+The lesson is an explainer, so the *demonstrated* half came from the Escape-to-close that `Sidebar.tsx`
+had been deliberately deferring in its own header comment:
+
+```tsx
+useEffect(() => {
+  if (!isMenuOpen) return;
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") setIsMenuOpen(false);
+  };
+  document.addEventListener("keydown", handleKeyDown);
+  panelRef.current?.focus();
+  return () => document.removeEventListener("keydown", handleKeyDown);
+}, [isMenuOpen, currentLabel]);
+```
+
+Both halves are present at once: a **DOM ref** (`panelRef`, focused so the keyboard is not left
+behind on the burger) and an **effect that subscribes**, with the unsubscribe on the way out.
+`currentLabel` is in the dependency array because the effect body reads it — tapping a lesson closes
+the menu, and the label under the burger changes with it.
+
+### Status — 2026-10-07: demonstrated, explained still owed
+
+**Demonstrated — done.** The lesson's `demo.tsx` focuses an input on mount through a DOM ref and keeps a
+running `{ renders, lastReps }` tally in a ref that is written by an effect and read by a click handler,
+never during render. `tsc` and `npm run lint` are green, and the Sample Code panel is a **true mirror** at
+**77 of 77** lines, measured rather than estimated. The Sidebar change adds the Escape key and
+focus-into-panel behaviour, also with both gates green.
+
+**Explained — a first pass on 2026-10-07, and it is not there yet.** Two questions were asked; the run is
+recorded below rather than smoothed over, because the wrong answer is the useful part.
+
+| # | Question | Result |
+| --- | --- | --- |
+| 1 | A handler does `tally.current = 5` and nothing else — what does the screen show? | **Correct.** "It keeps showing the old value, because a ref change never causes a re-render." That is the render-side rule, and it is the half that matters most. |
+| 2 | Why is *reading* `ref.current` during render wrong, even if the value is never displayed? | **Wrong.** Answered that refs are "not initialised until effects run, so the read is always undefined or null". **Refs are not initialised by effects** — the ref object exists from the first render, already holding its initial value. What starts `null` is a *DOM* ref's `.current`, and that is because React has not attached the element yet, not because an effect has not run. The real reason is timing: `.current` is shared mutable state that is not a fact about the current render — React may render twice, discard a render, and writes the DOM ref during the commit *after* the render function has returned. |
+| 3 | `useEffect(() => { counts.current = value; })` with **no** dependency array — what is `counts.current` after one update from 0 to 1? | **Wrong.** Answered "0, because an empty dependency array means the effect only ever runs once" — but the array was **omitted**, not empty. No array means the effect runs after **every** render, so it runs again after the update and `counts.current` is **1**. |
+| 4 | `useEffect(fn, [])` versus `useEffect(fn)` with no array — how often does each run? | **Correct**, after the feedback: "Once, and after every render." |
+
+**The lesson in the wrong answers, kept deliberately.** Q3 repeated the exact confusion that showed up in the
+`useEffect` session from the opposite direction: there an empty `[]` was believed to re-run when a value
+changed; here an omitted array was believed to run once. Both are the same rule read wrongly — **`[]` is a
+restriction, and omitting the array applies no restriction.** That trap is now in the cheat-sheet.
+
+**What is still owed.** The read-side reason, asked again as a fresh question rather than a repeat of Q2. The
+answer to look for is about *timing and shared mutable state* — that a render-time read is not a fact about
+that render, that React can render twice or discard a render, and that a DOM ref is written after the render
+returns. When that lands, flip this entry to the "Solid" table, set the marker to `OK`, tick the roadmap box,
+and move the line in `CLAUDE.md` from *pending* to *closed*.
+
+---
+
 ## Traps & mental models
 
 Every correction made during review, in one place. These are the things most likely to bite again.
@@ -892,6 +1023,7 @@ Every correction made during review, in one place. These are the things most lik
 | `useEffect` with no cleanup | Whatever the effect started keeps running. Change the dependency and React starts **another** one, so the work multiplies — a timer ticks twice as fast, a listener fires twice per event. The symptom appears several interactions after the mistake, which is why it survives review. Return `() => clearInterval(id)` / `removeEventListener` / `controller.abort()`. |
 | `useEffect` used to derive a value | Costs a second render and shows a stale value for one frame. If the value is a function of props or state, compute it during render. This is also what `react-hooks/set-state-in-effect` enforces. |
 | A dependency array that lies | `[]` or a partial list means the effect reads a value frozen at the render it ran in. `exhaustive-deps` names the value you left out — fix the effect, do not silence the warning. |
+| Confusing `[]` with *no array at all* | They are opposites in strength. `useEffect(fn, [])` runs **once**; `useEffect(fn)` with the second argument **omitted** runs after **every** render. An empty array is the strictest case, not the loosest. This has now been got wrong in both directions — believing `[]` re-runs on a change, and believing an omitted array runs only once. |
 | Reading state directly inside an interval | Forces that state into the dependency array, so the interval is torn down and rebuilt every tick. Use the updater form: `setSeconds((s) => s + 1)`. |
 | Controlled input missing one half | `value` without `onChange` freezes the box (React re-renders it back to the unchanged state); `onChange` without `value` types fine but the box stops reflecting state. A controlled input needs both. |
 | Form submit without `preventDefault()` | The browser runs its default submit — an HTTP request to the form's `action`/`method` — which reloads the page and throws state away. Call `event.preventDefault()` first. |
@@ -901,6 +1033,12 @@ Every correction made during review, in one place. These are the things most lik
 | `setReps(reps + 1)` written twice in one handler | Both lines read `reps` from the render they ran in, so both compute the **same** number and the second replaces the first — the count rises by 1, not 2. Use the updater form (`setReps((current) => current + 1)`) whenever the next value depends on the current one, once or several times. |
 | `useState(expensiveThing())` meaning to initialise lazily | Calls the function on **every** render and discards every result but the first. Pass the function itself: `useState(() => expensiveThing())`. |
 | Writing a field on an object held in state | `student.name = next` changes the very object React is holding, so `setStudent(student)` hands back the same reference and React bails out. Replace: `setStudent((current) => ({ ...current, name: next }))`. In this project ESLint's `react-hooks/immutability` rule rejects the mutation at the source — in every shape it was probed. |
+| A ref used for a value the screen shows | Nothing re-renders when a ref changes, because React does not watch it. The screen keeps the value from the last render and looks frozen while the ref moves on. If the reader sees it, it belongs in `useState`. |
+| Reading `ref.current` during render | Rejected by `react-hooks/refs` as an error in this project — in the component body, in JSX, or in a value derived from it. Read a ref in an effect or an event handler. The trap behind the rule: a render-time read gives you a value React never promised to keep in step. |
+| `useRef<HTMLInputElement>(null)` then `inputRef.current.focus()` | The ref is `null` on the first render, because the element does not exist yet. TypeScript refuses the unguarded read (`TS18047`: possibly `null`). Write `inputRef.current?.focus()`. |
+| Reaching for a ref to dodge a stale closure | The "latest value" ref trick works in the wild but is unavailable here: writing `.current` during render is exactly what `react-hooks/refs` rejects. Fix the dependency array instead — that is what it is for. |
+| Putting `ref` on your own component | A function component does not forward `ref` unless you ask it to; `tsc` refuses (`TS2322`: property `ref` does not exist). Refs attach to DOM elements, or to a component that opts in. |
+| A ref callback written as an arrow that returns a value | `<div ref={(node) => (boxRef.current = node)}>` returns the node, and React reads a returned value as a cleanup function. `tsc` rejects it (`TS2322`). Use a block body: `ref={(node) => { boxRef.current = node; }}`. |
 
 **The one mental model that explains most of React:** a re-render means **React calls your component
 function again**, with fresh arguments. State persists across those calls, plain variables do not, and
@@ -910,6 +1048,10 @@ relying on.
 **And the follow-up question a list adds:** when the arguments change *and the list is re-ordered*, which
 of those rows is the same row as before? That is what `key` answers, and it is why a wrong key shows up as
 state sitting on the wrong row rather than as data being wrong.
+
+**And what a ref adds to that model:** a ref is the one thing in a component that is *not* recomputed by
+the next call and *not* watched when it changes. That is precisely why it is useful for a DOM node or a
+tally, and precisely why it must never hold a value the render depends on.
 
 ---
 

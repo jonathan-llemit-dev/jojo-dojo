@@ -12,23 +12,23 @@ export const listsKeysTopic: Topic = {
   longDescription:
     "A list in React is an array of elements, and `map()` is what turns your data into them:\n\n" +
     "```\n{exercises.map((exercise) => (\n  <ExerciseRow key={exercise.id} exerciseName={exercise.name} />\n))}\n```\n\n" +
-    "That `key` is not a CSS id, a DOM attribute, or anything the user ever sees. It is the answer to " +
-    "one question React asks on every re-render: which element in the new list is the same thing as " +
+    "That `key` is not a CSS id or a DOM attribute, and the user never sees it. It answers a " +
+    "question React asks on every re-render: which element in the new list is the same thing as " +
     "which element in the old one?\n\n" +
     "The answer matters because React reuses rows between renders, and a reused row keeps its own " +
-    "state — a `useState` inside it, the text in an uncontrolled input. So the key decides which state " +
-    "belongs to which row. Get it wrong and the state stays where it was while the data moves past it.\n\n" +
-    "A key has to be both of these:\n" +
-    "- Stable — the same item keeps the same key across renders. `key={index}` fails this as soon as " +
-    "the list is sorted, rotated or filtered: index 1 is a different item afterwards, so React hands " +
-    "row 1's state to whichever item is now sitting there.\n" +
-    "- Unique among siblings — two rows with the same key are indistinguishable to React. A name looks " +
-    "unique, but real data repeats it, and React warns in the console rather than guessing.\n\n" +
-    "So the safe default is an id that comes from the data itself, like `exercise.id`. `key={index}` is " +
-    "only acceptable for a list that never changes order and never gains or loses a row.\n\n" +
-    "In the demo the list is keyed by the exercise's own id, so each row's state follows the " +
-    "exercise rather than the slot it sits in — press Done on a row, then Rotate, and the tick " +
-    "travels with the exercise.",
+    "state — a `useState` inside it, the text in an uncontrolled input. The key decides which state " +
+    "belongs to which row.\n\n" +
+    "A usable key needs two things:\n" +
+    "- **Stable.** The same item keeps the same key across renders. `key={index}` breaks this as soon " +
+    "as the list is sorted, rotated or filtered: index 1 is a different item afterwards, so React " +
+    "hands row 1's state to whatever is sitting there now.\n" +
+    "- **Unique among siblings.** Two rows sharing a key are indistinguishable to React. A name looks " +
+    "unique until real data repeats it, and then React warns in the console instead of guessing which " +
+    "is which.\n\n" +
+    "So reach for an id that comes from the data, like `exercise.id`. `key={index}` is only safe for " +
+    "a list that never changes order and never gains or loses a row.\n\n" +
+    "The demo keys each row by the exercise's own id, so its state follows the exercise rather than " +
+    "the slot. Press Done on a row, then press Rotate: the tick travels with the exercise.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.

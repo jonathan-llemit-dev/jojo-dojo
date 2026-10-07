@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
 import { topicRegistry } from "../../topics/registry";
 import { beltDotClass } from "../../topics/beltStyles";
@@ -20,21 +20,39 @@ import { beltDotClass } from "../../topics/beltStyles";
  * 3. Tapping a link closes the menu, so the panel never stays open on top of the lesson
  *    you just opened.
  *
+ * **Escape closes the burger menu**, and focus moves into the panel when it opens — both
+ * jobs for the same effect, because both are about a panel that only exists on phones.
+ * The effect reads `currentLabel`, so that value belongs in its dependency array: tapping a
+ * lesson closes the menu, and the label underneath the burger changes with it.
+ *
  * Rows show `topic.shortTitle` rather than `topic.title`: the full titles are
  * "Concept — subtitle" strings and were being truncated to "Components & Props — Dat…",
  * which made the list unscannable. A two-digit lesson number leads each row so the
  * sidebar reads as an ordered path rather than an unordered bag of links.
- *
- * There is deliberately **no Escape-to-close**: that needs a keydown listener, which in
- * React means `useEffect`. Leaving it out keeps this file free of a hook the journal has
- * not taught yet — it is a good first job for `useEffect` when that topic comes up.
  */
 export function Sidebar() {
   const activeSlug = useMatch("/dojo/topic/:slug")?.params.slug ?? null;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const panelRef = useRef<HTMLElement>(null);
 
   const activeTopic = topicRegistry.find((topic) => topic.slug === activeSlug);
   const currentLabel = activeTopic?.shortTitle ?? "All Topics";
+
+  // Escape closes the panel; opening it moves focus inside so the keyboard is not left
+  // behind on the burger. The listener is removed on the way out — an effect that
+  // subscribes to something has to unsubscribe, or every open would add another one.
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMenuOpen(false);
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    panelRef.current?.focus();
+
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isMenuOpen, currentLabel]);
 
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -71,9 +89,11 @@ export function Sidebar() {
 
       <nav
         id="lesson-list"
+        ref={panelRef}
+        tabIndex={-1}
         className={`${
           isMenuOpen ? "block" : "hidden"
-        } mt-2 max-h-[70vh] overflow-y-auto md:mt-0 md:block md:max-h-none md:space-y-1 md:overflow-y-visible`}
+        } mt-2 max-h-[70vh] overflow-y-auto outline-none md:mt-0 md:block md:max-h-none md:space-y-1 md:overflow-y-visible`}
       >
         <Link
           to="/dojo"

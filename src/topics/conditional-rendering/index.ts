@@ -10,22 +10,25 @@ export const conditionalRenderingTopic: Topic = {
   description:
     "Pick between &&, a ternary and an early return — and avoid the falsy-value trap that prints a stray 0.",
   longDescription:
-    "Conditional rendering is not a React feature; it is plain JavaScript deciding what to return. JSX has " +
-    "no if statement of its own, so you use an expression. There are three tools, and choosing the right one " +
-    "is most of the skill:\n\n" +
+    "Showing something only sometimes is not a React feature — it is plain JavaScript deciding what to " +
+    "return. JSX has no `if` of its own, so you use an expression. There are three to choose from, and " +
+    "picking the right one is most of the skill:\n\n" +
     '- `condition && <Thing />` — show Thing, or show nothing. Reach for this when there is no "else".\n' +
-    "- `condition ? <A /> : <B />` — show A or B. Reach for this whenever BOTH outcomes are real, because a " +
+    "- `condition ? <A /> : <B />` — show A or B. Reach for this when both outcomes are real, because a " +
     "ternary cannot leave a gap.\n" +
-    "- `if (!data) return <Empty />` early in the component — when the whole component differs, not just one " +
-    "line of it.\n\n" +
-    "The trap that catches everyone: `&&` does not coerce to a boolean. It returns the LEFT operand when that " +
-    "operand is falsy, and React renders numbers. So `{reps && <p>…</p>}` prints a bare `0` on the page when " +
-    "reps is 0. A comparison fixes it — `{reps > 0 && …}` — because `reps > 0` really is `true` or `false`. " +
-    "React renders nothing for `false`, `null`, `undefined` and `true`; everything else, `0` and `NaN` " +
-    "included, ends up on screen.\n\n" +
-    "The second trap is using two separate `&&`s where you meant one either/or. Independent guards can " +
-    "overlap (both appear) or leave a gap (neither appears), because nothing ties them together. If there " +
-    "are two possible states and one of them must always be visible, that is a ternary.",
+    "- `if (!data) return <Empty />` early in the component — when the whole component differs, not just " +
+    "one line of it.\n\n" +
+    "The trap that catches everyone is with `&&`. It does not turn the left side into `true` or `false` " +
+    "— it returns that value itself when it is falsy, and React happily renders numbers. So this prints " +
+    "a stray `0` on the page whenever `reps` is zero:\n\n" +
+    "```\n{reps && <p>You have logged {reps} reps.</p>}\n```\n\n" +
+    "Compare instead, because `reps > 0` really is a boolean:\n\n" +
+    "```\n{reps > 0 && <p>You have logged {reps} reps.</p>}\n```\n\n" +
+    "React draws nothing for `false`, `null`, `undefined` and `true`. Everything else reaches the " +
+    "screen — including `0` and `NaN`.\n\n" +
+    "The second trap is writing two separate `&&`s where you meant one either/or. Nothing ties the two " +
+    "conditions together, so they can overlap and show both things, or leave a gap and show neither. If " +
+    "one of two states must always be visible, that is a ternary.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.
