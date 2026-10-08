@@ -3,8 +3,8 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 
 // The version this run expects. Kept as one constant so a topic bump is a one-line edit
 // here rather than four scattered literals.
-const VERSION = "0.14.0";
-const SHORT = "v0.14";
+const VERSION = "0.15.0";
+const SHORT = "v0.15";
 
 let fails = 0;
 const ok = (m) => console.log(`  ok   ${m}`);
@@ -85,7 +85,7 @@ const reg = readFileSync("src/topics/registry.ts", "utf8");
 const entries = [...(reg.match(/export const topicRegistry: Topic\[\] = \[([\s\S]*?)\];/)?.[1] ?? "").matchAll(/^\s*(\w+),/gm)].map((m) => m[1]);
 const dirs = readdirSync("src/topics", { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort();
 console.log(`  ${entries.length} registry entries | ${dirs.length} folders`);
-if (entries.length === 11 && dirs.length === 11) ok("11 entries and 11 folders"); else bad("entry/folder count mismatch");
+if (entries.length === 12 && dirs.length === 12) ok("12 entries and 12 folders"); else bad("entry/folder count mismatch");
 for (const d of dirs) {
   const demo = readFileSync(`src/topics/${d}/demo.tsx`, "utf8");
   const status = demo.match(/Status: (OK|LD|RV)/)?.[1];
@@ -131,7 +131,7 @@ for (const name of dirs) {
 
 // ── 4. the numbers CLAUDE.md claims ─────────────────────────────────────────
 head("CLAUDE.md parity claims vs measured");
-const claims = { "components-props": 46, "conditional-rendering": 63, "event-handling": 105, "lists-and-keys": 62, "use-effect": 64, forms: 53, "use-state-deep-dive": 114, "use-ref": 77, "use-context-reducer": 376 };
+const claims = { "components-props": 46, "conditional-rendering": 63, "event-handling": 105, "lists-and-keys": 62, "use-effect": 64, forms: 53, "use-state-deep-dive": 114, "use-ref": 77, "use-context-reducer": 376, "custom-hooks": 87 };
 for (const [slug, n] of Object.entries(claims)) {
   const claimed = claude.includes(`${n} of ${n}`);
   const measured = parity[slug]?.exact && parity[slug].a === n;
@@ -142,20 +142,21 @@ for (const [slug, n] of Object.entries(claims)) {
 // ── 5. docs consistency ─────────────────────────────────────────────────────
 head("docs consistency");
 const checks = [
-  [claude.includes("eleven lessons registered and all eleven verified"), "CLAUDE.md: eleven/all-eleven one-liner"],
+  [claude.includes("twelve lessons registered — eleven verified, one awaiting its build task"), "CLAUDE.md: twelve/eleven+1 one-liner"],
   [claude.includes("Do not commit. The learner makes every commit."), "CLAUDE.md: the no-commit rule is present"],
-  [claude.includes(`**\`${VERSION}\`** with eleven topics`), "CLAUDE.md: versioning sentence"],
+  [claude.includes(`**\`${VERSION}\`** with twelve topics`), "CLAUDE.md: versioning sentence"],
   [claude.includes("the site has been live on Vercel"), "CLAUDE.md: deploy framed as settled"],
   [!claude.includes("Deploy to Vercel — the current version"), "CLAUDE.md: no deploy objective remains"],
   [claude.includes("**Build-on task** — a correct lecture"), "CLAUDE.md: build-on task is the documented default"],
   [roadmap.includes("React and TypeScript topics only"), "ROADMAP.md: scope stated"],
-  [roadmap.includes("eleven lessons live"), "ROADMAP.md: footer eleven"],
+  [roadmap.includes("twelve lessons live"), "ROADMAP.md: footer twelve"],
   [!/^- \[ \] .*(Deploy|Social links|Custom domain|LinkedIn)/m.test(roadmap), "ROADMAP.md: three chores not re-added"],
   [!/^- \[ \] Vite \+ React/m.test(roadmap), "ROADMAP.md: chore section removed"],
   [roadmap.includes("Redux") && roadmap.includes("Next.js"), "ROADMAP.md: Redux/Next.js parked under 'Later'"],
   [roadmap.includes("`BUILD` = lecture live"), "ROADMAP.md: BUILD marker documented"],
   [notes.includes("## 11 — `useRef`"), "NOTES.md: entry 11 present"],
   [notes.includes("## 12 — `useContext` & `useReducer`"), "NOTES.md: entry 12 present"],
+  [notes.includes("## 13 — Custom hooks"), "NOTES.md: entry 13 present"],
   [/^- \*\*Never used at all:\*\*(?!.*useReducer)/m.test(notes), "NOTES.md: useReducer off the 'never used' line"],
   [readme.includes("Eleven lessons verified"), "README.md: eleven lessons verified"],
   [readme.includes("jojo-dojo.vercel.app"), "README.md: live URL present"],

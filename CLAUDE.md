@@ -46,7 +46,7 @@ let him make it. Checking state with `git status` / `git log` / `git diff` is al
 how to check knowledge, are under "Reviewer Responsibilities" below. That is the rule most likely to be
 misread by a fresh session: **do not tick a box because a lesson file exists.**
 
-**Current state, one line:** eleven lessons registered and all eleven verified.
+**Current state, one line:** twelve lessons registered — eleven verified, one awaiting its build task.
 
 ## Commands
 
@@ -129,9 +129,12 @@ src/
     ├── use-ref/
     │   ├── demo.tsx            # UseRefDemo — DOM handles, and a ref tally that outlives a render
     │   └── index.ts            # Exports useRefTopic registry entry
-    └── use-context-reducer/
-        ├── demo.tsx            # UseContextReducerDemo — one reducer, three context-reading panels
-        └── index.ts            # Exports useContextReducerTopic registry entry
+    ├── use-context-reducer/
+    │   ├── demo.tsx            # UseContextReducerDemo — one reducer, three context-reading panels
+    │   └── index.ts            # Exports useContextReducerTopic registry entry
+    └── custom-hooks/
+        ├── demo.tsx            # CustomHooksDemo — one useStopwatch, two different components
+        └── index.ts            # Exports customHooksTopic registry entry
 ```
 
 **Key patterns to maintain:**
@@ -218,13 +221,13 @@ new topic = current version + 0.01
 
 The version is therefore a **running number, not a formula**. It is *not* computed from the topic count, and
 the learner may also adjust it deliberately — a milestone, a deploy, a fresh start. What is fixed is the step:
-one new lesson, one `+0.01`. At the time of writing the project is at **`0.14.0`** with eleven topics.
+one new lesson, one `+0.01`. At the time of writing the project is at **`0.15.0`** with twelve topics.
 
 Three artefacts must move together whenever the version changes:
 
 1. `"version"` in `package.json` — and the **two** `"version"` entries at the top of `package-lock.json`
    (the root one and the `packages[""]` one). Never hand-edit dependency versions in the lock.
-2. The badge in `src/pages/HomePage.tsx`, which shows the short form: `v0.14`.
+2. The badge in `src/pages/HomePage.tsx`, which shows the short form: `v0.15`.
 3. The version sentence in "Current project state" below.
 
 *History note: this section used to claim the version was "derived from the topic count, so it is never
@@ -248,7 +251,7 @@ stands as the reason the three artefacts must stay in step: a hand-picked `v0.1.
   - Write the template literal **flush against the left margin**. A template literal preserves indentation, so indenting it to match the surrounding code renders as ragged leading whitespace in the Sample Code panel.
   - **If the demo contains its own template literal, escape it.** A bare backtick would terminate the sample's template literal early and `${` would be interpolated, so write `` \` `` and `\${` in `index.ts`, and make the parity check unescape before comparing. `conditional-rendering` is the worked example.
 - **The import line is not decoration — it follows from the hooks used.** `jsx` correctly has none: it calls no hook, and React 19 needs no `import React`, so adding one would teach the wrong thing. `use-state`, `components-props` and `conditional-rendering` all open with `import { useState } from "react";`. Verified: every snippet's imports match its demo's exactly.
-- **Current parity**, re-verified by character-level diffing (not regex — see the note below) after stripping comments and blank lines: `components-props` matches at 46 of 46 code lines; `conditional-rendering` matches at **63 of 63**, and the demo strips to 64 lines because the removed JSX comment leaves one empty `{}` line, so compare against the demo with that line removed; `event-handling` matches at **105 of 105**; `lists-and-keys` matches at **62 of 62** with the same one-line `{}` residue (demo strips to 63); `use-effect` matches at **64 of 64**; `jsx` matches at 9 except that the sample omits the leading `export` keyword (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability, 38 code lines down to 11; `forms` matches at **53 of 53**; `use-state-deep-dive` matches at **114 of 114**; `use-ref` matches at **77 of 77**; `use-context-reducer` matches at **376 of 376**. **`NOTES.md` quotes the same snippets** — when a snippet changes, the notes' copy of it is part of the mirror and has drifted before.
+- **Current parity**, re-verified by character-level diffing (not regex — see the note below) after stripping comments and blank lines: `components-props` matches at 46 of 46 code lines; `conditional-rendering` matches at **63 of 63**, and the demo strips to 64 lines because the removed JSX comment leaves one empty `{}` line, so compare against the demo with that line removed; `event-handling` matches at **105 of 105**; `lists-and-keys` matches at **62 of 62** with the same one-line `{}` residue (demo strips to 63); `use-effect` matches at **64 of 64**; `jsx` matches at 9 except that the sample omits the leading `export` keyword (accepted — a sample is illustrative, not something to paste); `use-state` is deliberately trimmed for readability, 38 code lines down to 11; `forms` matches at **53 of 53**; `use-state-deep-dive` matches at **114 of 114**; `use-ref` matches at **77 of 77**; `use-context-reducer` matches at **376 of 376**; `custom-hooks` matches at **87 of 87**. **`NOTES.md` quotes the same snippets** — when a snippet changes, the notes' copy of it is part of the mirror and has drifted before.
 - **Re-run that diff rather than eyeballing it** — and write the checker carefully. Two plausible one-liners both lie: starting the strip at "the first `import`" returns **zero lines** for `jsx/demo.tsx`, which has no import, producing a false EXACT MIRROR; and a stripper that only removes `//` lines counts JSDoc blocks as code, inflating every demo by 8–10 lines. The reliable form tracks block-comment state character by character. Both mistakes were made in one session before the numbers reconciled.
 - **The reader is a stranger, not the learner.** Anything a visitor can see — every `longDescription`, the Sample Code panel, the Live Demo — must read as an ordinary tutorial page. **Never narrate the authoring process in reader-facing text.** No "this lesson shipped as a fix-it exercise", no "this is not a fix-it exercise because…", no "the two planted bugs were…", no "the demo and the sample are the same component", no "the exercise is fixed". A reader has no idea what any of that means, and it makes the page read like someone's homework file. The same goes for reasoning about `CLAUDE.md`, `NOTES.md` or a convention: those are for whoever maintains the repo, not for the person learning React.
   - **Where that material belongs instead:** the lesson's `demo.tsx` header may carry a marker plus a short *teaching* paragraph (the rule the demo illustrates); the *why* of how the lesson was authored, what was once broken, and which gate forced a design change belongs in `HISTORY.md`, `NOTES.md` or this file. If a description currently justifies a lesson's existence by an internal rule, that sentence is a defect, not documentation.
@@ -260,7 +263,7 @@ stands as the reason the three artefacts must stay in step: a hand-picked `v0.1.
   - **No hedges that blame the reader.** "a consequence worth expecting rather than debugging" implies they would have got it wrong.
   - **Keep every paragraph short.** A hard cap of **70 words**, and a bullet list counts as one block *per bullet*. The worst offender before this rewrite was a 146-word paragraph in `use-state-deep-dive`; `use-effect` had five over 60 and `use-ref` had four.
   - **Say what breaks, concretely.** "the clock counts two seconds per second" lands; "a leak compounds rather than appearing" does not.
-  - **A measured trap:** Flesch reading ease rated `use-ref` the *easiest* of all ten lessons (81) while it was the hardest to read. Sentence-length scores are blind to abstraction — do not use one to check this. Run **`npm run check:prose`** instead (`scripts/check-prose.mjs`): it enforces the RichText safety rules and these voice limits together, and currently passes on all eleven with a longest block of 67 words.
+  - **A measured trap:** Flesch reading ease rated `use-ref` the *easiest* of all ten lessons (81) while it was the hardest to read. Sentence-length scores are blind to abstraction — do not use one to check this. Run **`npm run check:prose`** instead (`scripts/check-prose.mjs`): it enforces the RichText safety rules and these voice limits together, and currently passes on all twelve with a longest block of 67 words.
   - Caveat kept from the entry above: this is about *reader-facing* text. `demo.tsx` headers, `NOTES.md`, `ROADMAP.md` and `HISTORY.md` are maintenance documents and may say exactly what they mean, in whatever register is clearest.
 
 - **Exception — fix-it exercises.** While a lesson ships deliberately broken, its snippet teaches the *correct* pattern instead of mirroring the buggy demo. Swap it for the real mirror once the exercise is fixed. **No lesson is currently in that state** — `use-state-deep-dive` was the most recent one and became a real mirror when its exercise was fixed, measured at 114 of 114 lines after regeneration.
@@ -315,8 +318,8 @@ stands and what comes next.
 
 ### Current project state
 - Landing page `/` works; "Enter Dojo" → `/dojo` navigates to the tutorial shell, and the About links scroll to the About section.
-- **Version `0.14.0`** — a running number, advanced by `0.01` for each new topic and adjustable deliberately. See "Versioning" below. The badge in `HomePage.tsx` shows the short form `v0.14`. *(This step was a deliberate bump for the shell's UI/UX pass, not a new topic — the topic count stayed at eleven.)*
-- **Eleven lessons registered, all eleven verified**: `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys`, `event-handling`, `use-effect`, `forms`, `use-state-deep-dive`, `useRef` and `use-context-reducer`. The eleventh is the first **build-on task**: rather than extending the lesson demo, the learner built a second, independent shared-state feature — a meal planner with its own `createContext`, its own six-member action union, a `useDiet()` accessor and three propless panels — and explained the provider rule and the `never` default in their own words (3/3). `use-state-deep-dive` was a fix-it exercise, fixed by the learner with both gates green and its sample now a true mirror. `useRef` became the tenth and took three passes to clear — the barrier was a real misconception, not a wording slip: it held that refs are *uninitialised* until an effect runs, when `useRef(1)` already holds `1` during the first render. Both are verified because the mechanism was explained in their own words. All eleven are added through the registry, with no new routes written.
+- **Version `0.15.0`** — a running number, advanced by `0.01` for each new topic and adjustable deliberately. See "Versioning" below. The badge in `HomePage.tsx` shows the short form `v0.15`. (`0.14.0` was a deliberate bump for the shell's UI/UX pass rather than a new topic; `0.15.0` is the twelfth lesson.)
+- **Twelve lessons registered — eleven verified, one in progress**: `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys`, `event-handling`, `use-effect`, `forms`, `use-state-deep-dive`, `useRef`, `use-context-reducer` and `custom-hooks`. `use-context-reducer` was the first **build-on task**: rather than extending the lesson demo, the learner built a second, independent shared-state feature — a meal planner with its own `createContext`, its own six-member action union, a `useDiet()` accessor and three propless panels — and explained the provider rule and the `never` default in their own words (3/3). `use-state-deep-dive` was a fix-it exercise, fixed by the learner with both gates green and its sample now a true mirror. `useRef` became the tenth and took three passes to clear — the barrier was a real misconception, not a wording slip: it held that refs are *uninitialised* until an effect runs, when `useRef(1)` already holds `1` during the first render. Both are verified because the mechanism was explained in their own words. The twelfth, `custom-hooks`, is the second build-on task and is **not yet verified**: the lecture is live with an 87-of-87 mirror, and the learner's own hook is outstanding (entry 13). All twelve are added through the registry, with no new routes written.
 - **The exercise model changed on 2026-10-08 — a build-on task is now the default.** `event-handling`, `use-effect` and `useRef` are explainers, because their characteristic mistakes cannot be shipped as compiling, lint-clean bugs; `use-context-reducer` is the first build-on task. Under a build-on task the learner writes a **new component or a new feature on the demo** as the hands-on half, measured against acceptance criteria agreed beforehand. The fix-it exercise is kept for topics that turn on a bug worth diagnosing. `use-state-deep-dive` *was* a fix-it exercise, but its *object*-state bug had to be dropped for the same reason (see the gate list under "Fix-it exercises"); its three array-shaped bugs are now fixed.
 - **Layout is mobile-responsive**, confirmed by the learner at phone width: below `md` the topic list is a burger dropdown, and the nav/padding/headings scale down. The reviewer can now re-check this directly in the browser (see the browser-automation note below).
 - A scratch routing playground lives at `/test/:student/:name/:subjects` (`components/sandbox/TestGreeting.tsx`), kept deliberately as a labelled demonstration of the `:param` ↔ `useParams()` name contract.
@@ -335,7 +338,7 @@ Ordering note: `Forms` is now verified, so it no longer appears among the open l
 + error states) that `useEffect` deferred to Forms is still deferred — there is no server in this project, so a
 fetch demo would have to fake its data. The remaining open lines, in priority order:
 
-1. **Custom hooks** — extracting a repeated hook sequence into one place.
+1. **Custom hooks** — lecture live at `/dojo/topic/custom-hooks` as a **build-on task**, so the open half is the learner's own hook rather than a lesson to write. Entry 13 of `NOTES.md` holds the brief, its expected values and the seven acceptance criteria.
 2. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them.
 3. **Portals** — rendering outside the parent DOM hierarchy.
 4. **One left-over surface from the `useState` deep dive** — **lazy initialisers** (`useState(() => build())`) are written up in lesson 10's prose but have never been exercised, so they are the one part of that topic not on the "Solid" table. It needs a lesson of its own or a question in a future review, not a new claim.

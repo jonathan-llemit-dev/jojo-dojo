@@ -5,7 +5,7 @@
 
 A dark, dojo-themed React learning journal forged with **Vite**, styled with **Tailwind CSS v4**, and live on **Vercel** at [jojo-dojo.vercel.app](https://jojo-dojo.vercel.app/). The landing page is at `/`; every React lesson then lives at its own URL under `/dojo`. Every commit is a rep. Every deploy is a rank up.
 
-**Version `0.14.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
+**Version `0.15.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
 
 ---
 
@@ -87,7 +87,8 @@ jojo-dojo/
 │       ├── use-state/         # One folder per lesson: demo.tsx + index.ts
 │       ├── use-state-deep-dive/  # Object & array state, lazy initialisers, two setters
 │       ├── use-ref/           # DOM handles & values that outlive a render
-│       └── use-context-reducer/  # Shared state: one reducer, one context, three panels
+│       ├── use-context-reducer/  # Shared state: one reducer, one context, three panels
+│       └── custom-hooks/      # A hook sequence extracted once and reused
 ├── index.html                 # HTML shell
 ├── vite.config.ts             # Vite + Tailwind plugin config
 ├── vercel.json                # SPA fallback so deep links resolve (site is live on Vercel)
@@ -139,14 +140,14 @@ This is the visitor-facing summary. The **master checklist — every study topic
 This project is **about React and TypeScript**, so the roadmap tracks topics rather than chores.
 
 - [x] Eleven lessons verified — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling, `useEffect`, forms & controlled inputs, `useState` deep dive (object & array state), `useRef`, `useContext` & `useReducer`
-- [ ] Custom hooks — extracting reusable logic
+- [ ] Custom hooks — extracting reusable logic — **lecture live**, hands-on build outstanding
 - [ ] `React.memo` / `useMemo` / `useCallback` — performance, and when not to reach for it
 - [ ] Portals — rendering outside the parent DOM hierarchy
 - [ ] Reusable UI kit — cards, buttons, modals, form components
 - [ ] Later, not now: Redux and Next.js (see `ROADMAP.md`)
 
 Live at <https://jojo-dojo.vercel.app/> — deployed since the first commit, and every push to `main`
-publishes automatically. The version is a running number (`0.14.0` today; one new topic adds `0.01`).
+publishes automatically. The version is a running number (`0.15.0` today; one new topic adds `0.01`).
 
 ---
 

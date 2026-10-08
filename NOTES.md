@@ -73,11 +73,15 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### In progress — lesson live, verification outstanding
 
-*(Empty. Every registered lesson is verified.)*
+**`custom-hooks` (entry 13)** — the lecture and its demo are live at `/dojo/topic/custom-hooks` as a
+**build-on task**, the second of that kind. Both gates are green, the Sample Code panel is a true mirror at
+65 of 65, and the roadmap line is marked `BUILD`. The task, its expected values and the seven acceptance
+criteria are in entry 13 — and the box stays unticked until the learner's own hook *and* their explanation are
+both on the record.
 
 ### Gaps — the honest list
 
-- **Never used at all:** custom hooks, `useMemo` / `useCallback`, portals.
+- **Never used at all:** `useMemo` / `useCallback`, portals.
 - **Taught in code but not yet exercised by a lesson of its own:** **lazy initialisers** (`useState(() => build())`). The mechanism is written up in entry 10 and appears in that lesson's prose, but no exercise has tested it, so it is not on the "Solid" table. Everything else the `useState` deep dive set out to cover — object/array replacement and the double-setter collapse — is now verified.
 
 ### Next, in order
@@ -86,13 +90,13 @@ React and TypeScript topics only. Deploy, social links and a custom domain were 
 settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
 deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
-1. **Custom hooks** — extracting a repeated hook sequence into one place.
+1. **Custom hooks** — lecture live, hands-on build outstanding. Write a hook of your own and use it in two places; the brief and the acceptance criteria are in entry 13.
 2. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them.
 3. **Portals** — rendering outside the parent DOM hierarchy.
 4. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
 
-The project is at **`0.14.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
-deliberately). Keep the `HomePage` badge (`v0.14`) in step; the three version artefacts are listed in
+The project is at **`0.15.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
+deliberately). Keep the `HomePage` badge (`v0.15`) in step; the three version artefacts are listed in
 `CLAUDE.md` under "Versioning".
 
 ---
@@ -1132,6 +1136,72 @@ them is a criterion: the number inputs hold a `number` and coerce with `+event.t
 box snaps it to `0` instead of going empty; `removeFood` also wipes the in-progress form fields and re-sets
 `nextId` to itself; and `state.caloriesDraft <= 0` is `false` for `NaN`, so `Number.isFinite(...)` would close
 that hole.
+
+---
+
+## 13 — Custom hooks (a hook sequence with a name of your own)
+
+- **Status:** LD (Learning) — lecture live 2026-10-08, hands-on build outstanding
+- **Added:** 2026-10-08
+- **Belt:** white
+- **Marker file:** `src/topics/custom-hooks/demo.tsx`
+- **Route:** `/dojo/topic/custom-hooks`
+
+### What this lesson is
+
+The first topic whose subject is **your own code** rather than a React API. A custom hook is not something
+React ships; it is a function whose name starts with `use` and which calls other hooks. The demo is one
+`useStopwatch()` — two `useState` calls, a `useEffect` that runs the interval, and a cleanup that stops it —
+called by a round clock and a rest row: two different components with different markup and different buttons.
+
+### The three facts the lesson turns on
+
+1. **The `use` prefix is a contract with the linter, not a decoration.** `react-hooks/rules-of-hooks` reads the
+   name to decide whether hooks may be called in that function at all. Measured: a function named `stopwatch`
+   holding `useState` + `useEffect` is rejected twice — *"React Hook "useState" is called in function
+   "stopwatch" that is neither a React function component nor a custom React Hook function. React Hook names
+   must start with the word "use"."* `tsc` has no opinion here; this is a lint rule, so the linter is the only
+   thing that tells you.
+2. **A hook is not a store.** Every call gets its own state. The round clock and the rest row keep separate
+   times, visible on screen. Sharing state between components is `useContext`'s job (entry 12) — a hook shares
+   the *code*, not the data.
+3. **Callers see the return value and nothing else.** The rest row takes the three things it needs and ignores
+   `reset`; neither component can tell that two pieces of state and an effect are hiding inside, which is what
+   lets the hook be rewritten without touching a call site.
+
+### The hands-on task — build, do not repair
+
+**The task.** Write **a custom hook of your own** — a function whose name starts with `use` and which composes
+**at least two** React hooks — and call it from **two different components** on the lesson page. The two call
+sites must be genuinely different components, not one component rendered twice with a different prop, because
+otherwise the extraction is not earned: two instances of one component already share the code.
+
+**Expected values.** The page must still work exactly as it does now: the round clock's `Start`/`Pause` toggles
+and `Reset` returns it to `0:00`, the rest row's single button toggles, and neither clock ever moves the other.
+
+**The seven acceptance criteria — fixed now, not after the fact:**
+
+| # | Criterion |
+| - | --- |
+| 1 | The hook's name starts with `use`, and it is called only at the top level of a component or another hook — never inside a condition, a loop or an event handler |
+| 2 | It composes **at least two** React hooks, so it is a sequence rather than a one-hook wrapper |
+| 3 | It is called from **two different components**, and each call keeps its own state — shown, not asserted |
+| 4 | The call sites do not reach into its internals: no `useState` in a caller holding something the hook already owns |
+| 5 | Whatever it starts, it stops — a listener, an interval or a subscription has a real cleanup |
+| 6 | `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` stay green |
+| 7 | The extraction is earned: the two components would otherwise hold the same sequence, and would have to change together |
+
+**How it gets assessed.** The code is the *demonstrated* half. The *explained* half is two or three questions
+anchored in that code, or a prose explanation handed over with it. A failed criterion is named, with the line it
+failed on, and the box stays open.
+
+### Why this is a lecture rather than a fix-it exercise
+
+The mistakes this topic has to teach are **naming and placement** mistakes — a function without the `use`
+prefix, a hook called inside a condition, a hook called from a callback — and every one of them is the same
+`react-hooks/rules-of-hooks` rule measured above. There is no compiling bug with an observable symptom left to
+plant, so the interesting question is the other one: *would you have extracted this, and can you say why?* That
+is what a build-on task asks.
 
 ---
 

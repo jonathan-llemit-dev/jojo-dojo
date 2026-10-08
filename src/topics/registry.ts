@@ -10,6 +10,7 @@ import { formsTopic } from "./forms";
 import { useStateDeepDiveTopic } from "./use-state-deep-dive";
 import { useRefTopic } from "./use-ref";
 import { useContextReducerTopic } from "./use-context-reducer";
+import { customHooksTopic } from "./custom-hooks";
 
 /**
  * Aggregate topic registry — the single source of truth for both the sidebar
@@ -29,6 +30,7 @@ export const topicRegistry: Topic[] = [
   useStateDeepDiveTopic,
   useRefTopic,
   useContextReducerTopic,
+  customHooksTopic,
 ];
 
 /**

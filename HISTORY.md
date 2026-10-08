@@ -10,6 +10,51 @@ Newest first.
 
 ## Session log
 
+### Lesson 12 — `custom-hooks`, and a demo flaw caught by re-reading my own reasoning (2026-10-08)
+
+**The next open line was custom hooks**, and it went out as the second **build-on task**: a lecture and a working
+demo, with the learner's own hook as the hands-on half. Version `0.14.0` → **`0.15.0`**, twelve lessons.
+
+**The load-bearing fact was probed before the lecture was written.** The claim the lesson needed was that the
+`use` prefix is not a style convention, so a throwaway file held a `useState` + `useEffect` sequence inside a
+function named `countdown`, and `react-hooks/rules-of-hooks` rejected it twice:
+
+> `React Hook "useState" is called in function "countdown" that is neither a React function component nor a
+> custom React Hook function. React component names must start with an uppercase letter. React Hook names must
+> start with the word "use".`
+
+That is the spine of the lesson, and it is quoted verbatim in the prose. Worth noting what it is *not*: `tsc` has
+no opinion about hook names at all — this is a lint rule, so the linter is the only thing that tells you. Saying
+"the compiler enforces it" would have been wrong.
+
+**A flaw in my own first draft, found by re-reading the rule the lesson teaches.** The demo opened as one
+`TimerCard` rendered twice, each instance calling `useStopwatch()`. It looked fine and it demonstrated per-call
+state — but it did not demonstrate the thing the lesson is *about*. Two instances of one component already share
+the code; nothing is duplicated, so the extraction is not earned and the lesson's closing rule ("extract when a
+sequence actually repeats") would be illustrated by a demo that contradicts it. **The demo had to be two
+different components**: a `RoundClock` built around a big readout and two buttons, and a compact `RestRow` with a
+single button. Different markup, different subsets of the returned API, same sequence underneath. The paragraph
+that caught it was the one claiming the rest row "takes the three things it needs and ignores the reset" — which
+is only true if the two call sites are genuinely different.
+
+**The lesson's three claims, each visible on the page.** One: the sequence lives in one function. Two: a hook is
+not a store — every call gets its own state, so starting the round clock leaves the rest row at zero, which the
+reader can check in about two seconds. Three: callers see only the return value, so the hook can be rewritten
+without touching a call site.
+
+**Shipped and measured.** `demo.tsx` (a `useStopwatch` hook, two consumer components), `index.ts` with a
+six-paragraph `longDescription` and a real 87-line mirror regenerated mechanically, the registry entry, and the
+seven-place checklist: `CLAUDE.md` tree + counts + parity, `package.json`/lock/badge version, `NOTES.md` entry 13
+with the task and its **seven acceptance criteria fixed before the learner starts**, `ROADMAP.md` line marked
+`BUILD`, `README.md` structure and roadmap, and `check:repo` moved from 11 to 12 entries with the new parity
+claim. `tsc`, `lint` and `check:prose` green; `check:repo` `ALL CHECKS PASSED` with `custom-hooks` measured at
+**87 of 87**.
+
+**The build-on task asks for something the demo does not do.** The demo has one hook and two components; the
+learner has to write their *own* hook — naming, composition, cleanup and all — and call it from two different
+components, with the criteria written down first. Criterion 3 is the one that needs a browser to settle: each
+call keeps its own state, shown rather than asserted. **Not committed — the learner makes every commit.**
+
 ### UI/UX — the shell gets two scroll panes, and a back-to-top button (2026-10-08)
 
 **The complaint was concrete.** On a long lesson you had to scroll all the way back up by hand, and scrolling
