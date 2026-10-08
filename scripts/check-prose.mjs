@@ -63,9 +63,12 @@ for (const dir of readdirSync("src/topics", { withFileTypes: true }).filter((d) 
   const voiceProblems = [];
 
   // ---- safety ----
-  const fences = (text.match(/^```$/gm) ?? []).length;
+  // A fence may carry a language tag (` ```tsx `). RichText accepts and ignores the tag, so the
+  // tag is optional here too — but it must still be *counted*, or a tagged fence would leave its
+  // three backticks in the text and the inline-backtick check would report a false imbalance.
+  const fences = (text.match(/^```\w*$/gm) ?? []).length;
   if (fences % 2 !== 0) problems.push(`${fences} fence lines (odd)`);
-  const noFences = text.replace(/^```$/gm, "");
+  const noFences = text.replace(/^```\w*$/gm, "");
   const inline = (noFences.match(/`/g) ?? []).length;
   if (inline % 2 !== 0) problems.push(`${inline} inline backticks (odd)`);
   for (const [i, line] of noFences.split("\n").entries()) {

@@ -1151,8 +1151,10 @@ that hole.
 
 The first topic whose subject is **your own code** rather than a React API. A custom hook is not something
 React ships; it is a function whose name starts with `use` and which calls other hooks. The demo is one
-`useStopwatch()` — two `useState` calls, a `useEffect` that runs the interval, and a cleanup that stops it —
-called by a round clock and a rest row: two different components with different markup and different buttons.
+`useTicker(intervalMs)` — two `useState` calls, a `useEffect` that runs the interval, and a cleanup that stops
+it — called by a round clock and a rest row: two different components with different markup and different
+buttons. The hook takes its tick length as an **argument**, so the demo's 1×/10× control is a hook parameter
+being exercised rather than a hard-coded constant.
 
 ### The three facts the lesson turns on
 

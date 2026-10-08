@@ -10,6 +10,68 @@ Newest first.
 
 ## Session log
 
+### `custom-hooks` revised — accuracy fixes, and a generator that corrupted two lessons (2026-10-08)
+
+**A review of lesson 12 landed a batch of corrections, and one of them was a real bug in my own demo.** Five
+things were wrong or weak:
+
+1. **The `useContext` sentence was false.** It said sharing state "is `useContext`'s job". `useContext` only
+   *reads* a value; the state still lives in a `useState`/`useReducer` above, or in an external store. The
+   paragraph now says all three.
+2. **`useStopwatch` was not a stopwatch.** It counted ticks, so pausing halfway through one discarded it —
+   toggle every 500ms and the clock never moves. There were two honest ways out: derive elapsed time from
+   `Date.now()` timestamps, or stop claiming accuracy. The second was chosen: the hook is renamed
+   **`useTicker`**, and the lesson carries a visible **Simplification:** note saying exactly what it does not do
+   and how a real stopwatch is built. Timestamp arithmetic plus a resumed-at ref would have doubled the
+   concepts in a lesson whose subject is *extraction*.
+3. **"Four things" did not match "two `useState` and one `useEffect`."** Now consistently three hooks.
+4. **The ESLint message was quoted with its tail cut off**, and the text implied React enforces the prefix. It
+   is now quoted in full in a fence, with a line saying React never checks the name at runtime — the prefix is a
+   convention enforced by tooling.
+5. **The extraction advice was too absolute.** "An indirection you pay for and never collect on" now reads as:
+   duplication is the strongest signal, a single-use hook is still fine when it names a concept or hides an
+   effect, and the test is whether the callers would change together.
+
+**Then the demo grew a why.** The description now shows the duplicated sequence, then the hook *and* its two
+call sites with real code; explains that a shared `<Clock>` component cannot serve two differently-shaped
+panels; states the interface as arguments in and return value out; names the stale-closure bug waiting behind
+reading `ticks` directly; explains why `if (!isRunning) return;` inside an effect is not a conditional hook
+call; and notes that the returned functions are new every render while nothing is memoised. The hook took an
+`intervalMs` parameter, wired to a 1×/10× control, so the argument is visible and a reader can test in two
+seconds. Accessibility: `useId` + `aria-labelledby` replaced the `aria-label` on each `<section>`, the readouts
+are `role="timer"` (a live region that stays silent — a value changing once a tick must never be announced),
+buttons got `focus-visible` rings from existing tokens, and Reset is disabled when it would do nothing. The
+rest row's status text is deliberately **not** a live region, with a comment saying why: the button beside it
+already flips its own label when pressed, and a `role="status"` would say it twice. A small `RenderTally` shows
+each clock's render count, written into the DOM from an effect because reading a ref during render is what
+`react-hooks/refs` rejects.
+
+**The sample mirror stopped being a hand-rolled ritual.** `scripts/sync:samples` now regenerates any lesson's
+`codeExample` from its `demo.tsx`, and leaves an already-matching sample untouched, so running it on a healthy
+repo is a no-op. `check:repo` remains the assertion — the generator and the checker are deliberately two
+scripts, because a checker that generated its own expectations could not check them.
+
+**And that new generator immediately broke two lessons, which is the part worth remembering.** Its first run
+rewrote *every* sample. `check:repo` failed on `conditional-rendering` and `lists-and-keys` — each one line
+longer than its demo — and on `custom-hooks` itself. The cause is a rule the checker had been quietly encoding
+all along: **a JSX block comment (`{/* … */}`) collapses into a single `{}`-only line**, because a block comment
+swallows its own newlines, and the checker strips that line from the *demo* side while expecting the sample not
+to contain it. Both older samples had been hand-tuned to omit it; my generator wrote it. Four more lessons
+(`components-props`, `event-handling`, `forms`, `use-effect`) had their files rewritten with no visible change —
+equivalent after stripping, but pointless churn in a commit. All six were restored with `git checkout`, the
+generator learned the residue rule and the "already in sync" skip, and a second full run reported `same` for
+every lesson it did not need to touch. **The lesson is the one this repo keeps learning: a generated artefact
+needs its generator to encode every rule its checker encodes, or the checker catches the generator rather than
+the code.**
+
+**Also fixed while in there:** `check-prose` counted fences as `/^```$/`, so a language tag (` ```tsx `) would
+have left three backticks in the text and reported a *false* imbalance. It now accepts ` ```\w* `. `RichText`
+already tolerated the tag and ignores it — there is no highlighter and no dependency was added for one.
+
+**Verified:** `tsc`, `lint` and `check:prose` green; `check:repo` `ALL CHECKS PASSED` with `custom-hooks`
+measured at **154 of 154** and every other lesson still exact. **Not committed — the learner makes every
+commit.**
+
 ### Lesson 12 — `custom-hooks`, and a demo flaw caught by re-reading my own reasoning (2026-10-08)
 
 **The next open line was custom hooks**, and it went out as the second **build-on task**: a lecture and a working

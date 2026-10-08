@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "check:prose": "node scripts/check-prose.mjs",
     "check:repo": "node scripts/check-repo.mjs",
+    "sync:samples": "node scripts/sync-samples.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

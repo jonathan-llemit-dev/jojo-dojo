@@ -10,77 +10,126 @@ export const customHooksTopic: Topic = {
   description:
     "Write a repeated hook sequence once, give it a name starting with use, and call it wherever it is needed — without sharing its state.",
   longDescription:
-    "A round timer and a rest timer need the same four things: a count, a running flag, an interval that ticks " +
-    "the count, and a cleanup that stops the interval. Written out twice, that is the same block of code in two " +
-    "components, and a fix to one is a fix you have to remember to make in the other.\n\n" +
-    "A custom hook is how you write that sequence once. It is not a React feature you import — it is an " +
-    "ordinary function whose name starts with `use` and which calls other hooks. `useStopwatch` holds two " +
-    "`useState` calls and one `useEffect`, and hands back only what a clock needs.\n\n" +
-    "```\n// twice, in two components\nconst [seconds, setSeconds] = useState(0);\nconst [isRunning, setIsRunning] = useState(false);\nuseEffect(() => {\n  if (!isRunning) return;\n  const id = window.setInterval(() => setSeconds((c) => c + 1), 1000);\n  return () => window.clearInterval(id);\n}, [isRunning]);\n\n// once, in a function of your own\nfunction useStopwatch() {\n  // …the same three hooks, written once\n}\n```\n\n" +
-    "The `use` prefix is not decoration. ESLint's `rules-of-hooks` decides whether hooks may be called inside a " +
-    "function by reading its name: rename `useStopwatch` to `stopwatch` and it reports `React Hook \"useState\" is " +
-    "called in function \"stopwatch\" that is neither a React function component nor a custom React Hook " +
-    "function.`\n\n" +
-    "A hook is not a store. Every call gets its own state, so the round clock and the rest row below keep " +
-    "separate times even though one function produces both. Sharing state between components is `useContext`'s " +
-    "job: a hook shares the code, not the data.\n\n" +
-    "Callers see the return value and nothing else. The rest row takes the three things it needs and ignores " +
-    "the reset, and neither component can tell that two pieces of state and an effect are hiding inside — which " +
-    "is what lets the hook be rewritten without touching a call site. That is the bargain a component already " +
-    "makes with its props, one level down.\n\n" +
-    "Extract when a sequence actually repeats. A hook written before the second copy exists is an indirection " +
-    "you pay for and never collect on. The second copy is the signal, and the test is whether the two callers " +
-    "would have to change together.",
+    "A round clock and a rest row need the same three hooks: a count, a running flag, and one effect that ticks " +
+    "the count and stops itself on cleanup. Written twice, that is the same block of code in two components, " +
+    "and a fix to one is a fix you have to remember to make in the other.\n\n" +
+    "Before this: `useState`, and the cleanup half of `useEffect`. Nothing else is assumed.\n\n" +
+    "```tsx\n// the same six lines, in RoundClock and again in RestRow\nconst [ticks, setTicks] = useState(0);\nconst [isRunning, setIsRunning] = useState(false);\nuseEffect(() => {\n  if (!isRunning) return;\n  const id = window.setInterval(() => setTicks((c) => c + 1), intervalMs);\n  return () => window.clearInterval(id);\n}, [isRunning, intervalMs]);\n```\n\n" +
+    "A custom hook is how you write that once. It is not a React feature you import — it is an ordinary " +
+    "function whose name starts with `use` and which calls other hooks:\n\n" +
+    "```tsx\nfunction useTicker(intervalMs: number): UseTickerResult {\n  const [ticks, setTicks] = useState(0);\n  const [isRunning, setIsRunning] = useState(false);\n\n  useEffect(() => {\n    if (!isRunning) return;\n    const id = window.setInterval(() => setTicks((c) => c + 1), intervalMs);\n    return () => window.clearInterval(id);\n  }, [isRunning, intervalMs]);\n\n  const minutes = Math.floor(ticks / 60);\n  const remainder = ticks % 60;\n\n  return {\n    ticks,\n    isRunning,\n    label: `${minutes}:${String(remainder).padStart(2, \"0\")}`,\n    toggle: () => setIsRunning((running) => !running),\n    reset: () => {\n      setIsRunning(false);\n      setTicks(0);\n    },\n  };\n}\n\n// then, in either component, with no props passed between them:\nconst { label, isRunning, toggle } = useTicker(intervalMs);\n```\n\n" +
+    "You may reach for a shared component instead, and the two panels are shaped too differently for one. The " +
+    "round clock is a card with a big readout and two buttons; the rest row is a line with one button. A " +
+    "component serving both would need a prop for every difference. A hook shares the behaviour and leaves " +
+    "the markup to whoever calls it.\n\n" +
+    "Arguments in, return value out — that is the whole interface. `useTicker(intervalMs)` takes the tick " +
+    "length and returns `{ ticks, isRunning, label, toggle, reset }`. The object and both of its functions are " +
+    "new on every render, which costs nothing while nothing is memoised; a `React.memo` child is the point at " +
+    "which `useCallback` starts to earn its keep.\n\n" +
+    "A hook is not a store. Each call gets its own state, so the round clock and the rest row keep separate " +
+    "counts even though one function produces both.\n\n" +
+    "To share state you lift it to a common parent. Context then delivers it down the tree, but `useContext` " +
+    "only *reads* it — the state itself still lives in a `useState` or `useReducer` somewhere above. An " +
+    "external store is the third option. A hook shares the code, not the data.\n\n" +
+    "The effect depends on `isRunning` and `intervalMs` and nothing else. The tick uses the updater form — " +
+    "`setTicks((current) => current + 1)` — so the count never enters the dependency array.\n\n" +
+    "Read `ticks` directly instead and the interval is rebuilt on every tick, with a stale number frozen in " +
+    "its closure. And `if (!isRunning) return;` sits inside the effect: that is an early return from a " +
+    "callback, not a conditional hook call.\n\n" +
+    "The `use` prefix is not decoration: ESLint's `rules-of-hooks` reads the name to decide whether hooks may " +
+    "be called in a function at all. Rename `useTicker` to `ticker` and it prints this, once for each hook " +
+    "inside:\n\n" +
+    "```\nReact Hook \"useState\" is called in function \"ticker\" that is neither a React function component nor a custom React Hook function.\nReact component names must start with an uppercase letter. React Hook names must start with the word \"use\".\n```\n\n" +
+    "React itself never checks the name at runtime — the prefix is a convention enforced by tooling.\n\n" +
+    "Extraction earns its keep when a sequence repeats: duplication is the strongest signal, because two " +
+    "copies have to be changed together. A hook called in one place can still be right when it names a " +
+    "concept the component would otherwise spell out, or hides an effect behind a verb. The test is whether " +
+    "the callers would change together, not how many there are.\n\n" +
+    "**Simplification:** this demo counts whole ticks, so pausing halfway through one discards it — toggle " +
+    "faster than the interval and the count never moves. A real stopwatch records `Date.now()` on start and " +
+    "derives elapsed time from timestamps, which is what keeps partial ticks. Counting ticks keeps the " +
+    "lesson on the extraction.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.
   //
-  // A real mirror of `./demo.tsx` — the two are kept in step. Regenerated from the
-  // demo mechanically (comments and blank lines stripped) rather than retyped.
-  codeExample: `import { useEffect, useState } from "react";
-function useStopwatch() {
-  const [seconds, setSeconds] = useState(0);
+  // A real mirror of `./demo.tsx` — the two are kept in step. Regenerate with
+  // `npm run sync:samples` rather than editing by hand; `npm run check:repo`
+  // fails if they drift.
+  codeExample: `import { useEffect, useId, useRef, useState } from "react";
+export type UseTickerResult = {
+  ticks: number;
+  isRunning: boolean;
+  label: string;
+  toggle: () => void;
+  reset: () => void;
+};
+function useTicker(intervalMs: number): UseTickerResult {
+  const [ticks, setTicks] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   useEffect(() => {
     if (!isRunning) return;
     const id = window.setInterval(() => {
-      setSeconds((current) => current + 1);
-    }, 1000);
+      setTicks((current) => current + 1);
+    }, intervalMs);
     return () => window.clearInterval(id);
-  }, [isRunning]);
-  const minutes = Math.floor(seconds / 60);
-  const remainder = seconds % 60;
+  }, [isRunning, intervalMs]);
+  const minutes = Math.floor(ticks / 60);
+  const remainder = ticks % 60;
   return {
+    ticks,
     isRunning,
     label: \`\${minutes}:\${String(remainder).padStart(2, "0")}\`,
     toggle: () => setIsRunning((running) => !running),
     reset: () => {
       setIsRunning(false);
-      setSeconds(0);
+      setTicks(0);
     },
   };
 }
-function RoundClock() {
-  const { label, isRunning, toggle, reset } = useStopwatch();
+function RenderTally() {
+  const renders = useRef(0);
+  const output = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    renders.current += 1;
+    if (output.current) output.current.textContent = \`renders: \${renders.current}\`;
+  });
+  return <span ref={output} className="text-[11px] text-dojo-muted/70" />;
+}
+function RoundClock({ intervalMs }: { intervalMs: number }) {
+  const headingId = useId();
+  const { ticks, isRunning, label, toggle, reset } = useTicker(intervalMs);
   return (
     <section
-      aria-label="Round clock"
+      aria-labelledby={headingId}
       className="flex flex-col gap-3 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
     >
-      <h3 className="text-xs uppercase tracking-wider text-dojo-muted">Round</h3>
-      <p className="font-mono text-3xl tabular-nums text-dojo-ember">{label}</p>
+      <h3 id={headingId} className="text-xs uppercase tracking-wider text-dojo-muted">
+        Round
+      </h3>
+      <p
+        role="timer"
+        aria-label={\`Round clock: \${label}\`}
+        className="font-mono text-3xl tabular-nums text-dojo-ember"
+      >
+        {label}
+      </p>
+      <p className="text-[11px] text-dojo-muted/70">
+        ticks: {ticks} · every {intervalMs}ms · <RenderTally />
+      </p>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={toggle}
-          className="rounded-lg bg-dojo-ember px-3 py-2 text-sm font-medium text-black transition hover:bg-dojo-ember-bright"
+          className="rounded-lg bg-dojo-ember px-3 py-2 text-sm font-medium text-black transition hover:bg-dojo-ember-bright focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dojo-ember"
         >
           {isRunning ? "Pause" : "Start"}
         </button>
         <button
           type="button"
           onClick={reset}
-          className="rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-crimson hover:text-dojo-crimson"
+          disabled={!isRunning && ticks === 0}
+          className="rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-crimson hover:text-dojo-crimson focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dojo-ember disabled:opacity-40 disabled:hover:border-dojo-border disabled:hover:text-dojo-muted"
         >
           Reset
         </button>
@@ -88,24 +137,33 @@ function RoundClock() {
     </section>
   );
 }
-function RestRow() {
-  const { label, isRunning, toggle } = useStopwatch();
+function RestRow({ intervalMs }: { intervalMs: number }) {
+  const headingId = useId();
+  const { isRunning, label, toggle } = useTicker(intervalMs);
   return (
     <section
-      aria-label="Rest clock"
+      aria-labelledby={headingId}
       className="flex items-center justify-between gap-3 rounded-lg border border-dojo-border bg-dojo-bg/40 px-4 py-3"
     >
       <div className="flex min-w-0 flex-col">
-        <h3 className="text-xs uppercase tracking-wider text-dojo-muted">Rest</h3>
+        <h3 id={headingId} className="text-xs uppercase tracking-wider text-dojo-muted">
+          Rest
+        </h3>
         <span className="truncate text-xs text-dojo-muted">
           {isRunning ? "Resting — breathe" : "Ready when you are"}
         </span>
       </div>
-      <span className="font-mono text-xl tabular-nums text-dojo-ember">{label}</span>
+      <p
+        role="timer"
+        aria-label={\`Rest clock: \${label}\`}
+        className="font-mono text-xl tabular-nums text-dojo-ember"
+      >
+        {label}
+      </p>
       <button
         type="button"
         onClick={toggle}
-        className="shrink-0 rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-ember"
+        className="shrink-0 rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-ember focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dojo-ember"
       >
         {isRunning ? "Stop" : "Rest"}
       </button>
@@ -113,13 +171,41 @@ function RestRow() {
   );
 }
 export function CustomHooksDemo() {
+  const [intervalMs, setIntervalMs] = useState(1000);
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
-      <RoundClock />
-      <RestRow />
+      <div role="group" aria-label="Tick speed" className="flex items-center gap-2">
+        <span className="text-xs uppercase tracking-wider text-dojo-muted">Speed</span>
+        <button
+          type="button"
+          aria-pressed={intervalMs === 1000}
+          onClick={() => setIntervalMs(1000)}
+          className={\`rounded-lg border px-3 py-1 text-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dojo-ember \${
+            intervalMs === 1000
+              ? "border-dojo-ember text-dojo-ember"
+              : "border-dojo-border text-dojo-muted hover:text-dojo-ember"
+          }\`}
+        >
+          1×
+        </button>
+        <button
+          type="button"
+          aria-pressed={intervalMs === 100}
+          onClick={() => setIntervalMs(100)}
+          className={\`rounded-lg border px-3 py-1 text-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dojo-ember \${
+            intervalMs === 100
+              ? "border-dojo-ember text-dojo-ember"
+              : "border-dojo-border text-dojo-muted hover:text-dojo-ember"
+          }\`}
+        >
+          10×
+        </button>
+      </div>
+      <RoundClock intervalMs={intervalMs} />
+      <RestRow intervalMs={intervalMs} />
       <p className="text-xs text-dojo-muted">
-        Two different components, one hook. Each call to useStopwatch keeps its own clock, so
-        the round timer and the rest timer never touch.
+        Start the round clock, then press Rest. Which clock moved? Both read the same 1× or 10×
+        speed, yet each call to useTicker keeps its own counters.
       </p>
     </div>
   );
