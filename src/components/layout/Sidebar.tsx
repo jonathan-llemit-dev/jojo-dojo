@@ -11,13 +11,17 @@ import { beltDotClass } from "../../topics/beltStyles";
  *
  * Three decisions worth knowing:
  *
- * 1. The panel **expands in place** instead of floating over the content. The shell in
- *    `TutorialLayout` wraps everything in `overflow-hidden`, which would clip an
+ * 1. The panel **expands in place** instead of floating over the content. From `md` up the
+ *    shell in `TutorialLayout` is `overflow-hidden`, which would clip an
  *    absolutely-positioned dropdown — and pushing the content down is perfectly good
  *    mobile behaviour.
  * 2. It is capped at 70vh with its own scroll. The roadmap has a dozen more topics
  *    coming, and a list that long would otherwise run off the screen.
- * 3. Tapping a link closes the menu, so the panel never stays open on top of the lesson
+ * 3. From `md` up the sidebar is a fixed-height column whose **list** is the part that
+ *    scrolls: the shell is one viewport tall, so the topic list and the lesson pane each
+ *    own a scrollbar and neither drags the other around. The "Lessons" heading stays put
+ *    so you always know what you are looking at.
+ * 4. Tapping a link closes the menu, so the panel never stays open on top of the lesson
  *    you just opened.
  *
  * **Escape closes the burger menu**, and focus moves into the panel when it opens — both
@@ -57,7 +61,7 @@ export function Sidebar() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <aside className="w-full shrink-0 border-b border-dojo-border bg-dojo-surface/30 p-3 md:w-64 md:border-b-0 md:border-r md:p-4">
+    <aside className="w-full shrink-0 border-b border-dojo-border bg-dojo-surface/30 p-3 md:flex md:min-h-0 md:w-64 md:flex-col md:overflow-hidden md:border-b-0 md:border-r md:p-4">
       {/* Phones: the burger, showing which topic you are on. Hidden from md up,
           where the plain heading below takes its place. */}
       <button
@@ -83,7 +87,7 @@ export function Sidebar() {
         </span>
       </button>
 
-      <h2 className="mb-3 hidden px-2 text-xs uppercase tracking-wider text-dojo-ember md:block">
+      <h2 className="mb-3 hidden shrink-0 px-2 text-xs uppercase tracking-wider text-dojo-ember md:block">
         Lessons
       </h2>
 
@@ -93,7 +97,7 @@ export function Sidebar() {
         tabIndex={-1}
         className={`${
           isMenuOpen ? "block" : "hidden"
-        } mt-2 max-h-[70vh] overflow-y-auto outline-none md:mt-0 md:block md:max-h-none md:space-y-1 md:overflow-y-visible`}
+        } mt-2 max-h-[70vh] overflow-y-auto outline-none md:mt-0 md:block md:min-h-0 md:max-h-none md:flex-1 md:space-y-1 md:overflow-y-auto`}
       >
         <Link
           to="/dojo"

@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
  */
 export function TopNav() {
   return (
-    <nav className="sticky top-0 z-20 border-b border-dojo-border bg-dojo-bg/80 px-4 py-3 backdrop-blur sm:px-6">
+    <nav className="sticky top-0 z-20 shrink-0 border-b border-dojo-border bg-dojo-bg/80 px-4 py-3 backdrop-blur sm:px-6">
       <div className="flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-semibold">
           <span className="text-xl">🥋</span>

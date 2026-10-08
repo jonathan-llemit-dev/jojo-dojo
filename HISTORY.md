@@ -10,6 +10,66 @@ Newest first.
 
 ## Session log
 
+### UI/UX — the shell gets two scroll panes, and a back-to-top button (2026-10-08)
+
+**The complaint was concrete.** On a long lesson you had to scroll all the way back up by hand, and scrolling
+the lesson dragged the topic list off the screen with it. Both are the same root cause: the whole page was one
+scroller.
+
+**The shell is now one viewport tall from `md` up.** The `TutorialLayout` root is `md:h-dvh md:overflow-hidden`,
+the row under the nav is `md:min-h-0`, and both panes own their scroll — `main` is `md:overflow-y-auto`, and the
+sidebar is a fixed-height flex column whose **list** is what scrolls, so the "Lessons" heading stays put while
+the topics move under it. Below `md` nothing changed: the page scrolls normally, because a phone wants one
+scroller, not two.
+
+`dvh` rather than `vh` on purpose. `100vh` on a phone is the *largest* viewport height — the value with the
+toolbars hidden — so a `100vh` shell runs underneath the browser chrome. `dvh` tracks the height as the
+toolbars come and go.
+
+**The back-to-top button** fades in past 400px. It listens to `window` and to `main` and takes the larger
+offset, so one code path covers both scroll models instead of a breakpoint check; scrolling the scroller that is
+not in use is a no-op. While invisible it is genuinely inert — `pointer-events-none`, `tabIndex={-1}`,
+`aria-hidden` — because a faded-out button that still takes focus is a trap, and the click honours
+`prefers-reduced-motion`.
+
+**One thing was added that was not asked for, and it needed to be.** With the pane as its own scroller, a new
+lesson inherits the previous lesson's `scrollTop`, so a long topic opens halfway down — the same annoyance
+arriving from the other direction. An effect keyed on `pathname` scrolls the pane back to the top. It rides in
+the same commit because the new scroll model made the old behaviour worse, not as scope creep.
+
+**Verified in the browser, and it could not have been verified any other way.** `tsc` and ESLint have nothing to
+say about which element scrolls. Read from the DOM rather than inferred: at the top the button is
+`aria-hidden="true" tabindex="-1" … opacity-0`; scrolled 1800px it is `aria-hidden="false" tabindex="0" …
+opacity-100`; clicking it at 480x760 returned it to the hidden state. Then the two things the CSS claims:
+
+- **the window genuinely cannot scroll at `md`+** — wheeling 800px over the sidebar, whose list fits at that
+  height and so has nothing of its own to scroll, moved nothing at all;
+- **the panes are independent** — wheeling over the sidebar at a 237px-tall viewport did not move the content
+  pane (the button stayed hidden), and wheeling the content pane did not move the list.
+
+Also re-confirmed on the way past: `use-context-reducer`'s sections now expose as
+`region "TOTAL MEALS TOTAL CALORIES TOTAL PROTEIN"`, `region "MEAL"` and `region "FOOD LIST"`, so the
+duplicate-id repair from the previous session holds in the rendered tree.
+
+**A tooling note worth keeping.** The accessibility tree **prunes `aria-hidden` nodes**, so a hidden button is
+simply absent from an `observe` dump and a visible one is present. That makes "is it in the tree?" a reliable
+visibility probe — but only once you know it. The first two times this session I read the button's *presence*
+as evidence it was still shown, when the truth was a smooth scroll still in flight; reading the element's own
+HTML (`html` scoped to its ref) settled it in one call.
+
+**And a host quirk that ate the dev server.** Writing this very entry killed it: the repo sits in a OneDrive
+folder, Vite watches the whole project, and OneDrive's save produced a `.HISTORY.md.26944.….tmpdir/HISTORY.md.tmp`
+that Vite's watcher hit while it was locked — `EBUSY: resource busy or locked, watch`. Nothing was wrong with the
+app; the verification above had already finished. Recorded in `CLAUDE.md` under build tooling so the next
+session recognises it instead of debugging the code.
+
+**Version bumped `0.13.0` → `0.14.0`.** `package.json`, both `package-lock.json` entries, the `HomePage` badge
+(`v0.14`), the version sentence in `CLAUDE.md`, and the `VERSION`/`SHORT` constants in `check:repo.mjs` moved
+together. It is a step **without** a new topic — a deliberate milestone for the shell work, which the versioning
+rule explicitly allows ("the learner may also adjust it deliberately") but which nothing in the repo could infer,
+so `CLAUDE.md`'s current-state line now says so outright rather than leaving a future session to wonder why
+eleven topics sit at `0.14`. **Not committed — the learner makes every commit.**
+
 ### `useContext` / `useReducer` — the first build-on task, verified (2026-10-08)
 
 **The hypothesis being tested: does a build-on task produce evidence?** The learner's hands-on half was to write

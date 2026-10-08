@@ -5,7 +5,7 @@
 
 A dark, dojo-themed React learning journal forged with **Vite**, styled with **Tailwind CSS v4**, and live on **Vercel** at [jojo-dojo.vercel.app](https://jojo-dojo.vercel.app/). The landing page is at `/`; every React lesson then lives at its own URL under `/dojo`. Every commit is a rep. Every deploy is a rank up.
 
-**Version `0.13.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
+**Version `0.14.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
 
 ---
 
@@ -146,7 +146,7 @@ This project is **about React and TypeScript**, so the roadmap tracks topics rat
 - [ ] Later, not now: Redux and Next.js (see `ROADMAP.md`)
 
 Live at <https://jojo-dojo.vercel.app/> — deployed since the first commit, and every push to `main`
-publishes automatically. The version is a running number (`0.13.0` today; one new topic adds `0.01`).
+publishes automatically. The version is a running number (`0.14.0` today; one new topic adds `0.01`).
 
 ---
 
