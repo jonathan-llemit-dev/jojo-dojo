@@ -131,7 +131,7 @@ for (const name of dirs) {
 
 // ── 4. the numbers CLAUDE.md claims ─────────────────────────────────────────
 head("CLAUDE.md parity claims vs measured");
-const claims = { "components-props": 46, "conditional-rendering": 63, "event-handling": 105, "lists-and-keys": 62, "use-effect": 64, forms: 53, "use-state-deep-dive": 114, "use-ref": 77, "use-context-reducer": 132 };
+const claims = { "components-props": 46, "conditional-rendering": 63, "event-handling": 105, "lists-and-keys": 62, "use-effect": 64, forms: 53, "use-state-deep-dive": 114, "use-ref": 77, "use-context-reducer": 159 };
 for (const [slug, n] of Object.entries(claims)) {
   const claimed = claude.includes(`${n} of ${n}`);
   const measured = parity[slug]?.exact && parity[slug].a === n;

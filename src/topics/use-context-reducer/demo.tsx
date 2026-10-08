@@ -17,8 +17,8 @@
 //      value it publishes itself, so a `useContext` call in the same component that renders
 //      `<SessionContext.Provider>` sees whatever sits above it — or the default.
 //
-// The actions are a discriminated union with no `default` branch, so adding a new action
-// type is a compile error until the reducer handles it.
+// The actions are a discriminated union, and the `default` branch only holds a `never` check:
+// add a new action type and forget its case, and that `never` assignment stops compiling.
 //
 // Hands-on task for this topic: see NOTES.md entry 12.
 
@@ -40,16 +40,16 @@ type SessionAction =
   | { type: "commitTechnique" }
   | { type: "reset" };
 
-const STARTING_SESSION: SessionState = {
+const STARTING_SESSION: SessionState = Object.freeze({
   rounds: 0,
   draft: "",
   log: [],
   nextId: 1,
-};
+});
 
 // Pure on purpose: every branch builds a new object, and the two arrays are replaced with
-// spreads rather than pushed into. `STARTING_SESSION` is returned as-is on reset because it
-// is a constant nobody ever writes to.
+// spreads rather than pushed into. `STARTING_SESSION` is frozen and returned as-is on reset,
+// so the reset target can never be mutated by accident.
 function sessionReducer(state: SessionState, action: SessionAction): SessionState {
   switch (action.type) {
     case "logRound":
@@ -58,6 +58,7 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
       return { ...state, draft: action.technique };
     case "commitTechnique": {
       const technique = state.draft.trim();
+      // An empty box is a no-op: returning the same state tells React nothing changed.
       if (!technique) return state;
       return {
         ...state,
@@ -68,6 +69,12 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
     }
     case "reset":
       return STARTING_SESSION;
+    default: {
+      // Every action type above has a case, so `action` is `never` here. Add a type and forget
+      // its case, and this assignment stops compiling — the union enforces completeness.
+      const _exhaustive: never = action;
+      return _exhaustive;
+    }
   }
 }
 
@@ -88,10 +95,16 @@ function useSession(): SessionApi {
 function RoundPanel() {
   const { state, dispatch } = useSession();
   return (
-    <section className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4">
-      <h3 className="text-xs uppercase tracking-wider text-dojo-muted">Rounds</h3>
+    <section
+      aria-labelledby="rounds-heading"
+      className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
+    >
+      <h3 id="rounds-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Rounds
+      </h3>
       <p className="font-mono text-3xl tabular-nums text-dojo-ember">{state.rounds}</p>
       <button
+        type="button"
         onClick={() => dispatch({ type: "logRound" })}
         className="rounded-lg bg-dojo-ember px-3 py-2 text-sm font-medium text-black transition hover:bg-dojo-ember-bright"
       >
@@ -104,17 +117,28 @@ function RoundPanel() {
 function TechniquePanel() {
   const { state, dispatch } = useSession();
   return (
-    <section className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4">
-      <h3 className="text-xs uppercase tracking-wider text-dojo-muted">Technique</h3>
-      <input
-        value={state.draft}
-        onChange={(event) =>
-          dispatch({ type: "draftTechnique", technique: event.target.value })
-        }
-        placeholder="Roundhouse kick"
-        className="w-full rounded-md border border-dojo-border bg-dojo-bg/60 px-3 py-2 text-sm text-dojo-text outline-none focus:border-dojo-ember"
-      />
+    <section
+      aria-labelledby="technique-heading"
+      className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
+    >
+      <h3 id="technique-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Technique
+      </h3>
+      <label className="flex flex-col gap-2">
+        <span className="text-xs uppercase tracking-wider text-dojo-muted">
+          Technique name
+        </span>
+        <input
+          value={state.draft}
+          onChange={(event) =>
+            dispatch({ type: "draftTechnique", technique: event.target.value })
+          }
+          placeholder="Roundhouse kick"
+          className="w-full rounded-md border border-dojo-border bg-dojo-bg/60 px-3 py-2 text-sm text-dojo-text outline-none focus:border-dojo-ember"
+        />
+      </label>
       <button
+        type="button"
         onClick={() => dispatch({ type: "commitTechnique" })}
         className="rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-ember"
       >
@@ -127,8 +151,13 @@ function TechniquePanel() {
 function LogPanel() {
   const { state, dispatch } = useSession();
   return (
-    <section className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4">
-      <h3 className="text-xs uppercase tracking-wider text-dojo-muted">Session log</h3>
+    <section
+      aria-labelledby="log-heading"
+      className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
+    >
+      <h3 id="log-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Session log
+      </h3>
       {state.log.length === 0 ? (
         <p className="text-sm text-dojo-muted">Nothing logged yet.</p>
       ) : (
@@ -142,6 +171,7 @@ function LogPanel() {
         </ul>
       )}
       <button
+        type="button"
         onClick={() => dispatch({ type: "reset" })}
         className="w-fit rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-crimson hover:text-dojo-crimson"
       >

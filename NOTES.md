@@ -75,7 +75,7 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 **`use-context-reducer` (entry 12)** — the lecture and its demo are live at `/dojo/topic/use-context-reducer`
 as a **build-on task**. This is the first topic using the new default exercise shape: rather than repairing a
 planted bug, the hands-on half is **a component or feature the learner writes themselves**. Both gates are
-green on the lecture, the Sample Code panel is a true mirror at 132 of 132, and the roadmap line is marked
+green on the lecture, the Sample Code panel is a true mirror at 159 of 159, and the roadmap line is marked
 `BUILD`. The task, its expected values and the seven acceptance criteria are in entry 12 — and the box stays
 unticked until their code *and* their explanation are both on the record.
 

@@ -15,19 +15,28 @@ export const useContextReducerTopic: Topic = {
     "deeper can change it. Every panel in between ends up accepting props it never uses.\n\n" +
     "Context is the way out. One component holds the state and publishes it, and any component below " +
     "can read it directly, however deep it sits. Nothing in between has to know the value exists.\n\n" +
-    "```\nconst SessionContext = createContext<SessionApi | null>(null);\n\n<SessionContext.Provider value={{ state, dispatch }}>\n  <RoundPanel />\n</SessionContext.Provider>\n\nconst { state, dispatch } = useContext(SessionContext);\n```\n\n" +
+    "```\nconst SessionContext = createContext<SessionApi | null>(null);\n\n<SessionContext.Provider value={{ state, dispatch }}>\n  <RoundPanel />\n</SessionContext.Provider>\n\nconst { state, dispatch } = useSession();\n```\n\n" +
+    "The panels never call `useContext` directly — a small `useSession` wrapper does, and it throws " +
+    "when there is no provider, so that missing-provider check lives in one place instead of three.\n\n" +
     "The state itself comes from `useReducer`. Instead of one `useState` per value, you keep a single " +
     "object and change it through named actions: `dispatch({ type: 'logRound' })`. A plain function — " +
     "the reducer — decides what each action does to that object.\n\n" +
     "A reducer must not change the state it is handed. It returns a new object built from the old one, " +
     "because React compares the two by reference. Write into the object and hand the same one back, and " +
     "React sees no change at all: no re-render, and the screen keeps the old number.\n\n" +
+    "The one time handing back the same state is right is when an action changes nothing: " +
+    "`commitTechnique` with an empty box returns the state it was handed, and React skips the render — " +
+    "the same reference is the correct no-op.\n\n" +
     "The actions are typed as a union, so `logRounds` will not compile, and adding an action type will " +
     "not either until the reducer handles it. Every way this state can change is one list of cases, and " +
     "the compiler keeps that list complete.\n\n" +
     "The value object is rebuilt on every render, so every consumer re-renders with it. On a card this " +
-    "size that costs nothing. In a larger tree you would split state and dispatch into two contexts, " +
-    "because `dispatch` never changes identity.",
+    "size that costs nothing. In a larger tree you would split state and dispatch into two contexts, so " +
+    "that components which only need dispatch do not re-render when state changes — dispatch is stable, " +
+    "but the state object is not.\n\n" +
+    "Before splitting, the usual first step is to memoize the value with " +
+    "`useMemo(() => ({ state, dispatch }), [state])` so consumers only re-render when state actually " +
+    "changes.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.
@@ -48,12 +57,12 @@ type SessionAction =
   | { type: "draftTechnique"; technique: string }
   | { type: "commitTechnique" }
   | { type: "reset" };
-const STARTING_SESSION: SessionState = {
+const STARTING_SESSION: SessionState = Object.freeze({
   rounds: 0,
   draft: "",
   log: [],
   nextId: 1,
-};
+});
 function sessionReducer(state: SessionState, action: SessionAction): SessionState {
   switch (action.type) {
     case "logRound":
@@ -72,6 +81,10 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
     }
     case "reset":
       return STARTING_SESSION;
+    default: {
+      const _exhaustive: never = action;
+      return _exhaustive;
+    }
   }
 }
 type SessionApi = { state: SessionState; dispatch: Dispatch<SessionAction> };
@@ -86,10 +99,16 @@ function useSession(): SessionApi {
 function RoundPanel() {
   const { state, dispatch } = useSession();
   return (
-    <section className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4">
-      <h3 className="text-xs uppercase tracking-wider text-dojo-muted">Rounds</h3>
+    <section
+      aria-labelledby="rounds-heading"
+      className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
+    >
+      <h3 id="rounds-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Rounds
+      </h3>
       <p className="font-mono text-3xl tabular-nums text-dojo-ember">{state.rounds}</p>
       <button
+        type="button"
         onClick={() => dispatch({ type: "logRound" })}
         className="rounded-lg bg-dojo-ember px-3 py-2 text-sm font-medium text-black transition hover:bg-dojo-ember-bright"
       >
@@ -101,17 +120,28 @@ function RoundPanel() {
 function TechniquePanel() {
   const { state, dispatch } = useSession();
   return (
-    <section className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4">
-      <h3 className="text-xs uppercase tracking-wider text-dojo-muted">Technique</h3>
-      <input
-        value={state.draft}
-        onChange={(event) =>
-          dispatch({ type: "draftTechnique", technique: event.target.value })
-        }
-        placeholder="Roundhouse kick"
-        className="w-full rounded-md border border-dojo-border bg-dojo-bg/60 px-3 py-2 text-sm text-dojo-text outline-none focus:border-dojo-ember"
-      />
+    <section
+      aria-labelledby="technique-heading"
+      className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
+    >
+      <h3 id="technique-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Technique
+      </h3>
+      <label className="flex flex-col gap-2">
+        <span className="text-xs uppercase tracking-wider text-dojo-muted">
+          Technique name
+        </span>
+        <input
+          value={state.draft}
+          onChange={(event) =>
+            dispatch({ type: "draftTechnique", technique: event.target.value })
+          }
+          placeholder="Roundhouse kick"
+          className="w-full rounded-md border border-dojo-border bg-dojo-bg/60 px-3 py-2 text-sm text-dojo-text outline-none focus:border-dojo-ember"
+        />
+      </label>
       <button
+        type="button"
         onClick={() => dispatch({ type: "commitTechnique" })}
         className="rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-ember"
       >
@@ -123,8 +153,13 @@ function TechniquePanel() {
 function LogPanel() {
   const { state, dispatch } = useSession();
   return (
-    <section className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4">
-      <h3 className="text-xs uppercase tracking-wider text-dojo-muted">Session log</h3>
+    <section
+      aria-labelledby="log-heading"
+      className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
+    >
+      <h3 id="log-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Session log
+      </h3>
       {state.log.length === 0 ? (
         <p className="text-sm text-dojo-muted">Nothing logged yet.</p>
       ) : (
@@ -138,6 +173,7 @@ function LogPanel() {
         </ul>
       )}
       <button
+        type="button"
         onClick={() => dispatch({ type: "reset" })}
         className="w-fit rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-crimson hover:text-dojo-crimson"
       >

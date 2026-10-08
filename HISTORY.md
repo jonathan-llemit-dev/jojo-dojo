@@ -10,6 +10,32 @@ Newest first.
 
 ## Session log
 
+### `use-context-reducer` — accessibility and correctness pass (2026-10-08)
+
+Five surgical fixes to the lecture, ranked by impact, none of which moved its structure or tone:
+
+1. **Accessibility.** The `TechniquePanel` input gained a real `<label>` ("Technique name" span); the three
+   `<h3>` headings are wired to their `<section>` through `aria-labelledby`; and every `<button>` now carries
+   `type="button"`.
+2. **Description bridged to the code.** The description's snippet now reads
+   `const { state, dispatch } = useSession();` instead of a raw `useContext(SessionContext)`, with one
+   sentence explaining that `useSession` wraps `useContext` and throws when the provider is missing, so the
+   check lives in one place instead of in every panel.
+3. **Exhaustiveness made real.** `sessionReducer` gained a `default` branch holding
+   `const _exhaustive: never = action; return _exhaustive;` — add an action type and forget its case, and the
+   `never` assignment stops compiling. The header comment that claimed "no `default` branch" was updated to
+   match.
+4. **Split-context rationale reworded** to lead with cause: components that only need `dispatch` do not
+   re-render when state changes, because `dispatch` is stable while the state object is not.
+5. **A `useMemo` note** records the intermediate fix before splitting contexts.
+
+Two small extras: a sentence explaining why `if (!technique) return state;` is a correct no-op — returning
+the same reference is the right signal when an action changes nothing — and `Object.freeze(STARTING_SESSION)`
+so the reset target cannot be mutated by accident.
+
+The sample was regenerated mechanically and re-measured at **159 of 159** lines (was 132). `tsc`, `lint` and
+`check:prose` green; `check:repo` `ALL CHECKS PASSED`. Still not committed.
+
 ### The hands-on exercise becomes a build, not a repair — and lesson 11 ships with it (2026-10-08)
 
 **The learner's call, and it changes the default *kind* of lesson.** Rather than repair a planted bug, the
