@@ -10,6 +10,56 @@ Newest first.
 
 ## Session log
 
+### `useContext` / `useReducer` — the first build-on task, verified (2026-10-08)
+
+**The hypothesis being tested: does a build-on task produce evidence?** The learner's hands-on half was to write
+their own component applying the topic. They did not extend the session card — they built a **second,
+independent shared-state feature** beside it: a meal planner with its own `createContext`/`useReducer` pair, its
+own `useDiet()` accessor, a six-member action union (`addFood`, `removeFood` with a payload, three draft
+updates, `reset`) and three more panels that receive no props. Two stores on one page, each with its own
+dispatch, is a stronger demonstration than adding one action to the existing union, because the whole pattern
+had to be re-derived rather than extended.
+
+**All seven acceptance criteria pass**, and both gates are green. Verified by driving it in Chrome rather than
+by reading it: "Spaghetti" + 500 calories → **Add Food** moved Total Meals 0 → 1 and Total Calories 0 → 500,
+the Food List panel showed the row in the same instant — **one dispatch, three sibling panels, no props** — and
+**Remove** returned all three to zero.
+
+**The one defect neither gate can see.** The new sections reused the session panels' heading ids
+(`rounds-heading`, `technique-heading`, `log-heading`), and `FoodStatsPanel` put `rounds-heading` on all three
+of its headings. Duplicate ids are invalid, and `aria-labelledby` resolves to the *first* match in the
+document, so the accessibility tree announced the meal panels as `region "ROUNDS"`, `region "TECHNIQUE"` and
+`region "SESSION LOG"` — every label pointing at the wrong panel. `tsc` and ESLint are blind to id collisions;
+it took looking at the rendered tree. That is the second session running where the browser found something the
+gates could not, which is now the argument for the UI pass rather than a nicety.
+
+It was fixed as **reviewer plumbing** — a pure rename to `diet-meals-heading` / `diet-calories-heading` /
+`diet-protein-heading`, `diet-form-heading` and `diet-list-heading`, with the stats section labelled by a
+space-separated list of its three headings. The learner's own code was otherwise left exactly as written. The
+review named three non-blocking nits — a `number` draft that snaps to `0` when the box is cleared, `removeFood`
+also wiping the in-progress form, and a `NaN` hole in the `caloriesDraft <= 0` guard — and deliberately did not
+touch them, because none of them is a criterion.
+
+**The explained half, three questions anchored in their code — 3/3.** (1) *What happens if `FoodStatsPanel` is
+moved outside its provider?* Answered that `useDiet()` gets `null` and throws — which needs both halves of the
+rule: the context default is `null`, **and** the accessor refuses it. (2) *What does
+`const _exhaustive: never = action;` buy over a plain `default: return state;`?* Answered that it stops
+compiling when a new action type has no case, correctly refusing the confusable answer that a `never` check
+catches a *typo* — that is the union's job, not the default branch's. (3) *Why does "Reset Meal Plan" leave the
+rounds counter alone?* Answered that `dispatchDiet` only ever reaches `dietReducer`: two stores, two
+dispatches.
+
+**The build-on task model holds up.** The open question going in was whether a build task gives weaker evidence
+than a repair, since there is no planted bug to find. It gives *different* evidence — design and composition
+rather than diagnosis — and the code-anchored questions did the same work the fix-it quiz did. What it did not
+do is remove the need to look at the page: the defect that mattered here was invisible to both gates and to a
+reading of the code.
+
+**Closed out.** Marker `LD` → `OK`, entry 12 rewritten with the evidence and moved into the "Solid" table, the
+`ROADMAP.md` box ticked, the sample mirror regenerated mechanically to **376 of 376** lines, and the parity
+claim carried into `CLAUDE.md` and `check:repo`. `check:repo` also had its one-liner and README assertions
+retargeted to "all eleven verified". **Not committed — the learner makes every commit.**
+
 ### `use-context-reducer` — accessibility and correctness pass (2026-10-08)
 
 Five surgical fixes to the lecture, ranked by impact, none of which moved its structure or tone:

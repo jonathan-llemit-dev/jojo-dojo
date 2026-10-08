@@ -1,26 +1,23 @@
 // ─────────────────────────────────────────────
 // Topic: useContext & useReducer — one piece of state, read from anywhere below
-// Added: 2026-10-08 | Status: LD (lecture live — hands-on build outstanding)
+// Added: 2026-10-08 | Status: OK (verified — built and explained)
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //
-// The card below has three panels that never talk to each other and receive no props at
-// all. One `useReducer` owns the session state, one `createContext` publishes it, and each
-// panel takes what it needs out of the context with `useContext`.
+// Two independent cards, each with its own `useReducer` and its own `createContext`: the
+// dojo session, and a meal plan. Six panels in total, and not one of them receives a prop.
 //
 // Two rules hold the whole thing up:
 //
-//   1. the reducer **returns a new state object** — `{ ...state, rounds: state.rounds + 1 }`.
+//   1. a reducer **returns a new state object** — `{ ...state, rounds: state.rounds + 1 }`.
 //      React compares the old state with the new one by reference, so handing back the very
 //      object it passed in is invisible: no re-render, and the screen keeps the old number;
 //   2. the provider must be an **ancestor** of every consumer. A component cannot read a
 //      value it publishes itself, so a `useContext` call in the same component that renders
 //      `<SessionContext.Provider>` sees whatever sits above it — or the default.
 //
-// The actions are a discriminated union, and the `default` branch only holds a `never` check:
-// add a new action type and forget its case, and that `never` assignment stops compiling.
-//
-// Hands-on task for this topic: see NOTES.md entry 12.
+// The actions are discriminated unions, and each reducer's `default` branch holds only a
+// `never` check: add a new action type and forget its case, and that assignment stops compiling.
 
 import { createContext, useContext, useReducer } from "react";
 import type { Dispatch } from "react";
@@ -44,6 +41,32 @@ const STARTING_SESSION: SessionState = Object.freeze({
   rounds: 0,
   draft: "",
   log: [],
+  nextId: 1,
+});
+
+type FoodEntry = { id: number; name: string; calories: number; protein: number };
+
+type DietState = {
+  meals: FoodEntry[];
+  foodNameDraft: string;
+  caloriesDraft: number;
+  proteinDraft: number;
+  nextId: number;
+}
+
+type DietAction =
+  | { type: "addFood" }
+  | { type: "removeFood"; selectedId: number }
+  | { type: "updateFoodNameDraft"; name: string }
+  | { type: "updateCaloriesDraft"; calories: number }
+  | { type: "updateProteinDraft"; protein: number }
+  | { type: "reset" };
+
+const STARTING_DIET: DietState = Object.freeze({
+  meals: [],
+  foodNameDraft: "",
+  caloriesDraft: 0,
+  proteinDraft: 0,
   nextId: 1,
 });
 
@@ -72,6 +95,49 @@ function sessionReducer(state: SessionState, action: SessionAction): SessionStat
     default: {
       // Every action type above has a case, so `action` is `never` here. Add a type and forget
       // its case, and this assignment stops compiling — the union enforces completeness.
+      const _exhaustive: never = action;
+      return _exhaustive;
+    }
+  }
+}
+
+function dietReducer(state: DietState, action: DietAction): DietState {
+  switch (action.type) {
+    case "addFood": {
+      const name = state.foodNameDraft.trim();
+      if (!name || state.caloriesDraft <= 0 || state.proteinDraft < 0) return state;
+      return {
+        ...state,
+        foodNameDraft: "",
+        caloriesDraft: 0,
+        proteinDraft: 0,
+        nextId: state.nextId + 1,
+        meals: [
+          ...state.meals,
+          { id: state.nextId, name, calories: state.caloriesDraft, protein: state.proteinDraft },
+        ],
+      };
+    }
+    case "removeFood": {
+      const updatedMeals = state.meals.filter((meal) => meal.id !== action.selectedId);
+      return {
+        ...state,
+        foodNameDraft: "",
+        caloriesDraft: 0,
+        proteinDraft: 0,
+        nextId: state.nextId,
+        meals: updatedMeals,
+      };
+    }
+    case "updateFoodNameDraft":
+      return { ...state, foodNameDraft: action.name };
+    case "updateCaloriesDraft":
+      return { ...state, caloriesDraft: action.calories };
+    case "updateProteinDraft":
+      return { ...state, proteinDraft: action.protein };
+    case "reset":
+      return STARTING_DIET;
+    default: {
       const _exhaustive: never = action;
       return _exhaustive;
     }
@@ -181,23 +247,190 @@ function LogPanel() {
   );
 }
 
+type DietApi = { stateDiet: DietState; dispatchDiet: Dispatch<DietAction> };
+
+const DietContext = createContext<DietApi | null>(null);
+
+// One small hook so no panel has to handle the `null` case itself: the check happens once,
+// here, instead of in all three of them.
+function useDiet(): DietApi {
+  const session = useContext(DietContext);
+  if (!session) {
+    throw new Error("useDiet() must be called inside <DietContext.Provider>.");
+  }
+  return session;
+}
+
+function FoodStatsPanel() {
+  const { stateDiet } = useDiet();
+  return (
+    <section
+      aria-labelledby="diet-meals-heading diet-calories-heading diet-protein-heading"
+      className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
+    >
+      <h3 id="diet-meals-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Total Meals
+      </h3>
+      <p className="font-mono text-3xl tabular-nums text-dojo-ember">{stateDiet.meals.length}</p>
+
+      <h3 id="diet-calories-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Total Calories
+      </h3>
+      <p className="font-mono text-3xl tabular-nums text-dojo-ember">{stateDiet.meals.reduce((acc, meal) => acc + meal.calories, 0)}</p>
+
+      <h3 id="diet-protein-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Total Protein
+      </h3>
+      <p className="font-mono text-3xl tabular-nums text-dojo-ember">{stateDiet.meals.reduce((acc, meal) => acc + meal.protein, 0)}</p>
+    </section>
+  );
+}
+
+function FoodFormPanel() {
+  const { stateDiet, dispatchDiet } = useDiet();
+  return (
+    <section
+      aria-labelledby="diet-form-heading"
+      className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
+    >
+      <h3 id="diet-form-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Meal
+      </h3>
+
+      <label className="flex flex-col gap-2">
+        <span className="text-xs uppercase tracking-wider text-dojo-muted">
+          Food name
+        </span>
+        <input
+          value={stateDiet.foodNameDraft}
+          onChange={(event) =>
+            dispatchDiet({ type: "updateFoodNameDraft", name: event.target.value })
+          }
+          placeholder="Spaghetti"
+          className="w-full rounded-md border border-dojo-border bg-dojo-bg/60 px-3 py-2 text-sm text-dojo-text outline-none focus:border-dojo-ember"
+        />
+      </label>
+
+      <label className="flex flex-col gap-2">
+        <span className="text-xs uppercase tracking-wider text-dojo-muted">
+          Calories
+        </span>
+        <input
+          type = "number"
+          value={stateDiet.caloriesDraft}
+          onChange={(event) =>
+            dispatchDiet({ type: "updateCaloriesDraft", calories: +event.target.value })
+          }
+          placeholder="200"
+          className="w-full rounded-md border border-dojo-border bg-dojo-bg/60 px-3 py-2 text-sm text-dojo-text outline-none focus:border-dojo-ember"
+        />
+      </label>
+
+      <label className="flex flex-col gap-2">
+        <span className="text-xs uppercase tracking-wider text-dojo-muted">
+          Protein
+        </span>
+        <input
+          type = "number"
+          value={stateDiet.proteinDraft}
+          onChange={(event) =>
+            dispatchDiet({ type: "updateProteinDraft", protein: +event.target.value })
+          }
+          placeholder="200"
+          className="w-full rounded-md border border-dojo-border bg-dojo-bg/60 px-3 py-2 text-sm text-dojo-text outline-none focus:border-dojo-ember"
+        />
+      </label>
+
+      <button
+        type="button"
+        onClick={() => dispatchDiet({ type: "addFood" })}
+        className="rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-ember"
+      >
+        Add Food
+      </button>
+    </section>
+  );
+}
+
+function FoodListPanel() {
+  const { stateDiet, dispatchDiet } = useDiet();
+  return (
+    <section
+      aria-labelledby="diet-list-heading"
+      className="flex flex-col gap-2 rounded-lg border border-dojo-border bg-dojo-bg/40 p-4"
+    >
+      <h3 id="diet-list-heading" className="text-xs uppercase tracking-wider text-dojo-muted">
+        Food List
+      </h3>
+      {stateDiet.meals.length === 0 ? (
+        <p className="text-sm text-dojo-muted">No Meal Plan yet.</p>
+      ) : (
+        <ul className="flex flex-col gap-1 text-sm">
+          {stateDiet.meals.map((entry) => (
+            <li key={entry.id} className="flex justify-between gap-4">
+              <span>{entry.name}</span>
+              <span className="font-mono text-xs text-dojo-muted">
+                Calories: {entry.calories} | Protein: {entry.protein}
+                &nbsp;
+                <button
+                  type="button"
+                  onClick={() => dispatchDiet({ type: "removeFood", selectedId: entry.id })}
+                  className="w-fit rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-crimson hover:text-dojo-crimson"
+                >
+                  Remove
+                </button>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <button
+        type="button"
+        onClick={() => dispatchDiet({ type: "reset" })}
+        className="w-fit rounded-lg border border-dojo-border px-3 py-2 text-sm transition hover:border-dojo-crimson hover:text-dojo-crimson"
+      >
+        Reset Meal Plan
+      </button>
+    </section>
+  );
+}
+
 export function UseContextReducerDemo() {
   const [state, dispatch] = useReducer(sessionReducer, STARTING_SESSION);
+  const [stateDiet, dispatchDiet] = useReducer(dietReducer, STARTING_DIET);
   return (
-    <SessionContext.Provider value={{ state, dispatch }}>
-      <div className="flex w-full max-w-lg flex-col gap-3">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <RoundPanel />
-          <TechniquePanel />
-          <div className="sm:col-span-2">
-            <LogPanel />
+    <>
+      <SessionContext.Provider value={{ state, dispatch }}>
+        <div className="flex w-full max-w-lg flex-col gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <RoundPanel />
+            <TechniquePanel />
+            <div className="sm:col-span-2">
+              <LogPanel />
+            </div>
           </div>
+          <p className="text-xs text-dojo-muted">
+            None of these panels receives a prop. Each one reads the same reducer state
+            straight out of the context, and changes it by dispatching an action.
+          </p>
         </div>
-        <p className="text-xs text-dojo-muted">
-          None of these panels receives a prop. Each one reads the same reducer state
-          straight out of the context, and changes it by dispatching an action.
-        </p>
-      </div>
-    </SessionContext.Provider>
+      </SessionContext.Provider>
+      <br/><hr/><br/>
+      <DietContext.Provider value={{ stateDiet, dispatchDiet }}>
+        <div className="flex w-full max-w-lg flex-col gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FoodStatsPanel />
+            <FoodFormPanel />
+            <div className="sm:col-span-2">
+              <FoodListPanel />
+            </div>
+          </div>
+          <p className="text-xs text-dojo-muted">
+            None of these panels receives a prop. Each one reads the same reducer state
+            straight out of the context, and changes it by dispatching an action.
+          </p>
+        </div>
+      </DietContext.Provider>
+    </>
   );
 }

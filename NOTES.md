@@ -36,6 +36,7 @@ assessment rather than a marker):
 | Forms & controlled inputs | Fixed both bugs in the `forms` exercise — the no-op `onChange` and the missing `preventDefault` — and corrected a `FormData` detour by explaining controlled vs read-at-submit. Entry 09 |
 | `useState` deep dive | Fixed all three bugs in the `use-state-deep-dive` exercise unaided — updater form for the double setter, `[...techniques, newTechnique]` for the add, `techniques.slice().sort(...)` for the sort — then explained the snapshot mechanism in their own words: both `setReps(reps + 1)` lines read the same render's value, so both compute the same number. Entry 10 |
 | `useRef` | Built the Escape-to-close and focus-into-panel behaviour in `Sidebar.tsx`: a DOM ref, a keydown listener, and an effect with real cleanup and an honest dependency array. Explained both directions of the rule — a ref change re-renders nothing, so a ref value must not be rendered; and a render-time read can't be trusted, because a render may be repeated or discarded. Took three passes to get past "refs aren't initialised until effects run" (they are — `useRef(1)` holds 1 during the first render). Entry 11 |
+| `useContext` / `useReducer` | Built a second, independent shared-state feature beside the session card — a meal planner with its own `createContext`, its own `useReducer` and a six-member action union, a `useDiet()` accessor, and three more panels that receive **no props**. Verified in the browser: one dispatch moved the totals panel and the list panel together, and Remove cleared both. Explained the provider rule (a consumer outside its provider gets `null` and the accessor throws) and the `never` default (it catches a *forgotten case*, not a typo — that is the union's job) in their own words. Entry 12 |
 
 *Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
 originally recorded on code evidence alone, which contradicted the reviewer's own standard — a
@@ -72,12 +73,7 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 ### In progress — lesson live, verification outstanding
 
-**`use-context-reducer` (entry 12)** — the lecture and its demo are live at `/dojo/topic/use-context-reducer`
-as a **build-on task**. This is the first topic using the new default exercise shape: rather than repairing a
-planted bug, the hands-on half is **a component or feature the learner writes themselves**. Both gates are
-green on the lecture, the Sample Code panel is a true mirror at 159 of 159, and the roadmap line is marked
-`BUILD`. The task, its expected values and the seven acceptance criteria are in entry 12 — and the box stays
-unticked until their code *and* their explanation are both on the record.
+*(Empty. Every registered lesson is verified.)*
 
 ### Gaps — the honest list
 
@@ -90,11 +86,10 @@ React and TypeScript topics only. Deploy, social links and a custom domain were 
 settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
 deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
-1. **`useContext` / `useReducer`** — lecture live, hands-on build outstanding. This is now a **build task**, not a lesson to write: add a fourth panel that reads the shared session from a different part of the tree and dispatches a new action. The brief and the acceptance criteria are in entry 12.
-2. **Custom hooks** — extracting a repeated hook sequence into one place.
-3. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them.
-4. **Portals** — rendering outside the parent DOM hierarchy.
-5. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
+1. **Custom hooks** — extracting a repeated hook sequence into one place.
+2. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them.
+3. **Portals** — rendering outside the parent DOM hierarchy.
+4. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
 
 The project is at **`0.13.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
 deliberately). Keep the `HomePage` badge (`v0.13`) in step; the three version artefacts are listed in
@@ -1031,7 +1026,7 @@ omitting the array applies no restriction.** It is in the cheat-sheet.
 
 ## 12 — `useContext` & `useReducer` (Shared State, and Actions Instead of Setters)
 
-- **Status:** LD (Learning) — lecture live 2026-10-08, hands-on build outstanding
+- **Status:** OK (Mastered) — verified 2026-10-08
 - **Added:** 2026-10-08
 - **Belt:** white
 - **Marker file:** `src/topics/use-context-reducer/demo.tsx`
@@ -1097,6 +1092,46 @@ reducer compiles and lints clean, while the identical mutation written in a comp
 The lecture is therefore a deliberate choice of exercise shape rather than a gate failure — the model changed
 on 2026-10-08, and a build of your own is now the default hands-on half. The full probe result is recorded in
 `ROADMAP.md` and `HISTORY.md`.
+
+### How it was verified — 2026-10-08
+
+**Demonstrated — a second, independent feature, reviewed and then driven in the browser.** Rather than adding a
+fourth panel to the session card, the learner built a whole meal planner beside it: its own
+`createContext` / `useReducer` pair, its own `useDiet()` accessor, a **six-member action union** (`addFood`,
+`removeFood` with a payload, three draft updates, `reset`), and three more panels that receive **no props**.
+All seven acceptance criteria pass, and `tsc` / `npm run lint` are green.
+
+Driven live rather than inferred: "Spaghetti" + 500 calories → **Add Food** moved Total Meals 0 → 1 and Total
+Calories 0 → 500, and the Food List panel showed the row at the same moment — **one dispatch, three sibling
+panels, no props**. **Remove** on that row returned all three figures to zero and the list to its empty state.
+The payload action, the guarded `addFood` and the form-clearing all behaved.
+
+**Explained — 3/3, on questions anchored in that code.** Asked what would happen if `FoodStatsPanel` were moved
+outside its provider, the answer was that `useDiet()` gets `null` and throws — which needs **both** halves of
+the rule (the context default is `null`, *and* the accessor refuses it). Asked what
+`const _exhaustive: never = action;` buys over a plain `default: return state;`, the answer was that it stops
+compiling when a new action type has no case — correctly rejecting the tempting confusable, that a `never`
+check catches a *typo*, which is the union's job and not the default branch's. Asked why "Reset Meal Plan"
+leaves the rounds counter alone, the answer was that `dispatchDiet` only ever reaches `dietReducer`: two
+stores, two dispatches.
+
+**One real defect, and neither gate could see it.** The three new sections reused the session panels' heading
+ids (`rounds-heading`, `technique-heading`, `log-heading`), and `FoodStatsPanel` put `rounds-heading` on all
+three of its headings. Duplicate ids are invalid, and `aria-labelledby` resolves to the *first* match — the
+accessibility tree announced the meal panels as `region "ROUNDS"`, `region "TECHNIQUE"` and
+`region "SESSION LOG"`. `tsc` and ESLint are blind to id collisions, so it took looking at the rendered page.
+Reviewer-fixed as plumbing — a pure rename to `diet-meals-heading` / `diet-calories-heading` /
+`diet-protein-heading`, `diet-form-heading` and `diet-list-heading` — with the stats section labelled by a
+space-separated list of its three headings.
+
+**Verdict: verified.** Both halves are on the record, and the Sample Code panel was regenerated mechanically
+to **376 of 376** lines.
+
+**Noted, not blocking.** Three small things the review found in the new code and left alone, because none of
+them is a criterion: the number inputs hold a `number` and coerce with `+event.target.value`, so clearing the
+box snaps it to `0` instead of going empty; `removeFood` also wipes the in-progress form fields and re-sets
+`nextId` to itself; and `state.caloriesDraft <= 0` is `false` for `NaN`, so `Number.isFinite(...)` would close
+that hole.
 
 ---
 

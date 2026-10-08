@@ -37,7 +37,7 @@ Do not re-add these to a future roadmap. If a session needs the deployment *mech
 - [x] Forms & controlled components — input state, validation — lesson live at `/dojo/topic/forms`; fixed and explained (entry 09)
 - [x] `useEffect` — side effects, dependency array, cleanup — lecture live at `/dojo/topic/use-effect`; verified by quiz (data fetching deferred to Forms)
 - [x] `useRef` — DOM access and mutable values — explainer live at `/dojo/topic/use-ref`; thirteen candidates probed against both gates and every one with a diagnosable symptom was rejected, so the hands-on half was the Escape-to-close in `Sidebar.tsx`. Verified 2026-10-07, after three passes past the "refs aren't initialised until effects run" misconception (entry 11)
-- [ ] `useContext` / `useReducer` — global state patterns — **BUILD**: lecture live at `/dojo/topic/use-context-reducer`, and the outstanding half is the learner's own panel. The task, its expected values and the seven acceptance criteria are in `NOTES.md` entry 12
+- [x] `useContext` / `useReducer` — shared state patterns — lesson live at `/dojo/topic/use-context-reducer`. The first **build-on task**: instead of adding a panel to the session card, the learner built a second, independent shared-state feature beside it — a meal planner with its own `createContext`/`useReducer` pair, a six-member action union, a `useDiet()` accessor and three propless panels. All seven acceptance criteria pass, and the provider rule and the `never` default were explained in their own words (3/3). Verified 2026-10-08 — entry 12
 - [ ] Custom hooks — extracting reusable logic — **GAP**: never used
 - [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization — **GAP**: never used
 - [ ] Portals — rendering outside the parent DOM hierarchy — **GAP**: never used
@@ -60,7 +60,7 @@ they were considered rather than forgotten.
 
 ---
 
-_Last updated: 2026-10-08 (eleven lessons live — ten verified, one awaiting its build task)_
+_Last updated: 2026-10-08 (eleven lessons live — all eleven verified)_
 
 **Why the `useState` deep dive is a fix-it exercise with three array bugs, not an object bug.** The
 characteristic mistake it teaches — writing a field on an object held in state — cannot be shipped at all:
