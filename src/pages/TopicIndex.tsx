@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { topicRegistry } from "../topics/registry";
-import { beltBadgeClass, beltDotClass } from "../topics/beltStyles";
+import { BELT_ORDER, beltBadgeClass, beltDotClass, beltLevel, beltName } from "../topics/beltStyles";
 
 /**
  * Default content rendered at `/dojo` — welcome text + overview grid of all topics.
@@ -14,11 +14,32 @@ export function TopicIndex() {
   return (
     <div className="w-full">
       <h1 className="text-2xl font-bold mb-2 md:text-3xl">Welcome to the Dojo</h1>
-      <p className="text-dojo-muted mb-8">
+      <p className="text-dojo-muted mb-3">
         The lessons build on each other, so the cards below are numbered in the order
         they are meant to be read. Any topic can also be opened straight from the
         sidebar.
       </p>
+
+      {/*
+        The key for the belts. It is built from `BELT_ORDER` — the same source the cards
+        read — so a card cannot show a belt the legend does not explain, and renaming a
+        level renames it in both places at once.
+      */}
+      <div className="mb-8 flex flex-wrap items-center gap-2">
+        <span className="text-sm text-dojo-muted">Difficulty:</span>
+        {BELT_ORDER.map((belt) => (
+          <span
+            key={belt}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs ${beltBadgeClass(belt)}`}
+          >
+            <span
+              aria-hidden="true"
+              className={`h-1.5 w-1.5 rounded-full ${beltDotClass(belt)}`}
+            />
+            {beltName(belt)} · {beltLevel(belt)}
+          </span>
+        ))}
+      </div>
 
       <ol className="grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 2xl:grid-cols-3">
         {topicRegistry.map((topic, index) => (
@@ -45,7 +66,7 @@ export function TopicIndex() {
                     <span
                       className={`h-1.5 w-1.5 rounded-full ${beltDotClass(topic.belt)}`}
                     />
-                    {topic.belt}
+                    {beltLevel(topic.belt)}
                   </span>
                 </div>
                 <p className="text-sm text-dojo-muted">{topic.description}</p>

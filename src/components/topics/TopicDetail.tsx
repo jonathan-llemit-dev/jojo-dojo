@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { topicBySlug, topicRegistry } from "../../topics/registry";
-import { beltBadgeClass, beltDotClass } from "../../topics/beltStyles";
+import { beltBadgeClass, beltDotClass, beltLevel, beltName } from "../../topics/beltStyles";
 import { RichText } from "./RichText";
 
 /**
@@ -71,7 +71,7 @@ export function TopicDetail() {
           <span
             className={`h-2 w-2 rounded-full ${beltDotClass(topic.belt)}`}
           ></span>
-          {topic.belt} belt
+          {beltName(topic.belt)} · {beltLevel(topic.belt)}
         </span>
         <h1 className="text-2xl font-bold mt-3 md:text-3xl">{topic.title}</h1>
       </header>

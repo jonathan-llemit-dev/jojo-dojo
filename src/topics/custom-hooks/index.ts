@@ -6,7 +6,7 @@ export const customHooksTopic: Topic = {
   slug: "custom-hooks",
   title: "Custom Hooks — Extracting a Repeated Hook Sequence",
   shortTitle: "Custom Hooks",
-  belt: "white",
+  belt: "black",
   description:
     "Write a repeated hook sequence once, give it a name starting with use, and call it wherever it is needed — without sharing its state.",
   longDescription:

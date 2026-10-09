@@ -8,6 +8,8 @@
   --color-dojo-ember: #f59e0b;
   --color-dojo-ember-bright: #fbbf24;
   --color-dojo-crimson: #dc2626;
+  /* The one cool accent: the blue belt (intermediate). Everything else here is warm. */
+  --color-dojo-azure: #60a5fa;
   --color-dojo-text: #f5f1ea;
   --color-dojo-muted: #a89b8c;
 

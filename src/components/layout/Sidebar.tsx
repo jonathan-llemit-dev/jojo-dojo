@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
 import { topicRegistry } from "../../topics/registry";
-import { beltDotClass } from "../../topics/beltStyles";
+import { beltDotClass, beltLevel } from "../../topics/beltStyles";
 
 /**
  * Topic navigation — one list, two presentations.
@@ -132,8 +132,15 @@ export function Sidebar() {
                 {String(index + 1).padStart(2, "0")}
               </span>
               <span
+                aria-hidden="true"
                 className={`h-2 w-2 shrink-0 rounded-full ${beltDotClass(topic.belt)}`}
               />
+              {/*
+                The dot is the only difficulty cue in this list, and colour on its own
+                tells a screen reader nothing — so the word travels beside it, hidden
+                from sight. Sighted readers get the key on the topic grid.
+              */}
+              <span className="sr-only">{beltLevel(topic.belt)}</span>
               <span className="min-w-0 truncate">{topic.shortTitle}</span>
             </Link>
           );

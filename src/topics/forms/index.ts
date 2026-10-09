@@ -6,7 +6,7 @@ export const formsTopic: Topic = {
   slug: "forms",
   title: "Forms & Controlled Inputs",
   shortTitle: "Forms & Inputs",
-  belt: "white",
+  belt: "blue",
   description:
     "Make an input controlled with value + onChange, and stop the browser's default submit with preventDefault.",
   longDescription:

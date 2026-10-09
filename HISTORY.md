@@ -10,6 +10,59 @@ Newest first.
 
 ## Session log
 
+### Every topic was a white belt — belts now mean something, and the reader gets a word (2026-10-08)
+
+**The complaint was the learner's, and it was right on both counts.** Every one of the twelve topics was
+`belt: "white"`, so the pill in the corner of every card said "white" and conveyed nothing; and a reader who
+had never seen the site had no way to learn what a belt meant, because nothing on any page said. Two further
+problems surfaced while fixing it, both invisible until more than one belt was actually in use:
+
+1. **`beltStyles.ts` rendered white and blue identically.** The helpers read
+   `belt === "black" ? crimson : ember` — so of the three values in `BeltRank`, two produced the same gold.
+   A blue belt would have been indistinguishable from a white one the moment one was assigned. Replaced with a
+   single `Record<BeltRank, …>` where each belt owns its level, its name, its badge classes and its dot class,
+   because an if/else chain over three values is exactly where the third case gets forgotten.
+2. **There was no blue in the palette.** `@theme` has ember, crimson and warm neutrals only, so a blue belt
+   had nothing to be. Added `--color-dojo-azure: #60a5fa` — the one cool accent in an otherwise warm palette.
+
+**Black renders as crimson, deliberately.** The page background is `#0f0d0b`; a literally black dot or border
+on it cannot be seen. Crimson is the strongest accent the dark palette has, and the belt's *name* still reads
+"Black belt" wherever a word is shown. That was the old code's behaviour too — it is now written down instead
+of being an accident of a ternary.
+
+**The reader gets a word, and each surface shows the half it needs.** The metaphor is lovely once you know it
+and useless before that, so every belt carries a plain-language `level` beside its `name`:
+
+- **topic grid** — the card pill shows the level alone ("Beginner"). "White" told a first-time reader nothing.
+- **grid legend** — a key above the cards: `Difficulty: [White belt · Beginner] [Blue belt · Intermediate]
+  [Black belt · Advanced]`. Built from `BELT_ORDER`, the same list the cards read, so a belt cannot appear on a
+  card without being explained in the key.
+- **lesson header** — both: "Black belt · Advanced".
+- **sidebar** — only the dot fits, so the dot is now `aria-hidden` and paired with an `sr-only` level. Colour
+  on its own says nothing to a screen reader, and the sidebar is where the difficulty curve is most useful.
+
+**The assignments, by real difficulty rather than by age.** White (6): `jsx`, `components-props`, `useState`,
+`conditional-rendering`, `lists-and-keys`, `event-handling` — nothing about hook discipline has to hold yet.
+Blue (4): `use-effect`, `forms`, `use-state-deep-dive`, `use-ref` — a hook whose *details* bite. Black (2):
+`use-context-reducer` and `custom-hooks` — material that combines several ideas or asks the reader to design an
+abstraction. Because the registry order is the reading order, the sidebar's dots now rise as you scroll it, so
+the curve is visible rather than asserted. The rule for choosing a belt is in `CLAUDE.md`; the per-topic values
+are in `NOTES.md`, one `- **Belt:**` line per entry, and deliberately not duplicated anywhere else.
+
+**Verified:** the four gates green; driven in Chrome at 1280 and at 375 — the sidebar rows announce as *"01
+Beginner JSX"*, *"07 Intermediate useEffect"*, *"11 Advanced Context & Reducer"*, the legend and the card pills
+render, and the lesson header reads *"Black belt · Advanced"*. A class name in the markup proves nothing on its
+own, so the compiled stylesheet was fetched and checked for every belt utility: `bg`/`border`/`text` for azure,
+muted and crimson all generate real rules.
+
+**No new topic, but a bump anyway: `0.15.0` → `0.16.0`**, on the learner's call. The automatic `+0.01` step is
+for topics and this adds none, which makes it a milestone bump like the `0.14.0` UI/UX pass. Every artefact the
+"Versioning" section names moved together — `package.json`, **both** `version` fields in `package-lock.json`
+(the root one and `packages[""]`, which sit among three *dependency* versions that also read `0.15.x` and must
+not move), the `HomePage.tsx` badge, `NOTES.md`, `README.md`, and the `VERSION` / `SHORT` constants in
+`scripts/check-repo.mjs` — which is the thing that actually catches a half-finished bump.
+**Not committed — the learner makes every commit.**
+
 ### Lesson 12 reviewed again — one finding was false, one was right for a reason it missed (2026-10-08)
 
 **A senior-review pass on `custom-hooks` raised seven ranked fixes. Two were rejected with measurement, one

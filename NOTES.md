@@ -95,9 +95,9 @@ deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 3. **Portals** — rendering outside the parent DOM hierarchy.
 4. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
 
-The project is at **`0.15.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
-deliberately). Keep the `HomePage` badge (`v0.15`) in step; the three version artefacts are listed in
-`CLAUDE.md` under "Versioning".
+The project is at **`0.16.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
+deliberately, as it was for the belt rework). Keep the `HomePage` badge (`v0.16`) in step; the three version
+artefacts are listed in `CLAUDE.md` under "Versioning".
 
 ---
 
@@ -602,7 +602,7 @@ explained half is above.
 
 - **Status:** OK (Mastered) — verified 2026-10-04, after one corrected misconception
 - **Added:** 2026-10-04
-- **Belt:** white
+- **Belt:** blue
 - **Marker file:** `src/topics/use-effect/demo.tsx`
 - **Route:** `/dojo/topic/use-effect`
 
@@ -707,7 +707,7 @@ pointlessly or wonder why an effect is not firing.
 
 - **Status:** OK (Mastered) — verified 2026-10-07
 - **Added:** 2026-10-07
-- **Belt:** white
+- **Belt:** blue
 - **Marker file:** `src/topics/forms/demo.tsx`
 - **Route:** `/dojo/topic/forms`
 
@@ -763,7 +763,7 @@ correct.
 
 - **Status:** OK (Mastered) — verified 2026-10-07
 - **Added:** 2026-10-07
-- **Belt:** white
+- **Belt:** blue
 - **Marker file:** `src/topics/use-state-deep-dive/demo.tsx`
 - **Route:** `/dojo/topic/use-state-deep-dive`
 
@@ -891,7 +891,7 @@ rather than offered as something to repair. The full probe result is in `ROADMAP
 
 - **Status:** OK (Mastered) — verified 2026-10-07
 - **Added:** 2026-10-07
-- **Belt:** white
+- **Belt:** blue
 - **Marker file:** `src/topics/use-ref/demo.tsx`
 - **Route:** `/dojo/topic/use-ref`
 
@@ -1032,7 +1032,7 @@ omitting the array applies no restriction.** It is in the cheat-sheet.
 
 - **Status:** OK (Mastered) — verified 2026-10-08
 - **Added:** 2026-10-08
-- **Belt:** white
+- **Belt:** black
 - **Marker file:** `src/topics/use-context-reducer/demo.tsx`
 - **Route:** `/dojo/topic/use-context-reducer`
 
@@ -1143,7 +1143,7 @@ that hole.
 
 - **Status:** LD (Learning) — lecture live 2026-10-08, hands-on build outstanding
 - **Added:** 2026-10-08
-- **Belt:** white
+- **Belt:** black
 - **Marker file:** `src/topics/custom-hooks/demo.tsx`
 - **Route:** `/dojo/topic/custom-hooks`
 

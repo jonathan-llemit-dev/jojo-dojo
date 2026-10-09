@@ -6,7 +6,7 @@ export const useContextReducerTopic: Topic = {
   slug: "use-context-reducer",
   title: "useContext & useReducer — Shared State Without Prop Drilling",
   shortTitle: "Context & Reducer",
-  belt: "white",
+  belt: "black",
   description:
     "Share one piece of state across a whole tree with a reducer, and read it from anywhere with context — no props passed through the middle.",
   longDescription:

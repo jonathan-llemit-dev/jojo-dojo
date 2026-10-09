@@ -1,6 +1,9 @@
 import type { ComponentType } from "react";
 
-/** Dojo belt rank — also drives the sidebar badge color. */
+/**
+ * Dojo belt rank — how advanced a lesson is. `beltStyles.ts` owns what each one is
+ * called and what colour it gets; nothing else should hardcode either.
+ */
 export type BeltRank = "white" | "blue" | "black";
 
 /** A single React lesson / topic served by the tutorial site. */
@@ -15,7 +18,12 @@ export interface Topic {
    * the concept alone, short enough to scan at a glance.
    */
   shortTitle: string;
-  /** Dojo belt rank — white (beginner) -> blue -> black (advanced). */
+  /**
+   * Dojo belt rank — how advanced the lesson is: white for the fundamentals, blue for
+   * the hook material that needs care, black for topics combining several ideas.
+   * Shown to the reader as a plain word ("Beginner" / "Intermediate" / "Advanced") with
+   * the belt name kept for the lesson header.
+   */
   belt: BeltRank;
   /** One-line summary rendered as plain text in the topic grid (`TopicIndex.tsx`). */
   description: string;

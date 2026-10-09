@@ -6,7 +6,7 @@ export const useStateDeepDiveTopic: Topic = {
   slug: "use-state-deep-dive",
   title: "useState Deep Dive — Object & Array State",
   shortTitle: "useState Deep Dive",
-  belt: "white",
+  belt: "blue",
   description:
     "Replace object and array state instead of changing it, initialise state lazily, and know what two setters in one handler do.",
 

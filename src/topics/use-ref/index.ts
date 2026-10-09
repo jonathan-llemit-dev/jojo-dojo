@@ -6,7 +6,7 @@ export const useRefTopic: Topic = {
   slug: "use-ref",
   title: "useRef — DOM Handles & Values That Outlive a Render",
   shortTitle: "useRef",
-  belt: "white",
+  belt: "blue",
   description:
     "Keep a mutable value across renders, or hold on to a DOM node — without triggering a re-render when it changes.",
   longDescription:

@@ -5,7 +5,7 @@
 
 A dark, dojo-themed React learning journal forged with **Vite**, styled with **Tailwind CSS v4**, and live on **Vercel** at [jojo-dojo.vercel.app](https://jojo-dojo.vercel.app/). The landing page is at `/`; every React lesson then lives at its own URL under `/dojo`. Every commit is a rep. Every deploy is a rank up.
 
-**Version `0.15.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
+**Version `0.16.0`** — a running number: every new topic adds `0.01` to whatever the version currently is, and it can also be bumped deliberately. It is never a formula.
 
 ---
 
@@ -75,7 +75,7 @@ jojo-dojo/
 │   ├── pages/                 # HomePage (landing), TopicIndex (lesson grid)
 │   └── topics/                # The lessons themselves
 │       ├── types.ts           # BeltRank + Topic types
-│       ├── beltStyles.ts      # BeltRank -> Tailwind classes
+│       ├── beltStyles.ts      # BeltRank -> level, belt name + Tailwind classes
 │       ├── registry.ts        # The list of lessons (source of truth)
 │       ├── jsx/               # One folder per lesson: demo.tsx + index.ts
 │       ├── components-props/  # One folder per lesson: demo.tsx + index.ts
@@ -147,7 +147,7 @@ This project is **about React and TypeScript**, so the roadmap tracks topics rat
 - [ ] Later, not now: Redux and Next.js (see `ROADMAP.md`)
 
 Live at <https://jojo-dojo.vercel.app/> — deployed since the first commit, and every push to `main`
-publishes automatically. The version is a running number (`0.15.0` today; one new topic adds `0.01`).
+publishes automatically. The version is a running number (`0.16.0` today; one new topic adds `0.01`).
 
 ---
 
