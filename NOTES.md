@@ -75,7 +75,7 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 **`custom-hooks` (entry 13)** — the lecture and its demo are live at `/dojo/topic/custom-hooks` as a
 **build-on task**, the second of that kind. Both gates are green, the Sample Code panel is a true mirror at
-65 of 65, and the roadmap line is marked `BUILD`. The task, its expected values and the seven acceptance
+147 of 147, and the roadmap line is marked `BUILD`. The task, its expected values and the seven acceptance
 criteria are in entry 13 — and the box stays unticked until the learner's own hook *and* their explanation are
 both on the record.
 
@@ -1159,17 +1159,23 @@ being exercised rather than a hard-coded constant.
 ### The three facts the lesson turns on
 
 1. **The `use` prefix is a contract with the linter, not a decoration.** `react-hooks/rules-of-hooks` reads the
-   name to decide whether hooks may be called in that function at all. Measured: a function named `stopwatch`
-   holding `useState` + `useEffect` is rejected twice — *"React Hook "useState" is called in function
-   "stopwatch" that is neither a React function component nor a custom React Hook function. React Hook names
-   must start with the word "use"."* `tsc` has no opinion here; this is a lint rule, so the linter is the only
-   thing that tells you.
+   name to decide whether hooks may be called in that function at all. Measured on this repo's installed plugin:
+   a function named `ticker` holding `useState` + `useEffect` is rejected **twice** — once per call site, both
+   from the same rule, both carrying the same three sentences: *"React Hook "useState" is called in function
+   "ticker" that is neither a React function component nor a custom React Hook function. React component names
+   must start with an uppercase letter. React Hook names must start with the word "use"."* (The second error
+   names `useEffect`.) The `ruleId` on both is `react-hooks/rules-of-hooks`, so the two "names must start with"
+   clauses are part of *that one rule's* message — not a second rule reporting alongside it. The rule also has a
+   **second half the name cannot satisfy**: hooks must be called at the top level of a component or another hook,
+   never inside an `if`, a loop or a callback. `tsc` has no opinion on any of this; it is a lint rule, so the
+   linter is the only thing that tells you.
 2. **A hook is not a store.** Every call gets its own state. The round clock and the rest row keep separate
-   times, visible on screen. Sharing state between components is `useContext`'s job (entry 12) — a hook shares
-   the *code*, not the data.
-3. **Callers see the return value and nothing else.** The rest row takes the three things it needs and ignores
-   `reset`; neither component can tell that two pieces of state and an effect are hiding inside, which is what
-   lets the hook be rewritten without touching a call site.
+   times, visible on screen. To *share* state you lift it to a common parent; Context then delivers it down the
+   tree, but `useContext` only **reads** it, and the state itself still lives in a `useState` or `useReducer`
+   somewhere above (entry 12). An external store is the third option. A hook shares the *code*, not the data.
+3. **Callers see the return value and nothing else.** The rest row takes three of the five things and ignores
+   `ticks` and `reset`; neither component can tell that two pieces of state and an effect are hiding inside,
+   which is what lets the hook be rewritten without touching a call site.
 
 ### The hands-on task — build, do not repair
 

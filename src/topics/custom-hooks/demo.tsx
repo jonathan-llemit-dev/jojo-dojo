@@ -18,10 +18,10 @@
 //
 //   1. the sequence — two pieces of state and one effect — lives in **one** function instead
 //      of in every component that needs a ticking count;
-//   2. a hook is not a store. Each call to `useTicker()` gets its own state, so starting the
-//      round clock leaves the rest row at zero;
-//   3. callers see the return value and nothing else. The rest row takes four of the five
-//      things and ignores `reset`, and neither component can tell an interval is hiding.
+//   2. a hook is not a store. Each call to `useTicker(intervalMs)` gets its own state, so
+//      starting the round clock leaves the rest row at zero;
+//   3. callers see the return value and nothing else. The rest row takes three of the five
+//      things and ignores the other two, and neither component can tell an interval is hiding.
 //
 // **Simplification, and it is visible on purpose.** `useTicker` counts whole ticks. Pause
 // after half a tick and that half is discarded, so toggling faster than the interval means
@@ -30,8 +30,12 @@
 // the lesson is the extraction, not the arithmetic.
 //
 // Hands-on task for this topic: see NOTES.md entry 13.
+//
+// The demo deliberately uses **only** `useState`, `useEffect` and `useId`. The first two are
+// the lesson's prerequisites; `useId` only labels the panels. Anything else here — a `useRef`
+// render counter, say — would drag another lesson's material into this one.
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 /** What `useTicker` hands back — the whole API a caller is allowed to see. */
 export type UseTickerResult = {
@@ -53,6 +57,9 @@ export type UseTickerResult = {
  *
  * `if (!isRunning) return;` sits **inside** the effect. That is an early return from a
  * callback, not a conditional hook call: the hook itself still runs on every render.
+ *
+ * Like every hook, it must be called at the top level — not inside an `if`, a loop or a
+ * callback. That is the half of `rules-of-hooks` the name cannot satisfy for you.
  */
 function useTicker(intervalMs: number): UseTickerResult {
   const [ticks, setTicks] = useState(0);
@@ -72,8 +79,8 @@ function useTicker(intervalMs: number): UseTickerResult {
   const remainder = ticks % 60;
 
   // A new object and two new functions on every render. That is fine here: nothing below is
-  // memoised, so a fresh identity costs nothing. `useCallback` earns its keep only when a
-  // child is wrapped in `React.memo` or a callback sits in a dependency array.
+  // memoised, so a fresh identity costs nothing today. `useCallback` earns its keep only when
+  // a child is wrapped in `React.memo` or a callback sits in a dependency array.
   return {
     ticks,
     isRunning,
@@ -84,27 +91,6 @@ function useTicker(intervalMs: number): UseTickerResult {
       setTicks(0);
     },
   };
-}
-
-/**
- * How many times this component has rendered, written straight into the DOM.
- *
- * The count cannot be *rendered* from a ref: reading `ref.current` during render is what
- * `react-hooks/refs` rejects, and the value would be stale anyway. So the ref is read in an
- * effect, which runs after the render, and the effect writes the result into an element it
- * also holds. No state, so no extra render — the number climbs once per tick and nothing else
- * moves.
- */
-function RenderTally() {
-  const renders = useRef(0);
-  const output = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    renders.current += 1;
-    if (output.current) output.current.textContent = `renders: ${renders.current}`;
-  });
-
-  return <span ref={output} className="text-[11px] text-dojo-muted/70" />;
 }
 
 function RoundClock({ intervalMs }: { intervalMs: number }) {
@@ -127,7 +113,7 @@ function RoundClock({ intervalMs }: { intervalMs: number }) {
         {label}
       </p>
       <p className="text-[11px] text-dojo-muted/70">
-        ticks: {ticks} · every {intervalMs}ms · <RenderTally />
+        ticks: {ticks} · every {intervalMs}ms
       </p>
       <div className="flex flex-wrap gap-2">
         <button
@@ -201,6 +187,7 @@ export function CustomHooksDemo() {
         <button
           type="button"
           aria-pressed={intervalMs === 1000}
+          aria-label="1× speed — one tick per second"
           onClick={() => setIntervalMs(1000)}
           className={`rounded-lg border px-3 py-1 text-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dojo-ember ${
             intervalMs === 1000
@@ -213,6 +200,7 @@ export function CustomHooksDemo() {
         <button
           type="button"
           aria-pressed={intervalMs === 100}
+          aria-label="10× speed — ten ticks per second"
           onClick={() => setIntervalMs(100)}
           className={`rounded-lg border px-3 py-1 text-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dojo-ember ${
             intervalMs === 100

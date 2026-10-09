@@ -10,6 +10,60 @@ Newest first.
 
 ## Session log
 
+### Lesson 12 reviewed again — one finding was false, one was right for a reason it missed (2026-10-08)
+
+**A senior-review pass on `custom-hooks` raised seven ranked fixes. Two were rejected with measurement, one
+was accepted for a better reason than the review gave, and four were adopted.**
+
+**Rejected: "don't fabricate the ESLint output."** The review claimed the quoted message "concatenates two
+separate messages (rules-of-hooks + component-naming)" and that "once for each hook inside" overstates the
+rule. Both halves are wrong, and `npx eslint --format json` settles it rather than an argument. A probe file
+with a `ticker` function holding `useState` + `useEffect` produced **two** messages — one per call site, line 6
+and line 7 — and **both** carry `ruleId: "react-hooks/rules-of-hooks"`. The two "names must start with…"
+clauses are part of *that one rule's* single message string, not a second rule reporting alongside it. So the
+prose was already accurate. What the fence did lack was the rule id, which is now shown the way the CLI prints
+it — that is the only change the finding earned. **The lesson's own numbers were measured, not invented, and
+the way to check that is a probe, not a second opinion.**
+
+**Accepted for a different reason: `RenderTally` is gone.** The review called its `textContent` write an
+anti-pattern that teaches a bad pattern in a patterns lesson. The technique is *forced* — a ref read during
+render is rejected by `react-hooks/refs` and a `setState` in an effect by `react-hooks/set-state-in-effect`, so
+displaying a render count has exactly one legal shape — and `use-ref` already demonstrates it deliberately.
+The reason that actually decided it is one the review never mentions: **the demo imported `useRef` while the
+lesson's prerequisites said "`useState`, and the cleanup half of `useEffect`. Nothing else is assumed."** A
+lesson cannot name its prerequisites and then use a hook outside them, and the tally was near-redundant anyway
+(six ticks means six renders, and `ticks:` already shows six). Removed, the demonstration still shows the
+machinery — `ticks: 6 · every 1000ms` — the sample drops 154 lines to 147, and the contradiction is gone.
+
+**Adopted.** The `rules-of-hooks` section gained the half the name cannot satisfy: *hooks must be called at the
+top level of a component or another hook, never inside an `if`, a loop or a callback.* That was a real hole —
+the lesson explained the naming rule at length and never said where a hook may be called, which is the other
+half of the same rule and the one that bites when a learner writes `if (ready) useTicker(1000)`. Also added: a
+sentence that the returned keys stay stable across renders, a forward pointer to `renderHook` from
+`@testing-library/react`, and a short "if you have this code in an editor" paragraph naming three edits worth
+making (drop `intervalMs` from the deps, swap the updater form and follow the linter, call the hook inside an
+`if`). The memoisation aside was split in two and now names the second trigger — a dependency array, not just a
+memoised child — and the shared-component aside moved below the interface, where it no longer interrupts
+"here is the hook" → "here is what it returns". The speed buttons gained `aria-label`s that begin with their
+visible text ("1× speed — one tick per second"), so screen readers get the units without breaking voice
+control.
+
+**Two stale claims in `NOTES.md` surfaced while updating the parity number.** The "In progress" section still
+said the mirror was **65 of 65** — two revisions out of date, because `check:repo` verifies the parity claim in
+`CLAUDE.md` and never looked at this one. And fact 2 of entry 13 still read *"Sharing state between components
+is `useContext`'s job"* — **the exact false claim the previous pass removed from the lesson prose and left
+behind in the notes.** `useContext` only reads; the state lives above it. Both fixed, along with fact 1 (now
+notes that both errors carry the same `ruleId`, and adds the placement half) and fact 3 (the rest row takes
+three of five things, not "the three things it needs").
+
+**Verified:** `tsc`, `lint` and `check:prose` green (17 blocks, longest 64 words); `check:repo`
+`ALL CHECKS PASSED` with `custom-hooks` at **147 of 147**. Then driven in Chrome, because the gates cannot see
+a page: the round clock ticked to `ticks: 4 · every 1000 ms` while the rest row stayed at `0:00`; switching to
+10× put `every 100 ms` on both panels; Reset returned the round clock to `0:00` with its button disabled again
+while the rest clock carried on to `0:43`; and the speed buttons announced as *"1× speed — one tick per
+second"*. The long quoted lint message scrolls inside its `<pre>` (`overflow-x-auto`) rather than stretching the
+page. **Not committed — the learner makes every commit.**
+
 ### `custom-hooks` revised — accuracy fixes, and a generator that corrupted two lessons (2026-10-08)
 
 **A review of lesson 12 landed a batch of corrections, and one of them was a real bug in my own demo.** Five
