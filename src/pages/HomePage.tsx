@@ -1,16 +1,55 @@
 import { Link } from "react-router-dom";
+import { topicRegistry } from "../topics/registry";
+import {
+  BELT_ORDER,
+  beltBadgeClass,
+  beltBlurb,
+  beltDotClass,
+  beltLevel,
+  beltName,
+} from "../topics/beltStyles";
 
-/** Three one-line answers to "what is this?" — a scannable strip under the About copy. */
-const ABOUT_POINTS = ["Short lessons", "Live examples", "Sample Code"];
+/**
+ * Four one-line answers to "what is this?" — a scannable strip under the About copy.
+ *
+ * The emoji is decoration only (`aria-hidden`), so each entry still reads as a sentence if
+ * the glyph does not render: the title carries the meaning, the body explains it.
+ */
+const ABOUT_POINTS = [
+  {
+    emoji: "⚡",
+    title: "Short lessons",
+    body: "One concept per lesson: an explanation, a snippet, and a demo you can run.",
+  },
+  {
+    emoji: "🧪",
+    title: "Live examples",
+    body: "Every demo is real, not a screenshot. Click them, break them, see what happens.",
+  },
+  {
+    emoji: "📜",
+    title: "Sample code",
+    body: "The exact code behind each demo — a line-for-line mirror of what is running.",
+  },
+  {
+    emoji: "🧭",
+    title: "A guided path",
+    body: "Topics are numbered in the order they build on each other, white belt through black.",
+  },
+];
 
 /**
  * Landing page served at `/`.
  *
  * The copy is deliberately short. The hero is only the eyebrow, the name, the byline and
- * the buttons — "React Training Ground" above "The Jojo Dojo" already says what this is,
- * and the dojo index shows the lessons themselves, so there is no count to advertise.
- * The About section carries the one long-form paragraph: why it exists, in the author's
- * own words.
+ * the buttons. The About section carries the one long-form paragraph, in the author's own
+ * words, and the belt path below it answers the next question a visitor has: how much React
+ * does each lesson assume, and which lessons are which.
+ *
+ * The belt path is **derived, not written out**. The three ranks come from `BELT_ORDER` and
+ * the lessons under each one are filtered from `topicRegistry`, so a new lesson files itself
+ * under the right belt with no edit to this file — and the section cannot fall out of step
+ * with the badges on the cards, in the sidebar or on the lesson pages.
  */
 export function HomePage() {
   return (
@@ -27,6 +66,9 @@ export function HomePage() {
           <a href="#about" className="hover:text-dojo-ember transition">
             About
           </a>
+          <a href="#belts" className="hover:text-dojo-ember transition">
+            Belts
+          </a>
           <a
             href="https://github.com/jonathan-llemit-dev/jojo-dojo"
             target="_blank"
@@ -41,7 +83,7 @@ export function HomePage() {
       {/* Hero */}
       <section className="flex-1 px-4 py-16 flex flex-col items-center text-center sm:px-6 sm:py-24">
         <span className="mb-4 px-3 py-1 text-xs rounded-full border border-dojo-border text-dojo-muted">
-          🥋 Welcome, student · v0.16
+          🥋 Welcome, student · v0.17
         </span>
 
         <p className="text-dojo-ember tracking-[0.3em] uppercase text-sm mb-4">
@@ -97,16 +139,79 @@ export function HomePage() {
           </p>
         </div>
 
-        <ul className="mx-auto mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
+        {/* `text-left` because the section centres its prose; a list of icon + title + body
+            reads badly centred, and worse on a phone where each entry wraps. */}
+        <ul className="mx-auto mt-10 grid max-w-2xl list-none gap-3 p-0 text-left sm:grid-cols-2">
           {ABOUT_POINTS.map((point) => (
             <li
-              key={point}
-              className="flex items-center justify-center gap-2 rounded-lg border border-dojo-border bg-dojo-surface/60 px-4 py-3 text-sm"
+              key={point.title}
+              className="flex items-start gap-3 rounded-lg border border-dojo-border bg-dojo-surface/60 px-4 py-3"
             >
-              <span aria-hidden="true" className="text-dojo-ember">
-                ✓
+              <span aria-hidden="true" className="text-lg leading-6">
+                {point.emoji}
               </span>
-              <span className="text-dojo-muted">{point}</span>
+              <span className="min-w-0">
+                <span className="block text-sm font-medium text-dojo-text">
+                  {point.title}
+                </span>
+                <span className="block text-xs leading-relaxed text-dojo-muted">
+                  {point.body}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Belt path — the difficulty scale, and which lessons sit at each rank. */}
+      <section
+        id="belts"
+        className="border-t border-dojo-border px-4 py-16 text-center scroll-mt-20 sm:px-6"
+      >
+        <h2 className="text-2xl font-bold mb-5">
+          From white belt to <span className="text-dojo-ember">black</span>
+        </h2>
+
+        <p className="mx-auto mb-10 max-w-2xl text-pretty leading-relaxed text-dojo-muted">
+          Every lesson wears a belt, so you can see how much React it assumes before you
+          start. The same three colours mark the cards in the dojo and the lessons in the
+          sidebar.
+        </p>
+
+        <ul className="mx-auto grid max-w-4xl list-none gap-4 p-0 text-left md:grid-cols-3">
+          {BELT_ORDER.map((belt) => (
+            <li
+              key={belt}
+              className="flex flex-col rounded-xl border border-dojo-border bg-dojo-surface/60 p-5 transition hover:border-dojo-ember"
+            >
+              <span
+                className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs ${beltBadgeClass(belt)}`}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`h-1.5 w-1.5 rounded-full ${beltDotClass(belt)}`}
+                />
+                {beltName(belt)} · {beltLevel(belt)}
+              </span>
+
+              <p className="mt-3 text-sm leading-relaxed text-dojo-muted">
+                {beltBlurb(belt)}
+              </p>
+
+              <ul className="mt-4 flex list-none flex-wrap gap-2 p-0">
+                {topicRegistry
+                  .filter((topic) => topic.belt === belt)
+                  .map((topic) => (
+                    <li key={topic.slug}>
+                      <Link
+                        to={`/dojo/topic/${topic.slug}`}
+                        className="inline-block rounded-md border border-dojo-border px-2 py-1 text-xs text-dojo-muted transition hover:border-dojo-ember hover:text-dojo-ember"
+                      >
+                        {topic.shortTitle}
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
             </li>
           ))}
         </ul>

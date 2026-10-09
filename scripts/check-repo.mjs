@@ -3,8 +3,8 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 
 // The version this run expects. Kept as one constant so a topic bump is a one-line edit
 // here rather than four scattered literals.
-const VERSION = "0.16.0";
-const SHORT = "v0.16";
+const VERSION = "0.17.0";
+const SHORT = "v0.17";
 
 let fails = 0;
 const ok = (m) => console.log(`  ok   ${m}`);

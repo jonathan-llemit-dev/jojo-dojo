@@ -10,6 +10,50 @@ Newest first.
 
 ## Session log
 
+### The landing page learns about belts, and the "✓ ✓ ✓" strip grows up (2026-10-08)
+
+**Two asks, both about the first page a stranger sees:** say something about the belts now that they mean
+something, and make the three-point strip under the About copy better than three ticks and three labels.
+
+**The strip.** It was `["Short lessons", "Live examples", "Sample Code"]` rendered as `✓` plus text, centred.
+A bare tick is not information — three identical glyphs tell the reader nothing the words do not, and nothing
+marks one entry as different from another. Now four entries, each with its own emoji, a title and a one-line
+body: ⚡ Short lessons, 🧪 Live examples, 📜 Sample code, 🧭 A guided path. The emoji is `aria-hidden`, so the
+sentence still reads if a glyph fails to render. `max-w-2xl` with `sm:grid-cols-2` keeps two per row on a
+tablet and one per row on a phone; the list is `text-left` because the section centres its prose and a
+three-line icon-plus-body entry reads badly centred. The fourth entry says the thing the site actually does —
+lessons are numbered in the order they build on each other — and the code claim on `📜` ("a line-for-line
+mirror of what is running") is one `check:repo` already enforces rather than marketing.
+
+**The belt path.** A new section between About and the footer: `From white belt to black`, then three cards —
+one per rank — each showing the badge ("White belt · Beginner"), a one-line blurb, and **a chip for every
+lesson at that rank**. The chips are links, so a reader can jump straight to a black-belt topic from the
+landing page.
+
+**It is derived, not written out**, which was the whole design constraint: the ranks come from `BELT_ORDER`
+and the chips are a `topicRegistry.filter((topic) => topic.belt === belt)`. Adding a thirteenth lesson files
+it under the right belt on this page with no edit to this page, and the section cannot disagree with the
+cards, the sidebar or the lesson headers. The per-rank blurbs went into `beltStyles.ts` as `beltBlurb()`
+rather than into `HomePage.tsx`, so the claim "belts live in exactly one place" stays literally true.
+
+**Interactivity: the chips, not a widget.** The learner offered "add some interactivity" as one option among
+several. A stateful demo on the landing page would compete with the one action the page is for — *Enter the
+Dojo* — and add focus-management and screen-reader surface for very little. Twelve chips that navigate to the
+lesson they name are interaction that earns its place, and the hover states follow the bordered-card language
+already used everywhere else.
+
+**Mobile:** checked at a true 375×667 (device emulation, not a window resize — the resize gave a 487px
+viewport, which is not the same test). The nav gained a third item, `Belts`, and still fits: at 375px the
+brand is ~103px and the three right-hand items ~168px of the 343px available.
+
+**Verified:** four gates green; driven in Chrome — the belt cards list exactly 6 / 4 / 2 lessons with the right
+titles under each, a chip navigates to its lesson (`Custom Hooks` → `/dojo/topic/custom-hooks`, which opens as
+"Lesson 12 of 12 Black belt · Advanced"), and every section renders at 375×667.
+
+**Version `0.16.0` → `0.17.0`**, on the learner's call — a deliberate milestone bump like the belt rework's,
+since this adds no topic either. All the artefacts the "Versioning" section names moved together.
+**Not committed — the learner makes every commit.**
+
 ### Every topic was a white belt — belts now mean something, and the reader gets a word (2026-10-08)
 
 **The complaint was the learner's, and it was right on both counts.** Every one of the twelve topics was

@@ -30,22 +30,25 @@ import type { BeltRank } from "./types";
  * carries a plain-language `level` alongside its `name`, and the topic grid shows the
  * level — the metaphor is taught once, in that grid's legend.
  */
-const BELTS: Record<BeltRank, { level: string; name: string; badge: string; dot: string }> = {
+const BELTS: Record<BeltRank, { level: string; name: string; blurb: string; badge: string; dot: string }> = {
   white: {
     level: "Beginner",
     name: "White belt",
+    blurb: "The fundamentals. Nothing here depends on hook discipline yet.",
     badge: "border-dojo-muted/60 bg-dojo-muted/10 text-dojo-muted",
     dot: "bg-dojo-muted",
   },
   blue: {
     level: "Intermediate",
     name: "Blue belt",
+    blurb: "A hook whose details bite — dependencies, cleanup, immutable updates, refs.",
     badge: "border-dojo-azure/60 bg-dojo-azure/10 text-dojo-azure",
     dot: "bg-dojo-azure",
   },
   black: {
     level: "Advanced",
     name: "Black belt",
+    blurb: "Several ideas at once, or designing an abstraction of your own.",
     badge: "border-dojo-crimson/60 bg-dojo-crimson/10 text-dojo-crimson",
     dot: "bg-dojo-crimson",
   },
@@ -62,6 +65,11 @@ export function beltLevel(belt: BeltRank): string {
 /** The belt's own name, for the lesson header where there is room for the metaphor. */
 export function beltName(belt: BeltRank): string {
   return BELTS[belt].name;
+}
+
+/** One line on what the rank assumes, for the belt path on the landing page. */
+export function beltBlurb(belt: BeltRank): string {
+  return BELTS[belt].blurb;
 }
 
 /** Classes for a bordered badge/pill, e.g. `<span className={\`rounded-full border ${beltBadgeClass(belt)}\`}>`. */
