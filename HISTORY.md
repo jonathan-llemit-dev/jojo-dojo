@@ -10,6 +10,42 @@ Newest first.
 
 ## Session log
 
+### `custom-hooks` closes — the last open box, and a lint failure worth having (2026-10-18)
+
+**Twelve lessons, all verified.** The learner's build-on task for lesson 12 was `useContinuousTimer`: a
+wall-clock stopwatch with an accumulator ref, a `performance.now()` anchor and a `requestAnimationFrame` loop,
+called from a lap-recording card and a compact session row. It went past what the lesson asked — the lesson's
+own "Simplification" note says a real stopwatch derives elapsed time from timestamps, and that is exactly what
+this does instead of counting intervals.
+
+**Six of the seven criteria passed on review; the seventh failed for a reason worth the exercise.** `lint`
+rejected :123 with `react-hooks/immutability`: *"Cannot access variable before it is declared"*. `tick` was a
+`useCallback` that called `requestAnimationFrame(tick)` — a `const` reading itself inside its own initialiser.
+It ran correctly, which is the interesting part: the failure is static, and the rule's second sentence ("the
+earlier access cannot update when this value changes over time") is a real objection rather than a
+hypothetical one. Given the choice between making the recursion hoistable and letting an effect own the loop,
+the reviewer took the second, because it deletes machinery instead of satisfying the checker — the recursion,
+the `rafRef` handle and the separate unmount effect all went, and the five `useCallback`s that existed only to
+feed each other's dependency arrays went with them. That the learner had just spent the lesson reading "a fresh
+identity costs nothing until something is memoised" and then wrapped five functions anyway is why `useCallback`
+is the next topic rather than a footnote.
+
+**The explained half came back two and a half of three**, and the half is the useful part. Ref-versus-state and
+the per-call-state mechanism were both correct, and both went beyond what was asked; the stale-closure question
+did not — the *property* of a ref was described rather than what breaks without it. Accepted for this topic,
+since the other two answers carry it, and written into the gaps list as the opening for the memo topic.
+
+**Verified in the browser, not asserted.** Start → `0:05.4` while the session row stayed `0:00.0`; stop →
+frozen at `0:18.8` with Reset enabled and a lap recorded at `0:18.6`, while the session row ran on to `0:27.4`;
+restart → `0:31.1`, continuing from the banked total instead of restarting. Both directions of independence
+shown, and the resume path proved — the one behaviour the rewrite actually touched.
+
+**Closed out:** marker `LD` → `OK`, sample regenerated to **334 of 334**, the `147` claims corrected, the
+ROADMAP box ticked with the footer reading twelve-of-twelve, README's count moved to "Twelve lessons verified",
+`NOTES.md`'s "In progress" section replaced with "Every registered lesson is verified" (the exact string
+`check:repo` looks for), entry 13 rewritten with the assessment, and the two checker strings that hardcoded
+"eleven verified" updated in the same pass. **Not committed — the learner makes every commit.**
+
 ### The landing page learns about belts, and the "✓ ✓ ✓" strip grows up (2026-10-08)
 
 **Two asks, both about the first page a stranger sees:** say something about the belts now that they mean

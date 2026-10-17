@@ -71,17 +71,24 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 **One misconception corrected mid-exercise, worth keeping.** The learner's work-in-progress note on the add handler read "nothing to fix here" — having just fixed the sort, they had stopped treating the add as a bug. It was still mutating in place. The lesson: **fixing one member of a bug family does not fix the family**; three handlers with three identical root causes needed three fixes, and two siblings being repaired does not make the third correct. It was fixed on the next pass, without a hint about the location.
 
-### In progress — lesson live, verification outstanding
+### Every registered lesson is verified
 
-**`custom-hooks` (entry 13)** — the lecture and its demo are live at `/dojo/topic/custom-hooks` as a
-**build-on task**, the second of that kind. Both gates are green, the Sample Code panel is a true mirror at
-147 of 147, and the roadmap line is marked `BUILD`. The task, its expected values and the seven acceptance
-criteria are in entry 13 — and the box stays unticked until the learner's own hook *and* their explanation are
-both on the record.
+There is no topic in progress. **`custom-hooks` closed on 2026-10-18** — the last open box. The learner built
+`useContinuousTimer` (a wall-clock stopwatch on an accumulator ref plus a `requestAnimationFrame` loop), called
+it from two differently-shaped panels, passed all seven acceptance criteria, and explained the mechanism well
+enough that the reviewer's follow-up questions had nothing left to bite on. Entry 13 records the build; the
+verification detail — including the one answer that came back half-complete — is in its *How it was assessed*
+section.
+
+Every marker in `src/topics/*/demo.tsx` now reads `Status: OK`.
 
 ### Gaps — the honest list
 
-- **Never used at all:** `useMemo` / `useCallback`, portals.
+- **Never used at all:** `useMemo`, portals.
+- **Used once, not yet understood:** `useCallback`. It appeared in the `custom-hooks` build and was removed
+  again — correctly, because nothing there compared function identity — but the learner's own note says its
+  deeper purpose is still new, and the stale-closure question in entry 13 came back half-answered for the same
+  reason. That is the opening for the `React.memo` / `useMemo` / `useCallback` topic, not a claim of knowledge.
 - **Taught in code but not yet exercised by a lesson of its own:** **lazy initialisers** (`useState(() => build())`). The mechanism is written up in entry 10 and appears in that lesson's prose, but no exercise has tested it, so it is not on the "Solid" table. Everything else the `useState` deep dive set out to cover — object/array replacement and the double-setter collapse — is now verified.
 
 ### Next, in order
@@ -1141,7 +1148,7 @@ that hole.
 
 ## 13 — Custom hooks (a hook sequence with a name of your own)
 
-- **Status:** LD (Learning) — lecture live 2026-10-08, hands-on build outstanding
+- **Status:** OK (Mastered) — verified 2026-10-18; built by the learner and explained in their own words
 - **Added:** 2026-10-08
 - **Belt:** black
 - **Marker file:** `src/topics/custom-hooks/demo.tsx`
@@ -1202,6 +1209,48 @@ and `Reset` returns it to `0:00`, the rest row's single button toggles, and neit
 **How it gets assessed.** The code is the *demonstrated* half. The *explained* half is two or three questions
 anchored in that code, or a prose explanation handed over with it. A failed criterion is named, with the line it
 failed on, and the box stays open.
+
+### How it was assessed — 2026-10-18
+
+**The build.** `useContinuousTimer` in `custom-hooks/demo.tsx`: three `useState` (`elapsed`, `laps`,
+`isRunning`), two `useRef` (a `performance.now()` anchor and a banked total), a `requestAnimationFrame` loop
+and a `visibilitychange` listener — called from `StopwatchPanel` (takes `laps` and `lap`) and
+`SessionTimerRow` (ignores both).
+
+| # | Verdict |
+| - | ------- |
+| 1 | Pass — `useContinuousTimer` at :108, called directly in both component bodies |
+| 2 | Pass — 3 × `useState`, 2 × `useRef`, 2 × `useEffect` |
+| 3 | Pass, and driven rather than asserted — starting the stopwatch left the session row at `0:00.0`; starting the session row left the stopwatch frozen at `0:18.8` while the session ran on to `0:27.4` |
+| 4 | Pass — both call sites hold only `useId`; nothing caller-side duplicates hook state |
+| 5 | Pass — the loop effect's cleanup *is* the cancel, plus a real `visibilitychange` unsubscribe |
+| 6 | **Failed first, then passed** — see below |
+| 7 | Pass — both panels would otherwise carry the same anchor, accumulator and start/stop arithmetic |
+
+**The one failure, and it was a good one.** `npm run lint` rejected the first version at :123 under
+`react-hooks/immutability`: *"Cannot access variable before it is declared"*. `tick` was a `useCallback` whose
+body called `requestAnimationFrame(tick)` — a `const` reading itself in its own initialiser. It *ran* fine,
+because the closure resolves after initialisation, so this was a static-analysis failure rather than a crash;
+but the rule's second sentence, that a captured name cannot see a later value, is the real objection, and it is
+the trap the moment those deps stop being empty. Fixed by moving the loop into a `useEffect` keyed on
+`isRunning`, which deleted the recursion, the `rafRef` handle and the separate unmount effect in one edit; the
+five now-pointless `useCallback`s went with it, and resume was re-checked afterwards to prove the clock carries
+on from the banked total (`0:18.8` → `0:31.1`) instead of restarting.
+
+**The explained half — two and a half of three.**
+
+- *What rule decides ref vs state?* **Correct.** State is what the screen shows, so it re-renders; a ref is
+  bookkeeping that must survive across renders and must not re-render anything.
+- *Reset on one panel — what happens to the other, and where is the isolation guaranteed?* **Correct, with the
+  mechanism.** Every call allocates its own variant inside the component that calls it. Sharpened once: the
+  state lives in the component's hook list keyed by **call order**, which is exactly why the rules care about
+  top-level placement.
+- *What breaks if `start()` reads `elapsed` state rather than `accumulatedRef.current`?* **Half.** The property
+  came back — persists, no re-render — but not the failure mode. The answer is a **stale closure**: a memoised
+  `start` closes over the first render's `elapsed`, so every resume would re-anchor at `0` and the clock would
+  snap backwards. A ref is read at call time, so it cannot go stale. Accepted for this topic because the other
+  two answers carry it; recorded as the opening for `React.memo` / `useMemo` / `useCallback`, where it stops
+  being a footnote.
 
 ### Why this is a lecture rather than a fix-it exercise
 
