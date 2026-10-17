@@ -10,6 +10,39 @@ Newest first.
 
 ## Session log
 
+### Lesson 13 — `memoization`, where the mistake is doing too much (2026-10-18)
+
+**The topic with an unusual shape: every other lesson here teaches a mistake that produces wrong output.**
+A missing `useMemo` renders the same pixels more slowly; a `memo()` defeated by an inline arrow renders the
+same pixels more often. None of it is *wrong*, so there is nothing to diagnose — which is why this one had to
+be a build-on task rather than a fix-it exercise, and why the demo had to make the work **visible** instead of
+describing it.
+
+**Showing the work is the design problem, and the rules make it a narrow one.** A render count cannot be
+rendered from a ref — reading `ref.current` during render is what `react-hooks/refs` rejects — and it cannot
+be held in state updated during render either. So each row counts itself in a no-deps effect and writes the
+number into a node it already holds, which is the same technique `use-ref` uses for its tally. That
+constraint turned out to be the demo's whole spine: **the row counters are the evidence**, and every claim in
+the prose points at them.
+
+**Two columns, one click.** Both columns receive the same `query` and the same `Nudge` button; the left does no
+memoisation, the right applies `useMemo` + `React.memo` + `useCallback`. Pressing Nudge changes state the list
+never reads, so the left column's counters all climb and the right column's hold still. A third strip isolates
+`useCallback` on its own: two `memo()` rows, same technique, one given a stable handler and one an inline
+arrow — Nudge proves which survives the comparison. That strip exists because `useCallback` is otherwise the
+tool people adopt by cargo cult, and here it has a counter that moves when you get it wrong.
+
+**The prose argues against itself on purpose.** The first half explains the three tools; the second half says
+the default is not to memoise, what each one costs, and the rule of thumb for when it earns its place. The
+closing paragraph says the demo's cost is synthetic and that real work is found with a profiler. A lesson
+about memoisation that only taught how to memoise would be teaching the bug it is meant to prevent.
+
+**Verified:** `tsc`, `lint` and `check:prose` green (`memoization 12 55 41 0 0 0 ok`); the sample regenerated
+to a true mirror at **143 of 143**; version `0.18.0` with all three artefacts and both checker constants moved
+together; counts updated to thirteen entries and thirteen folders across `check:repo`, `CLAUDE.md`,
+`ROADMAP.md`, `README.md` and `NOTES.md`, and a new `## 14 — React.memo` check added to the doc-consistency
+list so the entry cannot go missing again. **Not committed — the learner makes every commit.**
+
 ### `custom-hooks` closes — the last open box, and a lint failure worth having (2026-10-18)
 
 **Twelve lessons, all verified.** The learner's build-on task for lesson 12 was `useContinuousTimer`: a

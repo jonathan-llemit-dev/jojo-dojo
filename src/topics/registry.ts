@@ -11,6 +11,7 @@ import { useStateDeepDiveTopic } from "./use-state-deep-dive";
 import { useRefTopic } from "./use-ref";
 import { useContextReducerTopic } from "./use-context-reducer";
 import { customHooksTopic } from "./custom-hooks";
+import { memoizationTopic } from "./memoization";
 
 /**
  * Aggregate topic registry — the single source of truth for both the sidebar
@@ -31,6 +32,7 @@ export const topicRegistry: Topic[] = [
   useRefTopic,
   useContextReducerTopic,
   customHooksTopic,
+  memoizationTopic,
 ];
 
 /**

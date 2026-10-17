@@ -72,24 +72,18 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 **One misconception corrected mid-exercise, worth keeping.** The learner's work-in-progress note on the add handler read "nothing to fix here" — having just fixed the sort, they had stopped treating the add as a bug. It was still mutating in place. The lesson: **fixing one member of a bug family does not fix the family**; three handlers with three identical root causes needed three fixes, and two siblings being repaired does not make the third correct. It was fixed on the next pass, without a hint about the location.
 
-### Every registered lesson is verified
+### In progress — lesson live, verification outstanding
 
-There is no topic in progress. **`custom-hooks` closed on 2026-10-18** — the last open box. The learner built
-`useContinuousTimer` (a wall-clock stopwatch on an accumulator ref plus a `requestAnimationFrame` loop), called
-it from two differently-shaped panels, passed all seven acceptance criteria, and explained the mechanism well
-enough that the reviewer's follow-up questions had nothing left to bite on. Entry 13 records the build; the
-verification detail — including the one answer that came back half-complete — is in its *How it was assessed*
-section.
-
-Every marker in `src/topics/*/demo.tsx` now reads `Status: OK`.
+**`memoization` (entry 14)** — live at `/dojo/topic/memoization` as a **build-on task**, the third of that
+kind. Both gates are green, the Sample Code panel is a true mirror at 143 of 143, and the roadmap line is
+marked `BUILD`. The open half is the learner's own third column: one tool removed compared with the memoised
+column, and the counters pressed to show what changed. The brief and the seven acceptance criteria are in
+entry 14 — the box stays unticked until the column exists *and* the explanation is on the record.
 
 ### Gaps — the honest list
 
-- **Never used at all:** `useMemo`, portals.
-- **Used once, not yet understood:** `useCallback`. It appeared in the `custom-hooks` build and was removed
-  again — correctly, because nothing there compared function identity — but the learner's own note says its
-  deeper purpose is still new, and the stale-closure question in entry 13 came back half-answered for the same
-  reason. That is the opening for the `React.memo` / `useMemo` / `useCallback` topic, not a claim of knowledge.
+- **Never used at all:** portals.
+- **Used without a stated reason yet:** `useCallback`. It appeared in the `custom-hooks` build and was removed again — correctly, because nothing there compared function identity — and the stale-closure question in entry 13 came back half-answered for the same reason. Both are now the subject of entry 14, whose exercise is the first place the learner has to pick a tool and justify the pick rather than follow a pattern.
 - **Taught in code but not yet exercised by a lesson of its own:** **lazy initialisers** (`useState(() => build())`). The mechanism is written up in entry 10 and appears in that lesson's prose, but no exercise has tested it, so it is not on the "Solid" table. Everything else the `useState` deep dive set out to cover — object/array replacement and the double-setter collapse — is now verified.
 
 ### Next, in order
@@ -98,12 +92,12 @@ React and TypeScript topics only. Deploy, social links and a custom domain were 
 settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
 deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
-1. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them. This one has a real gap behind it rather than a syllabus slot: the `custom-hooks` build reached for `useCallback` five times without earning it, and the stale-closure question came back half-answered.
+1. **`React.memo` / `useMemo` / `useCallback`** — lecture live, hands-on build outstanding. Add the third column, remove exactly one tool, and read the counters; the brief and the acceptance criteria are in entry 14.
 2. **Portals** — rendering outside the parent DOM hierarchy.
 3. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
 
-The project is at **`0.17.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
-deliberately, as it was for the belt rework and the landing page). Keep the `HomePage` badge (`v0.17`) in step;
+The project is at **`0.18.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
+deliberately, as it was for the belt rework and the landing page). Keep the `HomePage` badge (`v0.18`) in step;
 the three version artefacts are listed in `CLAUDE.md` under "Versioning".
 
 ---
@@ -1259,6 +1253,72 @@ prefix, a hook called inside a condition, a hook called from a callback — and 
 `react-hooks/rules-of-hooks` rule measured above. There is no compiling bug with an observable symptom left to
 plant, so the interesting question is the other one: *would you have extracted this, and can you say why?* That
 is what a build-on task asks.
+
+## 14 — React.memo, useMemo & useCallback (memoizing only what you measured)
+
+- **Status:** LD (Learning) — lecture live 2026-10-18, hands-on build outstanding
+- **Added:** 2026-10-18
+- **Belt:** blue
+- **Marker file:** `src/topics/memoization/demo.tsx`
+- **Route:** `/dojo/topic/memoization`
+
+### What this lesson is
+
+The topic where the characteristic mistake is **doing too much**, not too little. All three tools exist to
+stop repeated work, and each costs something: a comparison on every render, a cached value in memory, and a
+dependency array that can go quietly wrong. The lecture's argument is therefore "don't, until you can see the
+work" — and the demo is built so the work is *visible*: every row counts its own renders.
+
+The demo puts two columns on the same `query` and the same `Nudge` button. Left does no memoisation; right
+applies all three tools. A third strip shows two `memo()` rows with the same technique and different handler
+identities, one stable and one inline, so `useCallback` gets its own controlled comparison.
+
+### The three facts the lesson turns on
+
+1. **`useMemo` caches a value, and the cache is a hint.** React may throw a memoised value away, so nothing
+   may depend on it being there. A correctness bug that a `useMemo` hides is still a bug.
+2. **`React.memo` compares props shallowly and skips the render if they match.** Which means it is defeated
+   by any prop whose identity changes every render — the commonest being an arrow written inline in JSX.
+   `useCallback` exists mostly to fix exactly that, which is why it is taught here rather than on its own.
+3. **Memoisation is a trade, not a default.** A comparison you pay on every render, plus a dependency array
+   to maintain, is a net loss on a component that renders three spans. The rule of thumb: memoise a value
+   that is expensive *and* recomputed far more often than its inputs change; memoise a component that
+   re-renders often with props that usually stay equal.
+
+### The hands-on task — isolate one variable
+
+**The task.** Add a **third column** to the demo and give it **exactly one** of the three tools different
+from the memoised column — keep `useMemo` and drop `useCallback`, or keep `React.memo` and drop `useMemo`.
+Use the row counters, with Nudge pressed, to show what changed.
+
+The point is not the extra column. It is that **removing one thing at a time is how you find out which one
+was doing the work.** A column that differs by two tools proves nothing.
+
+**The seven acceptance criteria — fixed now, not after the fact:**
+
+| # | Criterion |
+| - | --- |
+| 1 | A third column exists in the demo, sharing the same `query` and `Nudge` state as the other two |
+| 2 | Exactly **one** of the three tools differs from the fully memoised column — not two, not none |
+| 3 | With Nudge pressed, the counters show the predicted change, and the learner names *which* counter moved |
+| 4 | `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` stay green, with honest dependency arrays |
+| 5 | No `useMemo` or `useCallback` added where nothing depends on identity — the task must not turn into "memoise everything" |
+| 6 | The explanation names the tool removed *and* why that counter moved — not merely that it did |
+| 7 | The evidence is the counters, not the prose: the change is visible without reading the code |
+
+**How it gets assessed.** The code is the *demonstrated* half. The *explained* half is two or three questions
+anchored in that code, or a prose explanation handed over with it. The one to expect: *you removed X — what
+should have stopped, and what should have kept going?* A failed criterion is named, with the line it failed
+on.
+
+### Why a build-on task rather than a fix-it exercise
+
+The mistakes this topic teaches have **no observable symptom except work**. A missing `useMemo` renders the
+same pixels more slowly; a `memo()` defeated by an inline arrow renders the same pixels more often. Neither
+produces wrong output, so there is nothing to see and nothing to diagnose. The variants that *would* produce
+a wrong result — a stale closure from a missing dependency — are already rejected by
+`react-hooks/exhaustive-deps`, which is the boundary measured for entry 08. So the honest question here is
+not "find the bug" but "which of these three earned its place", and that is what a build-on task asks.
 
 ---
 
