@@ -41,6 +41,7 @@ Do not re-add these to a future roadmap. If a session needs the deployment *mech
 - [x] Custom hooks — extracting reusable logic — lesson live at `/dojo/topic/custom-hooks`. The second **build-on task**: the learner wrote `useContinuousTimer`, a wall-clock stopwatch built on an accumulator ref and a `requestAnimationFrame` loop, and called it from two differently-shaped panels — a lap-recording stopwatch card and a compact session row. All seven acceptance criteria pass, and the per-call-state mechanism and the ref-vs-state split were explained in their own words. Verified 2026-10-18 — entry 13
 - [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization — **GAP**: never used
 - [ ] Portals — rendering outside the parent DOM hierarchy — **GAP**: never used
+- [ ] Lazy initialisers — `useState(() => build())` — **GAP**: answered wrong in the pre-lesson check and still never exercised. Written up in entry 10 and in that lesson's prose, so it needs a lesson of its own or a question in a future review, not a new claim
 
 ## Components to Build (reusable UI kit)
 

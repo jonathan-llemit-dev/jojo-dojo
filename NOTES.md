@@ -17,7 +17,7 @@ assessment rather than a marker):
 
 ## Current Knowledge Snapshot
 
-*Assessed 2026-10-07 by the AI reviewer. This is the quick answer to "what do I actually know?" — read it before a study session rather than re-reading every entry. It is re-assessed after each new lesson. The evidence rules are in the "Reviewer responsibilities" section of `CLAUDE.md`; the roadmap checkboxes are marked from this list.*
+*Assessed 2026-10-18 by the AI reviewer. This is the quick answer to "what do I actually know?" — read it before a study session rather than re-reading every entry. It is re-assessed after each new lesson. The evidence rules are in the "Reviewer responsibilities" section of `CLAUDE.md`; the roadmap checkboxes are marked from this list.*
 
 ### Solid — confirmed in working code *and* explained correctly
 
@@ -37,6 +37,7 @@ assessment rather than a marker):
 | `useState` deep dive | Fixed all three bugs in the `use-state-deep-dive` exercise unaided — updater form for the double setter, `[...techniques, newTechnique]` for the add, `techniques.slice().sort(...)` for the sort — then explained the snapshot mechanism in their own words: both `setReps(reps + 1)` lines read the same render's value, so both compute the same number. Entry 10 |
 | `useRef` | Built the Escape-to-close and focus-into-panel behaviour in `Sidebar.tsx`: a DOM ref, a keydown listener, and an effect with real cleanup and an honest dependency array. Explained both directions of the rule — a ref change re-renders nothing, so a ref value must not be rendered; and a render-time read can't be trusted, because a render may be repeated or discarded. Took three passes to get past "refs aren't initialised until effects run" (they are — `useRef(1)` holds 1 during the first render). Entry 11 |
 | `useContext` / `useReducer` | Built a second, independent shared-state feature beside the session card — a meal planner with its own `createContext`, its own `useReducer` and a six-member action union, a `useDiet()` accessor, and three more panels that receive **no props**. Verified in the browser: one dispatch moved the totals panel and the list panel together, and Remove cleared both. Explained the provider rule (a consumer outside its provider gets `null` and the accessor throws) and the `never` default (it catches a *forgotten case*, not a typo — that is the union's job) in their own words. Entry 12 |
+| Custom hooks | Built `useContinuousTimer` unaided — three `useState`, an accumulator `useRef` and a `performance.now()` anchor, a `requestAnimationFrame` loop, and a `visibilitychange` listener with real cleanup — called from a lap-recording stopwatch card and a compact session row. All seven acceptance criteria pass and independence was shown in the browser in both directions. Explained the ref-vs-state split and the per-call-state mechanism in their own words; the stale-closure *failure mode* came back half-answered, which is the opening for the memo topic. One first-version lint failure (a `useCallback` calling itself) was fixed by moving the loop into an effect. Entry 13 |
 
 *Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
 originally recorded on code evidence alone, which contradicted the reviewer's own standard — a
@@ -97,10 +98,9 @@ React and TypeScript topics only. Deploy, social links and a custom domain were 
 settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
 deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
-1. **Custom hooks** — lecture live, hands-on build outstanding. Write a hook of your own and use it in two places; the brief and the acceptance criteria are in entry 13.
-2. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them.
-3. **Portals** — rendering outside the parent DOM hierarchy.
-4. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
+1. **`React.memo` / `useMemo` / `useCallback`** — and, more usefully, when *not* to reach for them. This one has a real gap behind it rather than a syllabus slot: the `custom-hooks` build reached for `useCallback` five times without earning it, and the stale-closure question came back half-answered.
+2. **Portals** — rendering outside the parent DOM hierarchy.
+3. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
 
 The project is at **`0.17.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
 deliberately, as it was for the belt rework and the landing page). Keep the `HomePage` badge (`v0.17`) in step;
@@ -1268,6 +1268,8 @@ Every correction made during review, in one place. These are the things most lik
 
 | Trap | What actually happens |
 | --- | --- |
+| A `useCallback` (or any `const`) that calls itself, e.g. a self-scheduling `requestAnimationFrame` loop | `react-hooks/immutability` rejects it: *"Cannot access variable before it is declared"*. It still *runs* — the closure resolves after initialisation, so the failure is static rather than a crash — but a captured name cannot see a later value, which is exactly what the rule is pointing at. Let an effect own the loop and cancel it in cleanup, or declare a hoistable `function` instead. |
+| Reading state inside a memoised callback instead of a ref | The callback closes over the values from the render that created it. With stable deps that is the **first** render, permanently — so a `start()` that read `elapsed` state would re-anchor at `0` on every resume and the clock would snap backwards. Read the ref at call time, where it cannot go stale. |
 | `{count && <p>…</p>}` when `count` is `0` | Renders a bare **`0`** on the page. `&&` returns the falsy *left operand itself* — it does not coerce to a boolean the way an `if` does. React ignores `false`, `null`, `undefined` and `true`, but happily renders the number `0`. Use `count > 0 && …`. |
 | Reassigning a prop inside the component | Does nothing useful. Props are a fresh snapshot each render; only the parent can change them. No re-render is triggered and your edit is overwritten next render. |
 | `let count = 0` for a value that changes | Re-created from scratch on every render, so it can never accumulate. A changing value that must update the UI belongs in `useState`. |
