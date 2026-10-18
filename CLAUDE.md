@@ -4,7 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Session history lives in `HISTORY.md`** — what each past session changed and the reasoning behind the
 conventions below. Read it when you need to know *why* something is the way it is. This file is the
-current state of play.
+current state of play. **A new session needs exactly one prompt: "Read `CLAUDE.md` and follow 'Starting a
+session'."** That section holds everything a first message would otherwise have to repeat.
 
 ## Project Overview
 
@@ -48,6 +49,69 @@ misread by a fresh session: **do not tick a box because a lesson file exists.**
 
 **Current state, one line:** thirteen lessons registered — twelve verified, one awaiting its build task.
 
+## Starting a session
+
+**The only prompt needed:** *"Read `CLAUDE.md` and follow 'Starting a session'."* Everything a first message
+would otherwise carry is below, so it cannot be forgotten between sessions.
+
+**The state is referenced, never copied.** A static block saying "13 lessons, version 0.18.0, entry 14 open"
+would be a second copy of facts that already live in two places, and every stale claim this repo has had to
+fix — the belt list, the parity numbers, "eleven verified" — was a second copy drifting from the first. So
+step 1 reads the state; steps 2–5 are the part that recurs and therefore belongs here.
+
+### 1. Read, and find the state
+
+`CLAUDE.md` (this file) → **"Current project state"** and **"Next session objectives"** below → the
+**"In progress"** and **"Gaps"** sections of `NOTES.md` → the open lines in `ROADMAP.md` → the newest entries
+in `HISTORY.md`.
+
+Two files own the state: "Current project state" here for the version and the lesson counts, and `NOTES.md`'s
+"In progress" section for whatever is outstanding. Do not take either from memory or from a prompt written
+earlier. If they disagree with each other, or with the code, that is drift — say so before acting.
+
+### 2. Verify, with the gate that can have changed
+
+See the table under "Commands". On a clean tree: `git status --short` + `npm run check:prose` +
+`npm run check:repo` (~0.7s). Add `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` only once code
+has been edited — and always before calling anything done.
+
+### 3. Say what you found, before editing
+
+Lead the first reply with: the version and lesson counts, which lesson is open and why, anything the gates or
+the documents disagree about, and what you propose next. No file changes before that summary exists.
+
+### 4. The standing rules
+
+- **Do not commit.** The learner makes every commit, always — including when a change is obviously finished.
+  Leave the work in the working tree and say what changed.
+- **Never run `npm run build`.**
+- **The assistant is the reviewer, not the implementer.** The learner writes the lesson demos and every
+  hands-on exercise. The reviewer owns the written record — `NOTES.md`, the `ROADMAP.md` boxes, `HISTORY.md`,
+  this file, and mechanical plumbing. **Never assign note-writing as learner work.**
+- **Never tick a box on code alone.** Both halves or the box stays open — see "Evidence standard".
+- **Visual checks need the `bsk` daemon, which only the learner can start.** Inside a sandbox the automatic
+  startup fails on Job Object breakaway. Ask for `bsk daemon start` rather than promising a browser
+  verification you cannot perform.
+
+### 5. The two recurring jobs
+
+**A. Assessing a build-on task.** The brief and the acceptance criteria are already written in that topic's
+`NOTES.md` entry — use those, never a new set. Name a failed criterion **with the line it failed on** and keep
+the box open. Then ask two or three questions anchored in the learner's own code for the explained half.
+Closing it is one pass:
+
+1. marker `LD` → `OK` in the topic's `demo.tsx`;
+2. `npm run sync:samples -- <slug>`, then correct the parity number in `CLAUDE.md` and `scripts/check-repo.mjs`;
+3. rewrite the `NOTES.md` entry as verified, keeping the assessment — including whatever came back half-answered;
+4. tick the `ROADMAP.md` box and update its footer count;
+5. update the counts and the one-line state in this file, and `README.md`;
+6. add a `HISTORY.md` entry;
+7. run all four gates.
+
+**B. Adding a lesson.** Work "Adding a lesson — the seven-place checklist", then bump the version by `0.01`
+in all three artefacts **and** the `VERSION`/`SHORT` constants in `scripts/check-repo.mjs`, then
+`npm run sync:samples -- <slug>`. A new lesson ships as `Status: LD` with a build-on task by default.
+
 ## Commands
 
 | Command | Description |
@@ -55,12 +119,27 @@ misread by a fresh session: **do not tick a box because a lesson file exists.**
 | `npm run dev` | Start the Vite dev server with HMR (`localhost:5173`; may shift to another port if 5173 is in use) |
 | `npm run build` | Type-check (`tsc -b`) then build for production (outputs to `dist/`) |
 | `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run ESLint across the project (`eslint .`) |
-| `npm run check:prose` | Validate every lesson's `longDescription` — RichText safety rules *and* the voice limits. Run it after editing any description. |
-| `npm run check:repo` | Verify the repo against what the docs claim — version in all three artefacts, registry/folder/marker counts, every sample↔demo parity number, and the doc-policy invariants. Run it at the start of a session and after any doc edit. |
+| `npm run lint` | Run ESLint across the project (`eslint .`). **The expensive gate: ~29s** — type-aware rules over every file. |
+| `npm run check:prose` | Validate every lesson's `longDescription` — RichText safety rules *and* the voice limits. Run it after editing any description. ~0.3s. |
+| `npm run check:repo` | Verify the repo against what the docs claim — version in all three artefacts, registry/folder/marker counts, every sample↔demo parity number, and the doc-policy invariants. ~0.4s, so there is no reason to skip it. |
 | `npm run sync:samples` | Regenerate every lesson's `codeExample` from its `demo.tsx`, so the Sample Code panel cannot drift from the code that runs. Leaves an already-matching sample alone; skips the two documented non-mirrors (`jsx`, `use-state`) unless named. `check:repo` is the assertion, this is the generator. |
 
 No test framework is installed. There are no tests to run.
+
+**Verify with the gate that can have changed — they are not one ritual.** Measured on this machine
+(2026-10-19): `check:prose` 0.3s and `check:repo` 0.4s, against `tsc` 12s and `npm run lint` 29s. Running all
+four at the start of every session spends ~42s re-confirming something that cannot have changed since the last
+green commit:
+
+| When | Run | Why |
+| ---- | --- | --- |
+| Start of a session, tree clean | `git status --short` + `check:prose` + `check:repo` | 0.7s, and these two are the ones that catch **drift** — the failure this repo has actually hit, repeatedly. `git status` is what licenses the rest: a clean tree *is* the tree the previous session verified. |
+| After any **code** edit — a new lesson, the learner's exercise, a fix | `npx tsc -p tsconfig.app.json --noEmit` + `npm run lint` | The only two that read code, and they are deterministic on a given tree and toolchain. Skipping them on an unchanged tree loses nothing; skipping them after an edit loses everything. |
+| After any **doc** edit | `check:prose` + `check:repo` | They cost 0.7s. Always. |
+| Before calling anything done or reviewable | all four | A green run is part of the handoff, which is why the previous commit should be green. |
+
+A dirty tree overrides the first row: if `git status` shows changes, someone edited something, so treat it as
+the code case.
 
 ## Architecture
 
