@@ -21,7 +21,7 @@ export const componentsPropsTopic: Topic = {
     "So what do you do when a child needs to change something? The parent owns the value in " +
     "`useState`, and hands the child two things: the value, and a function that changes it. The child " +
     "calls that function, the parent's state updates, and the new value comes back down as props.\n\n" +
-    "That round trip is the whole idea, and it has a name worth remembering: **data down, events " +
+    "That round trip is the whole idea, and it has a short name: **data down, events " +
     "up**.\n\n" +
     "Two mistakes are worth avoiding here.\n" +
     "- Do not copy a prop into `useState` to keep it. `useState(prop)` reads that prop once, on the " +

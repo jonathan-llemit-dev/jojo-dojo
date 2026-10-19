@@ -8,21 +8,24 @@ export const memoizationTopic: Topic = {
   shortTitle: "Memo & Callbacks",
   belt: "blue",
   description:
-    "Cache a value, a component or a function only when you have measured the work it saves — and know what each of the three costs.",
+    "Speed up a slow component by caching a search, a component or a function — and learn when caching costs more than it saves.",
   longDescription:
-    "A filter box over a long list is where this usually starts. Every keystroke rebuilds the list, re-sorts it and re-renders every row. Two separate costs live in that sentence: recomputing a value, and re-rendering a component that did not change.\n\n" +
-    "`useMemo` caches a value between renders and recomputes it only when its dependencies change. Treat that cache as a hint rather than a guarantee: React may throw a memoised value away, so nothing may depend on it being there.\n\n" +
-    "`React.memo` wraps a component and skips re-rendering it when its props are shallowly equal. It compares every prop on every render, which is why wrapping a component that almost always receives new props costs more than it saves. It takes a custom comparator as a second argument, rarely worth the dependency you then own.\n\n" +
-    "`useCallback` caches a function's identity, and it exists mainly so the `memo()` above it can work. An arrow written inline in JSX is a new function on every render, so a memoised child sees changed props and re-renders anyway:\n\n" +
-    "```tsx\n// a new arrow every render: memo() can never match\n<MemoRow technique={row} onPick={(id) => pick(id)} />\n\n// one identity for the life of the component\nconst pick = useCallback((id: number) => setPicked(id), []);\n<MemoRow technique={row} onPick={pick} />\n```\n\n" +
-    "Nothing about the handler changed except its identity. That is enough to defeat the memo.\n\n" +
-    "The default is not to memoise. Each tool buys work with a comparison you now pay on every render, a value held in memory, and a dependency array someone will eventually get wrong. Most components are cheap enough that all three are a net loss.\n\n" +
-    "Memoise a value when it is genuinely expensive and recomputed far more often than its inputs change. Memoise a component when it re-renders often with props that usually stay equal. Do not memoise a component that renders three spans, or a sum of three numbers.\n\n" +
-    "The demo searches 2,000 techniques. The left column does no memoisation; the right applies all three tools to the same work. Each row counts its own renders, so the difference is visible rather than described.\n\n" +
-    "Press Nudge. It changes a counter the list never reads, yet it re-renders the whole panel. On the left every row counter climbs. On the right they hold still, because the memoised list handed back the same array and the memoised rows compared equal.\n\n" +
-    "The last two rows are both memoised and both receive the same technique. Only the function differs: one is stable, one is a fresh arrow. Nudge proves which of them survives the comparison.\n\n" +
-    "With the code open, four edits teach more than reading: delete the `useCallback` and watch the right column start climbing, wrap the left column's rows in `memo()` and watch them join it, add `query` to the `useMemo` dependencies and confirm filtering still works, then shrink the list to twenty rows and feel the work disappear.\n\n" +
-    "The cost in this demo is synthetic, built so you can watch it. Real work is found with a profiler, not by sprinkling memoisation on a hunch — and a memo that saves nothing still makes the code harder to change.",
+    "A filter box over a long list is where most people meet this topic. You type a letter, the list rebuilds, and the page stutters. Someone says to add `useMemo`, so you do, and nothing changes that you can see.\n\n" +
+    "That is the first lesson: memoisation is a fix for a performance problem, and performance problems stay invisible until you look for them. These three tools are not things to sprinkle on while learning. They are what you reach for once a measurement says a render is expensive.\n\n" +
+    "Picture the work in two pieces. Typing in the filter means searching two thousand rows, and it also means rendering every row again. `useMemo` attacks the search. `React.memo` and `useCallback` attack the re-render.\n\n" +
+    "`useMemo` keeps the result of a calculation between renders. You tell it what to watch, and it runs again only when that changes:\n\n" +
+    "```tsx\nconst rows = useMemo(() => searchTechniques(query), [query]);\n```\n\n" +
+    "The saved answer is a shortcut, not a promise. React may throw it away, so never let what the page shows depend on it being there.\n\n" +
+    "`React.memo` wraps a component. Before rendering it again, React checks whether its props match the last ones with `===`. Two functions that do the same thing are still two different functions, so one new arrow is enough to fail the check. When every prop matches, React skips the render.\n\n" +
+    "`useCallback` keeps the same function object between renders, and it exists mostly to keep `memo()` working. An arrow written inline in JSX is a new function every render, so a memoised child sees a changed prop and re-renders anyway:\n\n" +
+    "```tsx\n// a new arrow every render: memo() can never match\n<MemoRow technique={row} onPick={(id) => pick(id)} />\n\n// the same function for the life of the component\nconst pick = useCallback((id: number) => setPicked(id), []);\n<MemoRow technique={row} onPick={pick} />\n```\n\n" +
+    "Nothing about the handler changed except which function object it is. That is enough to defeat the memo.\n\n" +
+    "The demo makes the difference visible. Two identical lists search the same 2,000 techniques and take the same filter. The left one does no memoisation; the right one applies all three tools. Every row counts how many times it has rendered.\n\n" +
+    "Press Nudge. It changes a counter the list never reads, yet the whole panel re-renders. In the left column every row counter climbs. In the right column they hold still, because the memoised list handed back the same array and the memoised rows compared equal.\n\n" +
+    "The last two rows are both memoised and both get the same technique. Only the function differs: one is stable, one is a fresh arrow. Nudge shows which one survives the comparison. With the code open, delete the `useCallback` and press Nudge again: the right column starts climbing.\n\n" +
+    "That saving still comes with a bill. `memo()` compares props on every render, including the renders it skips. `useMemo` keeps a value in memory. `useCallback` adds a dependency list you have to keep right. On a component that renders three spans, the comparison costs more than the render it avoids.\n\n" +
+    "So do not memoise by default. Memoise a value when the calculation is expensive and runs far more often than its inputs change. Memoise a component when it re-renders often with props that usually stay equal. Measure first: a profiler tells you where the time goes, a hunch does not. A memo that saves nothing still makes the code harder to change.\n\n" +
+    "The cost in this demo is synthetic, built so you can watch it. Real work is found with a profiler.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.

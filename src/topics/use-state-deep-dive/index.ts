@@ -38,7 +38,7 @@ export const useStateDeepDiveTopic: Topic = {
     "```\nsetReps((current) => current + 1);\nsetReps((current) => current + 1);   // receives 1, returns 2\n```\n\n" +
     "Two *different* setters in one handler are fine — they are separate values. The trap is\n" +
     "the same setter twice, or anything computed from state another line has already changed.\n\n" +
-    "One more shape worth knowing. When building a value is expensive, you can hand `useState`\n" +
+    "One more shape shows up in real code. When building a value is expensive, you can hand `useState`\n" +
     "a function to run once instead of a value to store:\n\n" +
     "```\nuseState(buildPlan());        // runs buildPlan on EVERY render, keeps only the first\nuseState(() => buildPlan());  // runs it once, for the first render\n```\n\n" +
     "The arrow is the whole difference, and it is easy to miss. `useState(buildPlan)` — passing\n" +

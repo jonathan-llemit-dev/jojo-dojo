@@ -18,7 +18,7 @@ export const conditionalRenderingTopic: Topic = {
     "ternary cannot leave a gap.\n" +
     "- `if (!data) return <Empty />` early in the component — when the whole component differs, not just " +
     "one line of it.\n\n" +
-    "The trap that catches everyone is with `&&`. It does not turn the left side into `true` or `false` " +
+    "The `&&` trap catches everyone. It does not turn the left side into `true` or `false` " +
     "— it returns that value itself when it is falsy, and React happily renders numbers. So this prints " +
     "a stray `0` on the page whenever `reps` is zero:\n\n" +
     "```\n{reps && <p>You have logged {reps} reps.</p>}\n```\n\n" +

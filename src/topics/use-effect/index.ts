@@ -8,7 +8,7 @@ export const useEffectTopic: Topic = {
   shortTitle: "useEffect",
   belt: "blue",
   description:
-    "Run code after render to talk to something outside React — with an honest dependency array and a cleanup that undoes it.",
+    "Run code after render to talk to something outside React — with a dependency array that names what the effect reads, and a cleanup that undoes it.",
   longDescription:
     "Say you want a clock that counts up while you train. You write the interval, you render the\n" +
     "seconds — and nothing appears, because React has no idea your timer exists.\n\n" +
@@ -34,7 +34,7 @@ export const useEffectTopic: Topic = {
     "changes, the old interval is still running and a new one starts too. Now the clock counts\n" +
     "two seconds per second. Toggle it again and it counts three.\n\n" +
     "That is why this mistake survives so long in real code: nothing looks wrong at first, and\n" +
-    "the damage builds up. Whatever your effect starts, return the thing that stops it —\n" +
+    "the damage builds up. Whatever your effect starts, return the call that stops it —\n" +
     "`clearInterval` for a timer, `removeEventListener` for a listener.\n\n" +
     "One last thing, and React's own docs start with it: you often do not need an effect at\n" +
     "all. If you are using one to calculate a value from state or props, do that calculation\n" +

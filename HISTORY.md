@@ -10,6 +10,47 @@ Newest first.
 
 ## Session log
 
+### The memoization lecture gets a beginner pass (2026-10-19)
+
+**The learner's note:** the `React.memo` / `useMemo` / `useCallback` lecture "seems like cold AI generated, no
+human spirit and not beginner friendly" — and the ask was to check the other lectures too, because the prose
+had been through this before on 2026-10-07.
+
+**The audit compared openings, because that is where the register shows.** The older ten still do what the
+2026-10-07 rewrite asked: `use-state` opens "Try to keep a score in a plain variable and you will watch it
+fail", `use-effect` opens "Say you want a clock that counts up while you train", `use-ref` opens on a search
+box that should be focused. The memoization lecture opened on a filter box and then turned into a spec sheet:
+`useMemo` caches a value, `React.memo` compares props, `useCallback` caches identity — the three tools
+introduced one after another, before the reader had a reason to care about any of them.
+
+**It passed every automatic check, which is the point.** `check:prose` scored it 0 tics, 0 hollow phrases and a
+55-word longest block. Nothing it measures was failing; what was wrong was register — definitions before a
+problem, jargon left unopened ("shallowly equal", "identity", "custom comparator"), and prose that talked
+*about* the topic rather than to the person reading it. That is the same blind spot as the Flesch trap in the
+2026-10-07 entry: the checker counts what is easy to count.
+
+**What replaced it.** The rewrite opens on the failed fix — you add `useMemo`, and nothing visible changes —
+then gives the reassurance a beginner needs: these are not things to add while learning, they are what a
+measurement sends you to. The two costs are separated before either tool appears (the search, and the
+re-render). "Same props" is grounded in `===` and in the fact that two functions doing the same job are still
+two objects. Each tool gets one job and one cost, the demo is walked through as the story, and the hands-on
+invitation is now a single edit (delete the `useCallback`, press Nudge) instead of four. The trade and the
+"measure first" rule close it.
+
+**Four surviving editor-tic phrases were fixed in the same pass** — "a name worth remembering"
+(`components-props`), "One more shape worth knowing" (`use-state-deep-dive`), "the trap that catches everyone"
+(`conditional-rendering`) and "the thing that stops it" (`use-effect`). The `use-effect` card description also
+lost "an honest dependency array" for plainer wording. All thirteen lessons now score **0 tics**; four of them
+were carrying one.
+
+**Verified:** `check:prose` 13/13 ok (`memoization 14 62 39 0 0 0 ok`), `tsc`, `lint` and `check:repo` green,
+and every parity number unchanged — prose only, so the samples and their mirrors did not move. **Not
+committed — the learner makes every commit.**
+
+**Flagged, not changed:** `custom-hooks` (17 paragraphs) and `use-context-reducer` (which ends on splitting
+contexts and memoising the value) are dense for a first read. Both are black-belt lessons, so the depth is
+arguably the point; trimming them is a separate call.
+
 ### `memoization` closes as an explainer, at the learner's call (2026-10-19)
 
 **The topic had one shape left to settle: the build.** It shipped as a build-on task — a third column that
