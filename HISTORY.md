@@ -10,6 +10,27 @@ Newest first.
 
 ## Session log
 
+### The lazy-initialiser lecture gets precise, and the follow-up is set (2026-10-20)
+
+**The question was whether it needed its own topic.** It does not: lazy initialisers are one surface inside
+`useState` deep dive, not a topic. A standalone lesson would repeat lesson 10's ground and bump the version
+for two lines of code. The follow-up exercise lives inside the existing demo instead.
+
+**The lecture had a real error, not just thin coverage.** The old paragraph said `useState(buildPlan)` makes
+`buildPlan` "become the state" and then that React calls it — contradictory, because if React calls it the
+state is its return value. It also said the initialiser "runs once" with no mention of StrictMode, which
+double-invokes initialisers in development. Someone adding a call counter would read 2 and think the lazy
+form was broken.
+
+**The rewrite** separates the direct call from the function form, says why a function argument is treated as
+a lazy initialiser, names the trap (an argument-taking `buildPlan` is called with none; a function you want
+to *store* needs `() => buildFn`), and adds the StrictMode note. Entry 10 now carries the five-criteria
+follow-up: a builder with a visible call count, `useState(() => build())`, a forced re-render, and a
+comparison against the direct call.
+
+**Checked:** `check:prose` (use-state-deep-dive: 14 blocks, longest 52) and `check:repo` green; `tsc` and
+`lint` green; no sample or parity moved. **Not committed.**
+
 ### `portals` closes — the toast, and the wrapper that styled the wrong node (2026-10-20)
 
 **The learner built the toast, and the portal was right.** `Toast` used `createPortal(…, document.body)`, a

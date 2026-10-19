@@ -76,18 +76,17 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 **One misconception corrected mid-exercise, worth keeping.** The learner's work-in-progress note on the add handler read "nothing to fix here" — having just fixed the sort, they had stopped treating the add as a bug. It was still mutating in place. The lesson: **fixing one member of a bug family does not fix the family**; three handlers with three identical root causes needed three fixes, and two siblings being repaired does not make the third correct. It was fixed on the next pass, without a hint about the location.
 
-### In progress — nothing outstanding
+### In progress — one follow-up exercise
 
-**Every registered lesson is verified.** The last open line, `portals` (entry 15), closed on 2026-10-20:
-the learner built the toast through `createPortal`, the reviewer fixed its positioning and wired the pinned
-technique, and the explanation is on the record. All fourteen lessons are now verified.
+**Every registered lesson is verified.** The only open item is the lazy-initialiser follow-up inside lesson
+10's demo (entry 10): a small exercise, not a new topic. All fourteen lessons remain verified.
 
 ### Gaps — the honest list
 
 - **Never used at all:** nothing — the last item, portals, is now used by the learner's toast (entry 15).
 - **Explained but not exercised in code:** the three memoisation tools. Entry 14 closed as an explainer, so the reasoning is on the record — the identity comparison, the cache hint, and the trade — but the learner never wrote code that had to choose between them; the third column was not built. `useCallback` is the sharpest case: it appeared in the `custom-hooks` build and was removed again, correctly, because nothing there compared function identity.
 - **Half-answered:** the stale-closure failure mode from entry 13 — the answer named the property of a ref, not what breaks without it. Entry 14 did not re-test it.
-- **Taught in code but not yet exercised by a lesson of its own:** **lazy initialisers** (`useState(() => build())`). The mechanism is written up in entry 10 and appears in that lesson's prose, but no exercise has tested it, so it is not on the "Solid" table. Everything else the `useState` deep dive set out to cover — object/array replacement and the double-setter collapse — is now verified.
+- **Follow-up exercise set:** **lazy initialisers** (`useState(() => build())`) — taught in entry 10 and the lesson prose, and now exercised by a small addition to lesson 10's demo (brief in entry 10). Not a new topic.
 
 ### Next, in order
 
@@ -95,7 +94,7 @@ React and TypeScript topics only. Deploy, social links and a custom domain were 
 settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
 deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
-1. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
+1. **Lazy initialisers** — follow-up exercise inside lesson 10's demo; the brief and its criteria are in entry 10. Build it, then that entry is updated.
 2. **Reusable UI kit** — cards, buttons, modals and form components, as a composition exercise. The roadmap's "Components to Build" list is the next build-shaped work.
 
 The project is at **`0.19.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
@@ -887,6 +886,32 @@ as a planted bug in this project.** ESLint's `react-hooks/immutability` rule rej
 exercise was designed. Array *methods* (`push`, `sort`) are not caught by that rule, which is why the planted
 bugs were array-shaped. Object replacement is therefore taught in the lesson prose and the Sample Code panel
 rather than offered as something to repair. The full probe result is in `ROADMAP.md` and `HISTORY.md`.
+
+### Follow-up exercise — lazy initialisers (set 2026-10-20)
+
+Lazy initialisers are taught above but the exercise never tested them, so this is a small follow-up inside
+the same demo — not a new topic.
+
+**The task.** Add a builder (for example `buildStartingTechniques()`) that records how many times it runs,
+and initialise the state with `useState(() => buildStartingTechniques())`. Add a control that forces a
+re-render, and show the builder's call count beside the render count.
+
+**Expected values.** On first mount the builder count is 1 in production (2 in dev StrictMode, which calls
+the initialiser twice to check purity); pressing the re-render control raises the render count while the
+builder count stays put. Swapping in `useState(buildStartingTechniques())` must make the builder run on
+every render — the symptom the exercise is about.
+
+**The acceptance criteria — fixed now:**
+
+| # | Criterion |
+| - | --- |
+| 1 | The initial state is produced by a function argument, not a call at render |
+| 2 | The builder's call count and the render count are both visible |
+| 3 | A forced re-render leaves the builder count unchanged, accounting for StrictMode's double call in dev |
+| 4 | `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` stay green; the sample is regenerated |
+| 5 | The explanation covers the direct call vs the function form, and why `useState(buildFn)` is also lazy |
+
+**Status:** open — the learner builds it; this entry is updated when it is assessed.
 
 ---
 

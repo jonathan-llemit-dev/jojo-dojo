@@ -38,12 +38,20 @@ export const useStateDeepDiveTopic: Topic = {
     "```\nsetReps((current) => current + 1);\nsetReps((current) => current + 1);   // receives 1, returns 2\n```\n\n" +
     "Two *different* setters in one handler are fine — they are separate values. The trap is\n" +
     "the same setter twice, or anything computed from state another line has already changed.\n\n" +
-    "One more shape shows up in real code. When building a value is expensive, you can hand `useState`\n" +
-    "a function to run once instead of a value to store:\n\n" +
-    "```\nuseState(buildPlan());        // runs buildPlan on EVERY render, keeps only the first\nuseState(() => buildPlan());  // runs it once, for the first render\n```\n\n" +
-    "The arrow is the whole difference, and it is easy to miss. `useState(buildPlan)` — passing\n" +
-    "the function itself, no arrow and no call — is the one that really surprises people:\n" +
-    "`buildPlan` becomes the state, and React calls it for you when it needs the first value.",
+    "One more shape shows up in real code. A plan built from a few thousand rows is not free. Write\n" +
+    "`useState(buildPlan())` and the call runs before `useState` sees anything — and your component runs\n" +
+    "on every render, so the plan is rebuilt every time and every result except the first is thrown away.\n\n" +
+    "Hand `useState` the function instead of the result, and React calls it only when it needs the initial\n" +
+    "state:\n\n" +
+    "```\nuseState(() => buildPlan());  // React calls this for the initial value\nuseState(buildPlan);          // same: a function argument is called\n```\n\n" +
+    "The arrow form is the one you will normally write. `useState(buildPlan)` behaves the same way,\n" +
+    "because React treats any function argument as a lazy initialiser: it calls it with no arguments and\n" +
+    "stores what comes back.\n\n" +
+    "That rule is also a trap. If `buildPlan` takes an argument, `useState(buildPlan)` calls it with none.\n" +
+    "And if you want the function itself as state rather than its result, wrap it — `useState(() => buildPlan)`\n" +
+    "stores the function, because the outer arrow is the initialiser.\n\n" +
+    "One development detail: StrictMode calls the initialiser twice to check it is pure. A counter can read\n" +
+    "2 in dev and 1 in production; that is React checking your function, not a broken initialiser.",
 
   // Flush against the left margin on purpose: a template literal preserves indentation,
   // so indenting this to match the surrounding code would render as ragged leading
