@@ -10,6 +10,28 @@ Newest first.
 
 ## Session log
 
+### The no-portal experiment, and the containing block it exposed (2026-10-19)
+
+**The learner tried removing the portal.** They commented out `createPortal(dialog, document.body)` and
+rendered the dialog in place instead — and it still covered the page. Reasonable conclusion: why portal at
+all?
+
+**Because `fixed` was doing the work, and nothing here trapped it.** A `fixed` element is laid out against
+the viewport, so a panel's `overflow: hidden` does not clip it. The demo's portal-mode dialog was `fixed`;
+the in-place one is `absolute`, which is why it clips. The comparison was changing two variables at once —
+portal versus no portal, and absolute versus fixed — so the portal looked decorative.
+
+**The fix makes the portal load-bearing.** The demo's wrapper now carries `[transform:translateZ(0)]`.
+A transformed ancestor becomes the containing block for `fixed` children, so a dialog rendered there
+without the portal is trapped inside the demo box instead of covering the viewport. The portal, being a
+child of `document.body`, never asks the question. The lecture gained two paragraphs: `fixed` is the
+obvious shortcut and often works, but `transform`, `filter`, `perspective` and `contain: paint` silently
+redefine the box a fixed child is laid out and clipped against — and the ancestor looks like an ordinary
+card.
+
+**Verified:** `check:prose` 12/12 portals (12 blocks, longest 54 words), `tsc`, `lint`, `check:repo`
+green; sample regenerated at **122 of 122**. **Not committed.**
+
 ### Mobile pass — the memoization filter, and the portals demo seen (2026-10-19)
 
 **The learner's report.** On a phone the memoization demo's filter box was a sliver: "the search bar is very

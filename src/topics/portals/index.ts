@@ -16,6 +16,8 @@ export const portalsTopic: Topic = {
     "```tsx\ncreatePortal(<DetailsDialog onClose={close} />, document.body);\n```\n\n" +
     "The dialog now lives at the end of `<body>`, outside every panel, scroll container and overflow rule.\n\n" +
     "In the demo, the same dialog renders two ways. In place, it stays inside the panel and its bottom is cut off. Through a portal, it is a child of `document.body` and covers the page. Switch between the two and watch the box escape.\n\n" +
+    "`position: fixed` is the obvious shortcut, and often it works: a fixed element is laid out against the viewport, so a panel's `overflow` does not clip it. What breaks it is a containing block. An ancestor with `transform`, `filter`, `perspective` or `contain: paint` becomes the box its fixed children are positioned and clipped against.\n\n" +
+    "That ancestor looks like an ordinary card. The demo's wrapper is transformed for that reason: without the portal, the dialog is trapped inside it. A portal never asks the question, because its parent is `document.body`.\n\n" +
     "Nothing else about the component changes. Props, state and context still work, because the React tree is untouched — the dialog is still a child of the component that rendered it. Events bubble the same way too: a click inside a portaled dialog still reaches a handler on the component that opened it.\n\n" +
     "Reach for a portal when something has to leave its container: a modal, a tooltip, a toast, or a dropdown that a parent's `overflow: hidden` would clip.\n\n" +
     "Do not portal everything. A button that is happy inside its panel belongs there. The portal is for the layer that has to sit above the page.\n\n" +
@@ -98,7 +100,7 @@ export function PortalsDemo() {
     <DetailsDialog titleId={titleId} fixed={mode === "portal"} onClose={closeDialog} />
   );
   return (
-    <div className="flex w-full max-w-md flex-col gap-3">
+    <div className="flex w-full max-w-md flex-col gap-3 [transform:translateZ(0)]">
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span className="text-dojo-muted">Render:</span>
         <button

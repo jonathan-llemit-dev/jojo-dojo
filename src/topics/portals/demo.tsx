@@ -92,8 +92,10 @@ export function PortalsDemo() {
     <DetailsDialog titleId={titleId} fixed={mode === "portal"} onClose={closeDialog} />
   );
 
+  // A transformed ancestor is common on cards (animations, stacking contexts), and it becomes the
+  // containing block for `fixed` children. The portal is what escapes it.
   return (
-    <div className="flex w-full max-w-md flex-col gap-3">
+    <div className="flex w-full max-w-md flex-col gap-3 [transform:translateZ(0)]">
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span className="text-dojo-muted">Render:</span>
         <button
