@@ -10,6 +10,60 @@ Newest first.
 
 ## Session log
 
+### Mobile pass — the memoization filter, and the portals demo seen (2026-10-19)
+
+**The learner's report.** On a phone the memoization demo's filter box was a sliver: "the search bar is very
+narrow no mobile response".
+
+**The cause was flex sizing, not the input.** The toolbar is a wrapping flex row, and the label was `flex-1`
+with a zero flex basis. On a wide screen it grows into the leftover; at 375px the row already held the Nudge
+button, so the label shared that line and received the few pixels left over. The input inside it was `flex-1`
+with `min-w-0`, so it obeyed and collapsed.
+
+**The fix.** `w-full sm:w-auto sm:flex-1` on the label — a full row on phones, the old single-row layout from
+`sm` up. The sample was regenerated (still 143 of 143) and the demo was driven at 375×667: the filter is full
+width, typing "jab" narrowed both lists, two Nudges took the left counters 2 → 4 while the right column held
+at 2, and the stable-vs-inline strip read 2 vs 5. Desktop was re-checked at 1584px: one row, no regression.
+
+**The portals demo was checked in the same session, at 375×667.** In place, the dialog is clipped by the panel
+and the backdrop dims only the panel; through the portal it covers the viewport, both paragraphs are visible,
+and focus is on Close. Escape closes it in both modes.
+
+**One operational note.** The dev server died while `sync:samples` wrote `index.ts` — the documented OneDrive
+watcher failure, not a code fault — and would not start inside the sandbox (`spawn EPERM`). It was started
+once with `danger-full-access` and is running at `localhost:5173`. Gates all green; **not committed.**
+
+### Lesson 14 — `portals`, and the two trees (2026-10-19)
+
+**The topic's whole difficulty is a DOM fact, not a React one.** The lesson panel scrolls and clips; a dialog
+rendered inside it is cut off, and `z-index` cannot rescue it because the clipping happens before stacking is
+considered. `createPortal` renders the markup into `document.body` while leaving the component where it was
+written. The lecture states that split once and then spends its length on the consequences: props and context
+still work, events still bubble through the React tree, and the tool is for escaping a container, not for
+decorating a page.
+
+**The demo had to make the difference visible.** One dialog, two modes: in place it sits inside a fixed-height
+panel, so its bottom is cut off; through a portal it is a child of `document.body` and covers the viewport. A
+mode switch flips between them while the dialog is open, so the same box can be watched escaping. The demo
+also does the accessibility work a dialog needs — `role`, `aria-modal`, focus into the close button, Escape,
+focus returned to the trigger — because a portal that skips those is a worse dialog, not a better one.
+
+**The task is a second surface, not a copy of the first.** The build-on asks for a toast: a Pin button in the
+dialog, a toast bottom-right through a portal, reading the pinned technique from the demo's state, dismissing
+cleanly. The point is the half the demo cannot show — a portaled node still belongs to the React tree, so its
+button reaches the demo's state. Seven criteria are fixed in entry 15, including "the explanation says why a
+portal was needed and what the split means for the toast's button".
+
+**Why build-on rather than fix-it.** A clipped dialog is plantable — it compiles, lints clean, and the symptom
+is visible — so a fix-it was available. The build-on was chosen because the demo already contains the
+comparison, and the useful exercise is reaching for the portal in a new place rather than repairing a
+deliberately broken dialog.
+
+**Added:** `src/topics/portals/` (demo + index), the registry entry, version `0.19.0` in all three artefacts
+and `v0.19` in the badge, the checker constants, the key-files tree, `NOTES.md` entry 15 plus the in-progress
+and gap updates, the roadmap line as **BUILD**, README's version and structure, and this entry. Sample
+generated at **122 of 122**. **Not committed — the learner makes every commit.**
+
 ### The memoization lecture gets a beginner pass (2026-10-19)
 
 **The learner's note:** the `React.memo` / `useMemo` / `useCallback` lecture "seems like cold AI generated, no

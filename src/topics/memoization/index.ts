@@ -134,7 +134,7 @@ export function MemoizationDemo() {
   return (
     <div className="flex w-full max-w-3xl flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
-        <label className="flex min-w-0 flex-1 items-center gap-2 text-xs text-dojo-muted">
+        <label className="flex w-full min-w-0 items-center gap-2 text-xs text-dojo-muted sm:w-auto sm:flex-1">
           <span className="shrink-0">Filter</span>
           <input
             value={query}

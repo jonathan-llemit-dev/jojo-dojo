@@ -12,6 +12,7 @@ import { useRefTopic } from "./use-ref";
 import { useContextReducerTopic } from "./use-context-reducer";
 import { customHooksTopic } from "./custom-hooks";
 import { memoizationTopic } from "./memoization";
+import { portalsTopic } from "./portals";
 
 /**
  * Aggregate topic registry — the single source of truth for both the sidebar
@@ -33,6 +34,7 @@ export const topicRegistry: Topic[] = [
   useContextReducerTopic,
   customHooksTopic,
   memoizationTopic,
+  portalsTopic,
 ];
 
 /**

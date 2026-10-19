@@ -75,17 +75,18 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 **One misconception corrected mid-exercise, worth keeping.** The learner's work-in-progress note on the add handler read "nothing to fix here" — having just fixed the sort, they had stopped treating the add as a bug. It was still mutating in place. The lesson: **fixing one member of a bug family does not fix the family**; three handlers with three identical root causes needed three fixes, and two siblings being repaired does not make the third correct. It was fixed on the next pass, without a hint about the location.
 
-### In progress — nothing outstanding
+### In progress — lesson live, verification outstanding
 
-**Every registered lesson is verified.** The last open line, `memoization` (entry 14), closed as an
-**explainer** on 2026-10-19: the lecture and demo are live, the Sample Code panel is a true mirror at
-143 of 143, and the three tools plus the trade were explained in the learner's own words. The third
-column was not built; the entry records that as the cost of the close, and the roadmap box is ticked on
-the demonstrated half being the lesson demo.
+**`portals` (entry 15)** — live at `/dojo/topic/portals` as a **build-on task**, the fourth of that kind.
+The lecture and demo are live, the Sample Code panel is a true mirror at 122 of 122, and the roadmap line
+is marked `BUILD`. The open half is the learner's own toast: a second portal surface, rendered into
+`document.body`, with the demo's state still readable through it. The brief and the seven acceptance
+criteria are in entry 15 — the box stays unticked until the toast exists *and* the explanation is on the
+record.
 
 ### Gaps — the honest list
 
-- **Never used at all:** portals.
+- **Never used at all:** portals — the lecture is live and the demo uses one, but no code of the learner's does yet; the toast build is entry 15.
 - **Explained but not exercised in code:** the three memoisation tools. Entry 14 closed as an explainer, so the reasoning is on the record — the identity comparison, the cache hint, and the trade — but the learner never wrote code that had to choose between them; the third column was not built. `useCallback` is the sharpest case: it appeared in the `custom-hooks` build and was removed again, correctly, because nothing there compared function identity.
 - **Half-answered:** the stale-closure failure mode from entry 13 — the answer named the property of a ref, not what breaks without it. Entry 14 did not re-test it.
 - **Taught in code but not yet exercised by a lesson of its own:** **lazy initialisers** (`useState(() => build())`). The mechanism is written up in entry 10 and appears in that lesson's prose, but no exercise has tested it, so it is not on the "Solid" table. Everything else the `useState` deep dive set out to cover — object/array replacement and the double-setter collapse — is now verified.
@@ -96,11 +97,11 @@ React and TypeScript topics only. Deploy, social links and a custom domain were 
 settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
 deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
-1. **Portals** — rendering outside the parent DOM hierarchy.
+1. **Portals** — lecture live, the learner's toast outstanding. Add a second portal surface that proves the React tree survives the move; the brief and the acceptance criteria are in entry 15.
 2. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
 
-The project is at **`0.18.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
-deliberately, as it was for the belt rework and the landing page). Keep the `HomePage` badge (`v0.18`) in step;
+The project is at **`0.19.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
+deliberately, as it was for the belt rework and the landing page). Keep the `HomePage` badge (`v0.19`) in step;
 the three version artefacts are listed in `CLAUDE.md` under "Versioning".
 
 ---
@@ -1360,12 +1361,83 @@ demo as the demonstrated half.
 
 ---
 
+## 15 — Portals (Rendering Outside the Parent DOM Tree)
+
+- **Status:** LD (Learning) — lecture live 2026-10-19, hands-on build outstanding
+- **Added:** 2026-10-19
+- **Belt:** blue
+- **Marker file:** `src/topics/portals/demo.tsx`
+- **Route:** `/dojo/topic/portals`
+
+### What this lesson is
+
+A dialog belongs above the page, but where it *lives* in the component tree is not where the browser puts
+it. A dialog rendered inside the lesson panel inherits that panel's `overflow: hidden` and is clipped —
+and no `z-index` fixes it. `createPortal` renders the markup into `document.body` while leaving the
+component in the React tree.
+
+The demo shows the same dialog two ways: in place, where the bottom is cut off, and through a portal,
+where it covers the page. A mode switch makes the difference visible rather than described.
+
+### The three facts the lesson turns on
+
+1. **A portal moves the DOM node, not the component.** Props, state and context still flow from the
+   component that rendered it, because the React tree has not moved.
+2. **Events bubble through the React tree.** A click inside a portaled dialog still reaches a handler on
+   the component that opened it; the portal does not detach it from the app.
+3. **A portal is for escaping, not for decorating.** Modals, tooltips, toasts and dropdowns that would be
+   clipped by an ancestor's overflow. A button that is happy inside its panel stays there.
+
+### The hands-on task — a second portal surface
+
+**The task.** Add a **Pin** button to the demo's dialog, and a **toast** that appears when it is pressed,
+rendered through `createPortal` into `document.body`, fixed to the bottom-right of the viewport. The toast
+reads the pinned technique from the demo's state and dismisses cleanly.
+
+The point is not another box on screen. It is that the toast has to prove two things at once: it is
+outside the panel's DOM, so nothing clips it, and it is still inside the React tree, so the state arrives
+and its own button works.
+
+**Expected values.** Pin the roundhouse kick from the dialog → the toast appears bottom-right with the
+technique's name and a dismiss button; the panel's own content does not move; dismissing returns the demo
+to its previous state. Scrolling the lesson pane must not move the toast. Clearing a toast must leave no
+timer or listener behind.
+
+**The seven acceptance criteria — fixed now, not after the fact:**
+
+| # | Criterion |
+| - | --- |
+| 1 | A new surface — a toast — rendered with `createPortal`, not the demo's dialog copied |
+| 2 | It sits outside the panel's bounds (bottom-right of the viewport) and is not clipped at 375px or from `md` up |
+| 3 | It reads state from the demo (the pinned technique), proving the React tree is intact |
+| 4 | A button inside the toast works, proving events still bubble through the React tree |
+| 5 | Dismissing removes it, and any timer or listener is cleaned up |
+| 6 | `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` stay green |
+| 7 | The explanation says why a portal was needed and what the React-tree/DOM-tree split means for the toast's button |
+
+**How it gets assessed.** The code is the *demonstrated* half. The *explained* half is two or three
+questions anchored in that code, or a prose explanation handed over with it. The one to expect: *the
+toast is in `document.body` — why does its button still reach your state?* A failed criterion is named,
+with the line it failed on.
+
+### Why a build-on task
+
+A clipped dialog is a plantable bug: it compiles, lints clean, and its symptom is visible. So a fix-it
+exercise was possible. The build-on shape was chosen instead because the demo already *contains* the
+comparison — in place versus portal — and the useful exercise is reaching for the tool in a new place
+(a toast) rather than repairing a deliberately broken dialog. The toast also tests the part a reader
+cannot see in the demo: that a portaled node still belongs to the React tree.
+
+---
+
 ## Traps & mental models
 
 Every correction made during review, in one place. These are the things most likely to bite again.
 
 | Trap | What actually happens |
 | --- | --- |
+| A dialog inside a scrolling or `overflow: hidden` panel | The panel clips it, and `z-index` cannot lift it out — the clipping happens before stacking is considered. Render it through a portal into `document.body`. |
+| Expecting a portal to reset React state or context | It does not. The markup moves, the component does not: props, state, context and event bubbling all still follow the React tree, which is why a portaled toast can read the state of the panel that opened it. |
 | A `useCallback` (or any `const`) that calls itself, e.g. a self-scheduling `requestAnimationFrame` loop | `react-hooks/immutability` rejects it: *"Cannot access variable before it is declared"*. It still *runs* — the closure resolves after initialisation, so the failure is static rather than a crash — but a captured name cannot see a later value, which is exactly what the rule is pointing at. Let an effect own the loop and cancel it in cleanup, or declare a hoistable `function` instead. |
 | Reading state inside a memoised callback instead of a ref | The callback closes over the values from the render that created it. With stable deps that is the **first** render, permanently — so a `start()` that read `elapsed` state would re-anchor at `0` on every resume and the clock would snap backwards. Read the ref at call time, where it cannot go stale. |
 | Wrapping a cheap component in `React.memo` | The wrapper still runs a shallow comparison on every render, stores the previous props, and requires every prop to keep a stable identity — one inline object, array or arrow cancels it. On a component that renders three spans, the comparison costs more than the render it skips. Memoise what a profiler shows is expensive, not what looks expensive. |

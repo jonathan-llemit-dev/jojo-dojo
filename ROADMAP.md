@@ -40,7 +40,7 @@ Do not re-add these to a future roadmap. If a session needs the deployment *mech
 - [x] `useContext` / `useReducer` — shared state patterns — lesson live at `/dojo/topic/use-context-reducer`. The first **build-on task**: instead of adding a panel to the session card, the learner built a second, independent shared-state feature beside it — a meal planner with its own `createContext`/`useReducer` pair, a six-member action union, a `useDiet()` accessor and three propless panels. All seven acceptance criteria pass, and the provider rule and the `never` default were explained in their own words (3/3). Verified 2026-10-08 — entry 12
 - [x] Custom hooks — extracting reusable logic — lesson live at `/dojo/topic/custom-hooks`. The second **build-on task**: the learner wrote `useContinuousTimer`, a wall-clock stopwatch built on an accumulator ref and a `requestAnimationFrame` loop, and called it from two differently-shaped panels — a lap-recording stopwatch card and a compact session row. All seven acceptance criteria pass, and the per-call-state mechanism and the ref-vs-state split were explained in their own words. Verified 2026-10-18 — entry 13
 - [x] `React.memo` / `useMemo` / `useCallback` — performance optimization — lesson live at `/dojo/topic/memoization`; closed as an **explainer** on 2026-10-19. The three tools and the trade were explained in the learner's own words; the third column was not built, and entry 14 records that as the cost. Verified 2026-10-19
-- [ ] Portals — rendering outside the parent DOM hierarchy — **GAP**: never used
+- [ ] Portals — rendering outside the parent DOM hierarchy — **BUILD**: lecture live at `/dojo/topic/portals`, and the outstanding half is the learner's own toast. The brief and its acceptance criteria are in `NOTES.md` entry 15
 - [ ] Lazy initialisers — `useState(() => build())` — **GAP**: answered wrong in the pre-lesson check and still never exercised. Written up in entry 10 and in that lesson's prose, so it needs a lesson of its own or a question in a future review, not a new claim
 
 ## Components to Build (reusable UI kit)
@@ -61,7 +61,7 @@ they were considered rather than forgotten.
 
 ---
 
-_Last updated: 2026-10-19 (thirteen lessons live — all thirteen verified)_
+_Last updated: 2026-10-19 (fourteen lessons live — thirteen verified, one awaiting its build task)_
 
 **Why the `useState` deep dive is a fix-it exercise with three array bugs, not an object bug.** The
 characteristic mistake it teaches — writing a field on an object held in state — cannot be shipped at all:
