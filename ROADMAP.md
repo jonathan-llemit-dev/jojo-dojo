@@ -39,7 +39,7 @@ Do not re-add these to a future roadmap. If a session needs the deployment *mech
 - [x] `useRef` — DOM access and mutable values — explainer live at `/dojo/topic/use-ref`; thirteen candidates probed against both gates and every one with a diagnosable symptom was rejected, so the hands-on half was the Escape-to-close in `Sidebar.tsx`. Verified 2026-10-07, after three passes past the "refs aren't initialised until effects run" misconception (entry 11)
 - [x] `useContext` / `useReducer` — shared state patterns — lesson live at `/dojo/topic/use-context-reducer`. The first **build-on task**: instead of adding a panel to the session card, the learner built a second, independent shared-state feature beside it — a meal planner with its own `createContext`/`useReducer` pair, a six-member action union, a `useDiet()` accessor and three propless panels. All seven acceptance criteria pass, and the provider rule and the `never` default were explained in their own words (3/3). Verified 2026-10-08 — entry 12
 - [x] Custom hooks — extracting reusable logic — lesson live at `/dojo/topic/custom-hooks`. The second **build-on task**: the learner wrote `useContinuousTimer`, a wall-clock stopwatch built on an accumulator ref and a `requestAnimationFrame` loop, and called it from two differently-shaped panels — a lap-recording stopwatch card and a compact session row. All seven acceptance criteria pass, and the per-call-state mechanism and the ref-vs-state split were explained in their own words. Verified 2026-10-18 — entry 13
-- [ ] `React.memo` / `useMemo` / `useCallback` — performance optimization — **BUILD**: lecture live at `/dojo/topic/memoization`, and the outstanding half is the learner's own third column. The brief and its acceptance criteria are in `NOTES.md` entry 14
+- [x] `React.memo` / `useMemo` / `useCallback` — performance optimization — lesson live at `/dojo/topic/memoization`; closed as an **explainer** on 2026-10-19. The three tools and the trade were explained in the learner's own words; the third column was not built, and entry 14 records that as the cost. Verified 2026-10-19
 - [ ] Portals — rendering outside the parent DOM hierarchy — **GAP**: never used
 - [ ] Lazy initialisers — `useState(() => build())` — **GAP**: answered wrong in the pre-lesson check and still never exercised. Written up in entry 10 and in that lesson's prose, so it needs a lesson of its own or a question in a future review, not a new claim
 
@@ -61,7 +61,7 @@ they were considered rather than forgotten.
 
 ---
 
-_Last updated: 2026-10-18 (thirteen lessons live — twelve verified, one awaiting its build task)_
+_Last updated: 2026-10-19 (thirteen lessons live — all thirteen verified)_
 
 **Why the `useState` deep dive is a fix-it exercise with three array bugs, not an object bug.** The
 characteristic mistake it teaches — writing a field on an object held in state — cannot be shipped at all:
@@ -162,3 +162,13 @@ and one lint-only control to prove the harness reported anything at all. The fin
 - Rejected by `tsc`, for the record: an unguarded nullable context value (`TS18047`), a provider value missing
   a promised member (`TS2741`), a typo in a `case` label against a union action type (`TS2678`), a reducer
   returning a state with a missing field (`TS2741`), and `{ items: state.items.push(x) }` (`TS2322`).
+
+**Why `memoization` closed as an explainer (2026-10-19).** It shipped as a build-on task — a third column
+that removes exactly one of `React.memo` / `useMemo` / `useCallback` — because the mistakes here have no
+observable symptom except work: a missing `useMemo` renders the same pixels more slowly, and a `memo()`
+defeated by an inline arrow renders the same pixels more often. There is nothing to diagnose, so the honest
+question was which tool earned its place. The learner's call was to answer it in conversation rather than
+code, and the topic closed as an **explainer**: the demo is the demonstrated half, and the explained half
+is recorded in entry 14, including the two first answers that were wrong before they were corrected. What
+the tick does not claim: that the learner has written code choosing between the three tools — the counter
+experiment was never run first-hand.

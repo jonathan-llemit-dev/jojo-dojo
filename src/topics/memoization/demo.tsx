@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // Topic: React.memo, useMemo & useCallback — memoize only what you have measured
-// Added: 2026-10-18 | Status: LD (lecture live — hands-on build outstanding)
+// Added: 2026-10-18 | Status: OK (closed as an explainer, 2026-10-19)
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //
@@ -27,7 +27,8 @@
 // rows. That is honest — it is genuinely repeated work — but it is synthetic. In a real
 // app the number that matters comes from a profiler, not from a demo.
 //
-// Hands-on task for this topic: see NOTES.md entry 14.
+// Closed as an explainer on 2026-10-19: the tools and the trade are explained in NOTES.md entry 14.
+// No third column was built — the counters below are the demo's evidence, not the learner's build.
 
 import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 

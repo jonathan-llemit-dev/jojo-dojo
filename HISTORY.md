@@ -10,6 +10,31 @@ Newest first.
 
 ## Session log
 
+### `memoization` closes as an explainer, at the learner's call (2026-10-19)
+
+**The topic had one shape left to settle: the build.** It shipped as a build-on task — a third column that
+removes exactly one of `React.memo` / `useMemo` / `useCallback` — because the mistakes here have no observable
+symptom except work, so there is nothing to diagnose and the honest question was which tool earned its place.
+After the lecture and a quiz, the learner's call was to close it on the demo and conversation rather than build
+the column: "no need to code, the sample code is good enough".
+
+**That is a legitimate explainer close, and the record says exactly what it costs.** The lesson demo is the
+demonstrated half (it runs, both gates green, sample a true mirror at 143 of 143), and the explained half is
+three questions plus follow-ups. Two answers were wrong before they were corrected and are kept that way in
+entry 14: `useMemo`'s "recompute and cause rerender" was the cost rather than the rule — the rule is that
+output stays correct, so the cache is for expensive computation only — and `React.memo` was called "a good
+starter" for a three-span component, the default the lecture argues against, before the trade came back
+correctly ("the comparison is much more expensive than rerendering three spans"). **What the tick does not
+claim:** that the learner has written code choosing between the three tools. The counter experiment was never
+run first-hand.
+
+**The docs moved in one pass:** marker `OK`; entry 14 rewritten as an explainer close with the seven criteria
+kept as the brief that was not taken up; the roadmap box ticked with a footer of thirteen; the snapshot's
+"Solid" row added and "In progress" replaced by "Every registered lesson is verified"; the gap list rewritten
+to say "explained but not exercised in code"; CLAUDE's one-liner, explainer list and objective list updated;
+README's roadmap shortened; and the two checker strings (`thirteen verified`, `Thirteen lessons verified`)
+moved with them. **Not committed — the learner makes every commit.**
+
 ### Lesson 13 — `memoization`, where the mistake is doing too much (2026-10-18)
 
 **The topic with an unusual shape: every other lesson here teaches a mistake that produces wrong output.**

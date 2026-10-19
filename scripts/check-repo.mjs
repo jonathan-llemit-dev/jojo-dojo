@@ -142,7 +142,7 @@ for (const [slug, n] of Object.entries(claims)) {
 // ── 5. docs consistency ─────────────────────────────────────────────────────
 head("docs consistency");
 const checks = [
-  [claude.includes("thirteen lessons registered — twelve verified, one awaiting its build task"), "CLAUDE.md: thirteen/twelve+1 one-liner"],
+  [claude.includes("thirteen lessons registered — all thirteen verified"), "CLAUDE.md: thirteen/all-verified one-liner"],
   [claude.includes("Do not commit. The learner makes every commit."), "CLAUDE.md: the no-commit rule is present"],
   [claude.includes(`**\`${VERSION}\`** with thirteen topics`), "CLAUDE.md: versioning sentence"],
   [claude.includes("the site has been live on Vercel"), "CLAUDE.md: deploy framed as settled"],
@@ -159,7 +159,7 @@ const checks = [
   [notes.includes("## 13 — Custom hooks"), "NOTES.md: entry 13 present"],
   [notes.includes("## 14 — React.memo"), "NOTES.md: entry 14 present"],
   [/^- \*\*Never used at all:\*\*(?!.*useReducer)/m.test(notes), "NOTES.md: useReducer off the 'never used' line"],
-  [readme.includes("Twelve lessons verified"), "README.md: twelve lessons verified"],
+  [readme.includes("Thirteen lessons verified"), "README.md: thirteen lessons verified"],
   [readme.includes("jojo-dojo.vercel.app"), "README.md: live URL present"],
   [!/\[ \] Deploy to Vercel/m.test(readme), "README.md: deploy chore removed"],
   [history.includes("The hands-on exercise becomes a build, not a repair"), "HISTORY.md: the exercise-model decision is logged"],
