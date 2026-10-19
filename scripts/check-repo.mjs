@@ -131,7 +131,7 @@ for (const name of dirs) {
 
 // ── 4. the numbers CLAUDE.md claims ─────────────────────────────────────────
 head("CLAUDE.md parity claims vs measured");
-const claims = { "components-props": 46, "conditional-rendering": 63, "event-handling": 105, "lists-and-keys": 62, "use-effect": 64, forms: 53, "use-state-deep-dive": 114, "use-ref": 77, "use-context-reducer": 376, "custom-hooks": 334, memoization: 143, portals: 122 };
+const claims = { "components-props": 46, "conditional-rendering": 63, "event-handling": 105, "lists-and-keys": 62, "use-effect": 64, forms: 53, "use-state-deep-dive": 114, "use-ref": 77, "use-context-reducer": 376, "custom-hooks": 334, memoization: 143, portals: 193 };
 for (const [slug, n] of Object.entries(claims)) {
   const claimed = claude.includes(`${n} of ${n}`);
   const measured = parity[slug]?.exact && parity[slug].a === n;
@@ -142,7 +142,7 @@ for (const [slug, n] of Object.entries(claims)) {
 // ── 5. docs consistency ─────────────────────────────────────────────────────
 head("docs consistency");
 const checks = [
-  [claude.includes("fourteen lessons registered — thirteen verified, one awaiting its build task"), "CLAUDE.md: fourteen/thirteen+1 one-liner"],
+  [claude.includes("fourteen lessons registered — all fourteen verified"), "CLAUDE.md: fourteen/all-verified one-liner"],
   [claude.includes("Do not commit. The learner makes every commit."), "CLAUDE.md: the no-commit rule is present"],
   [claude.includes(`**\`${VERSION}\`** with fourteen topics`), "CLAUDE.md: versioning sentence"],
   [claude.includes("the site has been live on Vercel"), "CLAUDE.md: deploy framed as settled"],
@@ -160,7 +160,7 @@ const checks = [
   [notes.includes("## 14 — React.memo"), "NOTES.md: entry 14 present"],
   [notes.includes("## 15 — Portals"), "NOTES.md: entry 15 present"],
   [/^- \*\*Never used at all:\*\*(?!.*useReducer)/m.test(notes), "NOTES.md: useReducer off the 'never used' line"],
-  [readme.includes("Thirteen lessons verified"), "README.md: thirteen lessons verified"],
+  [readme.includes("Fourteen lessons verified"), "README.md: fourteen lessons verified"],
   [readme.includes("jojo-dojo.vercel.app"), "README.md: live URL present"],
   [!/\[ \] Deploy to Vercel/m.test(readme), "README.md: deploy chore removed"],
   [history.includes("The hands-on exercise becomes a build, not a repair"), "HISTORY.md: the exercise-model decision is logged"],

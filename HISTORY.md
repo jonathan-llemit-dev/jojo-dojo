@@ -10,6 +10,27 @@ Newest first.
 
 ## Session log
 
+### `portals` closes — the toast, and the wrapper that styled the wrong node (2026-10-20)
+
+**The learner built the toast, and the portal was right.** `Toast` used `createPortal(…, document.body)`, a
+4-second timer with cleanup, and a close button; a "Show Toast" button triggered it. The first version had two
+problems: the `fixed right-4 top-…` positioning wrapper sat *outside* the portal, so its classes styled an
+empty box while the portaled card landed unpositioned at the end of `<body>`; and the toast said "Sample
+toast", not the pinned technique.
+
+**The fixes, recorded rather than hidden.** The positioning moved into the portaled element; a Pin technique
+button in the dialog sets a `pinned` state that the toast reads; `Toast` moved into `demo.tsx` so the Sample
+Code panel shows `createPortal` (the mirror convention would otherwise hide the topic in a second file). The
+toast is bottom-right, themed, stacked by index, dismissible by its own button, and auto-dismisses.
+
+**The explained half — 2.5/3.** The React/DOM split, the props path, and the containing-block effect of
+`[transform:translateZ(0)]` were right; the detached-tree counterfactual was restated rather than answered,
+and the timer cleanup needed a follow-up (the dismiss removes the toast; the cleanup stops the pending
+callback). Verified; entry 15 records both the fixes and the gap.
+
+**Checks:** `tsc`, `lint`, `check:prose` (portals 12 blocks, longest 54) and `check:repo` green; sample 193 of
+193; marker `OK`; counts fourteen/fourteen. **Not committed.**
+
 ### The no-portal experiment, and the containing block it exposed (2026-10-19)
 
 **The learner tried removing the portal.** They commented out `createPortal(dialog, document.body)` and

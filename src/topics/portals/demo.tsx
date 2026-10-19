@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // Topic: Portals — render a component outside the parent DOM tree
-// Added: 2026-10-19 | Status: LD (lecture live — build-on task outstanding)
+// Added: 2026-10-19 | Status: OK (build-on task complete — toast through a portal, 2026-10-20)
 // ─────────────────────────────────────────────
 // (Statuses: OK = Mastered, LD = Learning, RV = Reviewing.)
 //
@@ -11,20 +11,57 @@
 // The demo renders the same dialog two ways — inside the panel and through a portal — so the
 // clipping is visible rather than described.
 //
-// Build-on task for this topic: see NOTES.md entry 15.
+// The toast in this file is the build-on feature: a second portal surface, verified 2026-10-20.
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 type RenderMode = "in-place" | "portal";
 
-type DetailsDialogProps = {
-  titleId: string;
-  fixed: boolean;
-  onClose: () => void;
+const TECHNIQUE = "Roundhouse kick";
+
+type ToastProps = {
+  id: number;
+  message: string;
+  index: number;
+  onClose: (id: number) => void;
 };
 
-function DetailsDialog({ titleId, fixed, onClose }: DetailsDialogProps) {
+function Toast({ id, message, index, onClose }: ToastProps) {
+  useEffect(() => {
+    const timer = setTimeout(() => onClose(id), 4000);
+    return () => clearTimeout(timer);
+  }, [id, onClose]);
+
+  return createPortal(
+    <div
+      className="fixed right-4 z-50 flex w-80 max-w-[calc(100vw-2rem)] items-center gap-3 rounded-lg border border-dojo-border bg-dojo-surface px-4 py-3 text-sm text-dojo-text shadow-lg shadow-black/50"
+      style={{ bottom: 16 + index * 72 }}
+    >
+      <span className="h-2 w-2 shrink-0 rounded-full bg-dojo-ember" aria-hidden="true" />
+      <p className="min-w-0 flex-1">{message}</p>
+      <button
+        type="button"
+        onClick={() => onClose(id)}
+        aria-label="Dismiss toast"
+        className="shrink-0 rounded-md px-1 text-lg leading-none text-dojo-muted transition hover:text-dojo-ember focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dojo-ember"
+      >
+        &times;
+      </button>
+    </div>,
+    document.body,
+  );
+}
+
+type DetailsDialogProps = {
+  titleId: string;
+  technique: string;
+  fixed: boolean;
+  onClose: () => void;
+  onPin: () => void;
+};
+
+function DetailsDialog({ titleId, technique, fixed, onClose, onPin }: DetailsDialogProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -53,7 +90,7 @@ function DetailsDialog({ titleId, fixed, onClose }: DetailsDialogProps) {
       >
         <div className="flex items-start justify-between gap-3">
           <h4 id={titleId} className="text-sm font-semibold text-dojo-ember">
-            Roundhouse kick
+            {technique}
           </h4>
           <button
             ref={closeRef}
@@ -72,6 +109,15 @@ function DetailsDialog({ titleId, fixed, onClose }: DetailsDialogProps) {
           Relax the shoulders and breathe out on impact. Speed comes from the turn, not from
           swinging the leg harder.
         </p>
+        <div className="mt-3 flex justify-end">
+          <button
+            type="button"
+            onClick={onPin}
+            className="rounded-md bg-dojo-ember px-3 py-1 text-xs font-medium text-black transition hover:bg-dojo-ember-bright focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dojo-ember"
+          >
+            Pin technique
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -82,14 +128,36 @@ export function PortalsDemo() {
   const openRef = useRef<HTMLButtonElement>(null);
   const [mode, setMode] = useState<RenderMode>("portal");
   const [isOpen, setIsOpen] = useState(false);
+  const [toasts, setToasts] = useState<{ id: number; message: string }[]>([]);
+  const [pinned, setPinned] = useState<string | null>(null);
+
+  const addToast = (message: string) => {
+    setToasts((prev) => [...prev, { id: Date.now() + Math.random(), message }]);
+  };
+
+  const removeToast = useCallback((id: number) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }, []);
 
   function closeDialog() {
     setIsOpen(false);
     openRef.current?.focus();
   }
 
+  function handlePin(technique: string) {
+    setPinned(technique);
+    addToast(`${technique} pinned`);
+    closeDialog();
+  }
+
   const dialog = (
-    <DetailsDialog titleId={titleId} fixed={mode === "portal"} onClose={closeDialog} />
+    <DetailsDialog
+      titleId={titleId}
+      technique={TECHNIQUE}
+      fixed={mode === "portal"}
+      onClose={closeDialog}
+      onPin={() => handlePin(TECHNIQUE)}
+    />
   );
 
   // A transformed ancestor is common on cards (animations, stacking contexts), and it becomes the
@@ -124,7 +192,7 @@ export function PortalsDemo() {
         </button>
       </div>
 
-      <section className="relative h-32 overflow-hidden rounded-lg border border-dojo-border bg-dojo-surface/40 p-3">
+      <section className="relative h-36 overflow-hidden rounded-lg border border-dojo-border bg-dojo-surface/40 p-3">
         <h4 className="text-xs uppercase tracking-wider text-dojo-muted">Technique panel</h4>
         <p className="mt-1 max-w-xs text-[11px] text-dojo-muted">
           This panel has a fixed height and hides anything that overflows it.
@@ -138,10 +206,22 @@ export function PortalsDemo() {
           Open details
         </button>
 
+        <p className="mt-1 text-[11px] text-dojo-muted">Pinned: {pinned ?? "nothing yet"}</p>
+
         {isOpen && mode === "in-place" && dialog}
       </section>
 
       {isOpen && mode === "portal" && createPortal(dialog, document.body)}
+
+      {toasts.map((toast, index) => (
+        <Toast
+          key={toast.id}
+          id={toast.id}
+          message={toast.message}
+          index={index}
+          onClose={removeToast}
+        />
+      ))}
 
       <p className="text-xs text-dojo-muted">
         {mode === "portal"

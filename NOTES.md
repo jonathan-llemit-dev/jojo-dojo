@@ -17,7 +17,7 @@ assessment rather than a marker):
 
 ## Current Knowledge Snapshot
 
-*Assessed 2026-10-19 by the AI reviewer. This is the quick answer to "what do I actually know?" — read it before a study session rather than re-reading every entry. It is re-assessed after each new lesson. The evidence rules are in the "Reviewer responsibilities" section of `CLAUDE.md`; the roadmap checkboxes are marked from this list.*
+*Assessed 2026-10-20 by the AI reviewer. This is the quick answer to "what do I actually know?" — read it before a study session rather than re-reading every entry. It is re-assessed after each new lesson. The evidence rules are in the "Reviewer responsibilities" section of `CLAUDE.md`; the roadmap checkboxes are marked from this list.*
 
 ### Solid — confirmed in working code *and* explained correctly
 
@@ -39,6 +39,7 @@ assessment rather than a marker):
 | `useContext` / `useReducer` | Built a second, independent shared-state feature beside the session card — a meal planner with its own `createContext`, its own `useReducer` and a six-member action union, a `useDiet()` accessor, and three more panels that receive **no props**. Verified in the browser: one dispatch moved the totals panel and the list panel together, and Remove cleared both. Explained the provider rule (a consumer outside its provider gets `null` and the accessor throws) and the `never` default (it catches a *forgotten case*, not a typo — that is the union's job) in their own words. Entry 12 |
 | Custom hooks | Built `useContinuousTimer` unaided — three `useState`, an accumulator `useRef` and a `performance.now()` anchor, a `requestAnimationFrame` loop, and a `visibilitychange` listener with real cleanup — called from a lap-recording stopwatch card and a compact session row. All seven acceptance criteria pass and independence was shown in the browser in both directions. Explained the ref-vs-state split and the per-call-state mechanism in their own words; the stale-closure *failure mode* came back half-answered, which is the opening for the memo topic. One first-version lint failure (a `useCallback` calling itself) was fixed by moving the loop into an effect. Entry 13 |
 | `React.memo` / `useMemo` / `useCallback` | Closed as an **explainer** (2026-10-19): explained the identity comparison `memo` makes and why an inline arrow defeats it, that `useMemo` is a cache hint usable only for expensive computation, and the trade — a shallow compare and stored props on every render, so `memo` belongs on an expensive child, not three spans. The lesson demo is the demonstrated half; no third column was built, and the entry records that the tools were explained rather than used. Entry 14 |
+| Portals | Built a toast rendered through `createPortal` into `document.body`: a Pin button in the dialog sets the demo's `pinned` state, the toast reads the technique, and its × reaches the parent's handler through the React tree. The reviewer fixed the positioning (the wrapper sat outside the portal) and wired the pinned state. Explained the React/DOM split and the transformed-ancestor containing block (2.5/3; the detached-tree counterfactual was not answered). Entry 15 |
 
 *Rigor note: every entry in this table now rests on code **and** a correct explanation. JSX was
 originally recorded on code evidence alone, which contradicted the reviewer's own standard — a
@@ -75,18 +76,15 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 **One misconception corrected mid-exercise, worth keeping.** The learner's work-in-progress note on the add handler read "nothing to fix here" — having just fixed the sort, they had stopped treating the add as a bug. It was still mutating in place. The lesson: **fixing one member of a bug family does not fix the family**; three handlers with three identical root causes needed three fixes, and two siblings being repaired does not make the third correct. It was fixed on the next pass, without a hint about the location.
 
-### In progress — lesson live, verification outstanding
+### In progress — nothing outstanding
 
-**`portals` (entry 15)** — live at `/dojo/topic/portals` as a **build-on task**, the fourth of that kind.
-The lecture and demo are live, the Sample Code panel is a true mirror at 122 of 122, and the roadmap line
-is marked `BUILD`. The open half is the learner's own toast: a second portal surface, rendered into
-`document.body`, with the demo's state still readable through it. The brief and the seven acceptance
-criteria are in entry 15 — the box stays unticked until the toast exists *and* the explanation is on the
-record.
+**Every registered lesson is verified.** The last open line, `portals` (entry 15), closed on 2026-10-20:
+the learner built the toast through `createPortal`, the reviewer fixed its positioning and wired the pinned
+technique, and the explanation is on the record. All fourteen lessons are now verified.
 
 ### Gaps — the honest list
 
-- **Never used at all:** portals — the lecture is live and the demo uses one, but no code of the learner's does yet; the toast build is entry 15.
+- **Never used at all:** nothing — the last item, portals, is now used by the learner's toast (entry 15).
 - **Explained but not exercised in code:** the three memoisation tools. Entry 14 closed as an explainer, so the reasoning is on the record — the identity comparison, the cache hint, and the trade — but the learner never wrote code that had to choose between them; the third column was not built. `useCallback` is the sharpest case: it appeared in the `custom-hooks` build and was removed again, correctly, because nothing there compared function identity.
 - **Half-answered:** the stale-closure failure mode from entry 13 — the answer named the property of a ref, not what breaks without it. Entry 14 did not re-test it.
 - **Taught in code but not yet exercised by a lesson of its own:** **lazy initialisers** (`useState(() => build())`). The mechanism is written up in entry 10 and appears in that lesson's prose, but no exercise has tested it, so it is not on the "Solid" table. Everything else the `useState` deep dive set out to cover — object/array replacement and the double-setter collapse — is now verified.
@@ -97,8 +95,8 @@ React and TypeScript topics only. Deploy, social links and a custom domain were 
 settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
 deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
-1. **Portals** — lecture live, the learner's toast outstanding. Add a second portal surface that proves the React tree survives the move; the brief and the acceptance criteria are in entry 15.
-2. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
+1. **Lazy initialisers** (`useState(() => build())`) — written up in entry 10 and mentioned in that lesson's prose, but still never exercised. It needs a lesson of its own or a question in a future review, not a new claim.
+2. **Reusable UI kit** — cards, buttons, modals and form components, as a composition exercise. The roadmap's "Components to Build" list is the next build-shaped work.
 
 The project is at **`0.19.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
 deliberately, as it was for the belt rework and the landing page). Keep the `HomePage` badge (`v0.19`) in step;
@@ -1363,7 +1361,7 @@ demo as the demonstrated half.
 
 ## 15 — Portals (Rendering Outside the Parent DOM Tree)
 
-- **Status:** LD (Learning) — lecture live 2026-10-19, hands-on build outstanding
+- **Status:** OK (Mastered) — verified 2026-10-20; the learner's toast, with reviewer fixes to layout and state wiring
 - **Added:** 2026-10-19
 - **Belt:** blue
 - **Marker file:** `src/topics/portals/demo.tsx`
@@ -1415,10 +1413,47 @@ timer or listener behind.
 | 6 | `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` stay green |
 | 7 | The explanation says why a portal was needed and what the React-tree/DOM-tree split means for the toast's button |
 
-**How it gets assessed.** The code is the *demonstrated* half. The *explained* half is two or three
-questions anchored in that code, or a prose explanation handed over with it. The one to expect: *the
-toast is in `document.body` — why does its button still reach your state?* A failed criterion is named,
-with the line it failed on.
+### How it was assessed — 2026-10-20
+
+**The build — the learner's part, and the two fixes it needed.** They wrote `Toast` with `createPortal`,
+a 4-second `setTimeout` cleared in its effect, and a close button, then triggered it from a "Show Toast"
+button. The portal was correct. Two things were not: the positioning wrapper (`fixed right-4 top-…`) sat
+*outside* the portal, so its classes styled an empty box and the portaled card landed unpositioned at the
+end of `<body>`; and the toast said "Sample toast" rather than the pinned technique. The reviewer fixed
+the layout by moving the positioning into the portaled element, wired a **Pin technique** button in the
+dialog with a `pinned` state, and merged `Toast` into `demo.tsx` so the Sample Code panel shows the
+`createPortal` call. The learner's toast and portal are the feature; the fixes are recorded here rather
+than hidden.
+
+| # | Verdict |
+| - | ------- |
+| 1 | Pass — `Toast` renders through `createPortal(…, document.body)`; the reviewer merged it into the demo so the sample mirrors it |
+| 2 | Pass — verified at 375×667 and on desktop: bottom-right, above the panel, not clipped |
+| 3 | Pass after the fix — the toast reads the pinned technique ("Roundhouse kick pinned"); the learner's first version was disconnected |
+| 4 | Pass — the × button dismissed the toast; the handler is the parent's `removeToast`, reached through the React tree |
+| 5 | Pass — closing removes it; the timer is cleared in cleanup, and the auto-dismiss was watched |
+| 6 | Pass — `tsc` and `lint` green |
+| 7 | Pass, with a note — see the explained half |
+
+**The explained half — 2.5 of 3.**
+
+- *What connects the portaled × button to the demo's state?* **Right on the mechanism, incomplete on the
+  counterfactual.** The answer named the `removeToast` prop and the stable `useCallback` identity, which is
+  how the handler arrives. Pressed on what a detached React tree would mean, the answer restated the actual
+  behaviour — the toast inherits props even though it is outside the parent's DOM — rather than saying a
+  detached tree would lose `onClose`. The mechanism is the topic; the counterfactual was not answered.
+- *The wrapper carries `[transform:translateZ(0)]` — where would a non-portaled toast sit?* **Correct.** The
+  answer named the containing block and said it would be confined to it and cut off if it overflowed. That
+  is exactly why the transform is there.
+- *Why clear the 4-second timer on an early dismiss?* **Correct after a follow-up.** The first answer
+  thought the cleanup caused the disappearance; the follow-up got it: the timer would still run in the
+  background, and the cleanup prevents that stray callback. Dismissing is what removes the toast.
+
+**Verdict: verified.** The demonstrated half is the learner's toast and portal, with the reviewer's layout
+and state fixes recorded above; the explained half covers the two facts the topic turns on — the React tree
+survives the DOM move, and a transformed ancestor traps a `fixed` child unless a portal escapes it. What
+the tick does **not** claim: that the first version met criteria 2 and 3 unaided. It did not, and the fixes
+are in the record.
 
 ### Why a build-on task
 
@@ -1436,6 +1471,7 @@ Every correction made during review, in one place. These are the things most lik
 
 | Trap | What actually happens |
 | --- | --- |
+| Positioning a portaled child from a wrapper outside the portal | The wrapper's `fixed`/position classes style the empty wrapper, not the node that moved into `document.body`. Put the positioning on the portaled element itself, or portal the wrapper together with its children. |
 | A dialog inside a scrolling or `overflow: hidden` panel | The panel clips it, and `z-index` cannot lift it out — the clipping happens before stacking is considered. Render it through a portal into `document.body`. |
 | Expecting a portal to reset React state or context | It does not. The markup moves, the component does not: props, state, context and event bubbling all still follow the React tree, which is why a portaled toast can read the state of the panel that opened it. |
 | A `useCallback` (or any `const`) that calls itself, e.g. a self-scheduling `requestAnimationFrame` loop | `react-hooks/immutability` rejects it: *"Cannot access variable before it is declared"*. It still *runs* — the closure resolves after initialisation, so the failure is static rather than a crash — but a captured name cannot see a later value, which is exactly what the rule is pointing at. Let an effect own the loop and cancel it in cleanup, or declare a hoistable `function` instead. |
@@ -1490,4 +1526,4 @@ tally, and precisely why it must never hold a value the render depends on.
 
 ---
 
-*Last updated: 2026-10-19*
+*Last updated: 2026-10-20*
