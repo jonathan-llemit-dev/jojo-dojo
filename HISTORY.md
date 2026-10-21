@@ -10,6 +10,30 @@ Newest first.
 
 ## Session log
 
+### Topic order regrouped by belt, and memoization moves to advanced (2026-10-22)
+
+**The learner's finding was a real inconsistency.** `memoization` was rated blue (intermediate), but it is
+advanced material — and it sat *after* two black lessons in the array, so "the reading path rises" was false
+at the end of the list.
+
+**The new registry order** is grouped white → blue → black, and the only belt change is memoization to black:
+
+- **White:** `jsx`, `components-props`, `useState`, `conditional-rendering`, `lists-and-keys`, `event-handling`
+- **Blue:** `forms`, `use-state-deep-dive`, `use-effect`, `useRef`, `portals`
+- **Black:** `use-context-reducer`, `custom-hooks`, `memoization`
+
+The registry array is the source, so the sidebar, the grid, the landing-page belt path and every `Lesson NN`
+breadcrumb follow without another edit. The docs were moved with it: the topic list in `CLAUDE.md`, the
+roadmap regrouped under belt headers, the README's verified list, and the belt line in `NOTES.md` entry 14.
+
+**The lecture audit.** `check:prose` passes on all fourteen, with the longest block at 67 words and zero
+tics or hollow phrases. The newest lectures (memoization, portals) already open on a situation; the two that
+remain dense are the black-belt pair — `custom-hooks` (17 blocks) and `use-context-reducer`, which ends on
+splitting contexts. Their depth is deliberate for an advanced lesson and they were not rewritten in this
+pass; they are the ones to trim if the learner wants a shorter first read.
+
+**Checked:** all four gates green; version stays `0.19.0` because no topic was added; **not committed.**
+
 ### Lazy initialisers close inside lesson 10, not as a topic (2026-10-22)
 
 **The learner's call was right: no new topic.** The surface is one idea inside `useState` deep dive, and a

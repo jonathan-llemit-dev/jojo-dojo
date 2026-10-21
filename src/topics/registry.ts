@@ -1,18 +1,18 @@
 import type { Topic } from "./types";
-import { useStateTopic } from "./use-state";
 import { jsxTopic } from "./jsx";
 import { componentsPropsTopic } from "./components-props";
+import { useStateTopic } from "./use-state";
 import { conditionalRenderingTopic } from "./conditional-rendering";
 import { listsKeysTopic } from "./lists-and-keys";
 import { eventHandlingTopic } from "./event-handling";
-import { useEffectTopic } from "./use-effect";
 import { formsTopic } from "./forms";
 import { useStateDeepDiveTopic } from "./use-state-deep-dive";
+import { useEffectTopic } from "./use-effect";
 import { useRefTopic } from "./use-ref";
+import { portalsTopic } from "./portals";
 import { useContextReducerTopic } from "./use-context-reducer";
 import { customHooksTopic } from "./custom-hooks";
 import { memoizationTopic } from "./memoization";
-import { portalsTopic } from "./portals";
 
 /**
  * Aggregate topic registry — the single source of truth for both the sidebar
@@ -27,14 +27,14 @@ export const topicRegistry: Topic[] = [
   conditionalRenderingTopic,
   listsKeysTopic,
   eventHandlingTopic,
-  useEffectTopic,
   formsTopic,
   useStateDeepDiveTopic,
+  useEffectTopic,
   useRefTopic,
+  portalsTopic,
   useContextReducerTopic,
   customHooksTopic,
   memoizationTopic,
-  portalsTopic,
 ];
 
 /**

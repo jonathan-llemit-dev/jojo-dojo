@@ -6,7 +6,7 @@ export const memoizationTopic: Topic = {
   slug: "memoization",
   title: "React.memo, useMemo & useCallback — Memoizing Only What You Measured",
   shortTitle: "Memo & Callbacks",
-  belt: "blue",
+  belt: "black",
   description:
     "Speed up a slow component by caching a search, a component or a function — and learn when caching costs more than it saves.",
   longDescription:

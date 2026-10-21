@@ -27,21 +27,36 @@ Do not re-add these to a future roadmap. If a session needs the deployment *mech
 
 ## React Core Topics
 
+The order below is the registry order — white belt, then blue, then black — so the reading path rises as it
+goes. The lesson number on each page comes from that array, not from this list.
+
+### White belt — fundamentals
+
 - [x] JSX — syntax, expressions, `className` — lesson live at `/dojo/topic/jsx`
 - [x] Components & props — passing data down — lesson live at `/dojo/topic/components-props`
 - [x] `useState` — stateful components / counters — lesson live at `/dojo/topic/use-state`
-- [x] `useState` deep dive — object/array state (replace, don't mutate), lazy initialisers, and two setters in one handler — lesson live at `/dojo/topic/use-state-deep-dive`; three-bug exercise **fixed** by the learner and explained in their own words (entry 10). Note the real gap was narrower than this line used to claim: `lists-and-keys` already held an **array of objects** in state, and `event-handling` / `use-effect` already called two setters in one handler. What was genuinely unexercised is **replacing an object field**, **lazy initialisers**, and **calling the same setter twice in one handler**.
-- [x] Event handling — handlers, references, passing arguments — lesson live at `/dojo/topic/event-handling`; verified by a 3/3 quiz (the event object is deferred to Forms)
 - [x] Conditional rendering — `&&`, ternary, early return — lesson live at `/dojo/topic/conditional-rendering`
 - [x] Lists & keys — `map()`, why keys matter — lesson live at `/dojo/topic/lists-and-keys`; fixed and explained (entry 06)
+- [x] Event handling — handlers, references, passing arguments — lesson live at `/dojo/topic/event-handling`; verified by a 3/3 quiz (the event object is deferred to Forms)
+
+### Blue belt — intermediate
+
 - [x] Forms & controlled components — input state, validation — lesson live at `/dojo/topic/forms`; fixed and explained (entry 09)
+- [x] `useState` deep dive — object/array state (replace, don't mutate), lazy initialisers, and two setters in one handler — lesson live at `/dojo/topic/use-state-deep-dive`; three-bug exercise **fixed** by the learner and explained in their own words (entry 10). Note the real gap was narrower than this line used to claim: `lists-and-keys` already held an **array of objects** in state, and `event-handling` / `use-effect` already called two setters in one handler. What was genuinely unexercised is **replacing an object field**, **lazy initialisers**, and **calling the same setter twice in one handler**.
 - [x] `useEffect` — side effects, dependency array, cleanup — lecture live at `/dojo/topic/use-effect`; verified by quiz (data fetching deferred to Forms)
 - [x] `useRef` — DOM access and mutable values — explainer live at `/dojo/topic/use-ref`; thirteen candidates probed against both gates and every one with a diagnosable symptom was rejected, so the hands-on half was the Escape-to-close in `Sidebar.tsx`. Verified 2026-10-07, after three passes past the "refs aren't initialised until effects run" misconception (entry 11)
+- [x] Portals — rendering outside the parent DOM hierarchy — lesson live at `/dojo/topic/portals`. The build-on task: the learner's toast rendered through `createPortal`, with the reviewer fixing its positioning and wiring the pinned technique; all seven criteria pass and the explanation is on the record. Verified 2026-10-20 — entry 15
+
+### Black belt — advanced
+
 - [x] `useContext` / `useReducer` — shared state patterns — lesson live at `/dojo/topic/use-context-reducer`. The first **build-on task**: instead of adding a panel to the session card, the learner built a second, independent shared-state feature beside it — a meal planner with its own `createContext`/`useReducer` pair, a six-member action union, a `useDiet()` accessor and three propless panels. All seven acceptance criteria pass, and the provider rule and the `never` default were explained in their own words (3/3). Verified 2026-10-08 — entry 12
 - [x] Custom hooks — extracting reusable logic — lesson live at `/dojo/topic/custom-hooks`. The second **build-on task**: the learner wrote `useContinuousTimer`, a wall-clock stopwatch built on an accumulator ref and a `requestAnimationFrame` loop, and called it from two differently-shaped panels — a lap-recording stopwatch card and a compact session row. All seven acceptance criteria pass, and the per-call-state mechanism and the ref-vs-state split were explained in their own words. Verified 2026-10-18 — entry 13
 - [x] `React.memo` / `useMemo` / `useCallback` — performance optimization — lesson live at `/dojo/topic/memoization`; closed as an **explainer** on 2026-10-19. The three tools and the trade were explained in the learner's own words; the third column was not built, and entry 14 records that as the cost. Verified 2026-10-19
-- [x] Portals — rendering outside the parent DOM hierarchy — lesson live at `/dojo/topic/portals`. The build-on task: the learner's toast rendered through `createPortal`, with the reviewer fixing its positioning and wiring the pinned technique; all seven criteria pass and the explanation is on the record. Verified 2026-10-20 — entry 15
-- [x] Lazy initialisers — `useState(() => build())` — closed inside `use-state-deep-dive` rather than as a new lesson: the demo builds its starting list through `useState(() => buildStartingTechniques())`, and the direct-call / bare-function / StrictMode difference was explained. Verified 2026-10-22 — entry 10
+
+**Closed sub-surface:** lazy initialisers — `useState(() => build())` — closed inside `use-state-deep-dive`
+rather than as a new lesson: the demo builds its starting list through
+`useState(() => buildStartingTechniques())`, and the direct-call / bare-function / StrictMode difference was
+explained. Verified 2026-10-22 — entry 10
 
 ## Components to Build (reusable UI kit)
 

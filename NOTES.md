@@ -1293,7 +1293,7 @@ is what a build-on task asks.
 
 - **Status:** OK (Mastered) — verified 2026-10-19 as an explainer; explained in conversation, no third column built
 - **Added:** 2026-10-18
-- **Belt:** blue
+- **Belt:** black
 - **Marker file:** `src/topics/memoization/demo.tsx`
 - **Route:** `/dojo/topic/memoization`
 

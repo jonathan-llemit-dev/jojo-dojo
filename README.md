@@ -141,7 +141,7 @@ This is the visitor-facing summary. The **master checklist — every study topic
 
 This project is **about React and TypeScript**, so the roadmap tracks topics rather than chores.
 
-- [x] Fourteen lessons verified — `useState`, JSX, components & props, conditional rendering, lists & keys, event handling, `useEffect`, forms & controlled inputs, `useState` deep dive (object & array state), `useRef`, `useContext` & `useReducer`, custom hooks, `React.memo` / `useMemo` / `useCallback`, portals
+- [x] Fourteen lessons verified — JSX, components & props, `useState`, conditional rendering, lists & keys, event handling, forms & controlled inputs, `useState` deep dive (object & array state), `useEffect`, `useRef`, portals, `useContext` & `useReducer`, custom hooks, `React.memo` / `useMemo` / `useCallback`
 - [ ] Reusable UI kit — cards, buttons, modals, form components
 - [ ] Later, not now: Redux and Next.js (see `ROADMAP.md`)
 
