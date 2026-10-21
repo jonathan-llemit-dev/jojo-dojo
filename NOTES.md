@@ -34,7 +34,7 @@ assessment rather than a marker):
 | `useEffect` | The timer demo (interval effect, real dependency array, real cleanup), plus explained why a missing cleanup **compounds** and why `[]` means once rather than "when anything changes". One quiz answer was wrong and corrected — entry 08 |
 | TypeScript in this codebase | Typed objects (`Topic`), `import type`, and no unnecessary type assertions |
 | Forms & controlled inputs | Fixed both bugs in the `forms` exercise — the no-op `onChange` and the missing `preventDefault` — and corrected a `FormData` detour by explaining controlled vs read-at-submit. Entry 09 |
-| `useState` deep dive | Fixed all three bugs in the `use-state-deep-dive` exercise unaided — updater form for the double setter, `[...techniques, newTechnique]` for the add, `techniques.slice().sort(...)` for the sort — then explained the snapshot mechanism in their own words: both `setReps(reps + 1)` lines read the same render's value, so both compute the same number. Entry 10 |
+| `useState` deep dive | Fixed all three bugs in the `use-state-deep-dive` exercise unaided — updater form for the double setter, `[...techniques, newTechnique]` for the add, `techniques.slice().sort(...)` for the sort — then explained the snapshot mechanism in their own words: both `setReps(reps + 1)` lines read the same render's value, so both compute the same number. The demo's starting list is also built through a lazy initialiser (`useState(() => buildStartingTechniques())`), and the eager-call/bare-function/StrictMode difference was explained. Entry 10 |
 | `useRef` | Built the Escape-to-close and focus-into-panel behaviour in `Sidebar.tsx`: a DOM ref, a keydown listener, and an effect with real cleanup and an honest dependency array. Explained both directions of the rule — a ref change re-renders nothing, so a ref value must not be rendered; and a render-time read can't be trusted, because a render may be repeated or discarded. Took three passes to get past "refs aren't initialised until effects run" (they are — `useRef(1)` holds 1 during the first render). Entry 11 |
 | `useContext` / `useReducer` | Built a second, independent shared-state feature beside the session card — a meal planner with its own `createContext`, its own `useReducer` and a six-member action union, a `useDiet()` accessor, and three more panels that receive **no props**. Verified in the browser: one dispatch moved the totals panel and the list panel together, and Remove cleared both. Explained the provider rule (a consumer outside its provider gets `null` and the accessor throws) and the `never` default (it catches a *forgotten case*, not a typo — that is the union's job) in their own words. Entry 12 |
 | Custom hooks | Built `useContinuousTimer` unaided — three `useState`, an accumulator `useRef` and a `performance.now()` anchor, a `requestAnimationFrame` loop, and a `visibilitychange` listener with real cleanup — called from a lap-recording stopwatch card and a compact session row. All seven acceptance criteria pass and independence was shown in the browser in both directions. Explained the ref-vs-state split and the per-call-state mechanism in their own words; the stale-closure *failure mode* came back half-answered, which is the opening for the memo topic. One first-version lint failure (a `useCallback` calling itself) was fixed by moving the loop into an effect. Entry 13 |
@@ -76,17 +76,16 @@ Understood as *concepts*, not yet *demonstrated as skills*. A single correct mul
 
 **One misconception corrected mid-exercise, worth keeping.** The learner's work-in-progress note on the add handler read "nothing to fix here" — having just fixed the sort, they had stopped treating the add as a bug. It was still mutating in place. The lesson: **fixing one member of a bug family does not fix the family**; three handlers with three identical root causes needed three fixes, and two siblings being repaired does not make the third correct. It was fixed on the next pass, without a hint about the location.
 
-### In progress — one follow-up exercise
+### In progress — nothing outstanding
 
-**Every registered lesson is verified.** The only open item is the lazy-initialiser follow-up inside lesson
-10's demo (entry 10): a small exercise, not a new topic. All fourteen lessons remain verified.
+**Every registered lesson is verified.** The lazy-initialiser follow-up inside lesson 10 closed on
+2026-10-22 (entry 10), so no follow-up remains. All fourteen lessons are verified.
 
 ### Gaps — the honest list
 
 - **Never used at all:** nothing — the last item, portals, is now used by the learner's toast (entry 15).
 - **Explained but not exercised in code:** the three memoisation tools. Entry 14 closed as an explainer, so the reasoning is on the record — the identity comparison, the cache hint, and the trade — but the learner never wrote code that had to choose between them; the third column was not built. `useCallback` is the sharpest case: it appeared in the `custom-hooks` build and was removed again, correctly, because nothing there compared function identity.
 - **Half-answered:** the stale-closure failure mode from entry 13 — the answer named the property of a ref, not what breaks without it. Entry 14 did not re-test it.
-- **Follow-up exercise set:** **lazy initialisers** (`useState(() => build())`) — taught in entry 10 and the lesson prose, and now exercised by a small addition to lesson 10's demo (brief in entry 10). Not a new topic.
 
 ### Next, in order
 
@@ -94,8 +93,7 @@ React and TypeScript topics only. Deploy, social links and a custom domain were 
 settled decisions (2026-10-07) — the site is already live at <https://jojo-dojo.vercel.app/> and every push
 deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
-1. **Lazy initialisers** — follow-up exercise inside lesson 10's demo; the brief and its criteria are in entry 10. Build it, then that entry is updated.
-2. **Reusable UI kit** — cards, buttons, modals and form components, as a composition exercise. The roadmap's "Components to Build" list is the next build-shaped work.
+1. **Reusable UI kit** — cards, buttons, modals and form components, as a composition exercise. The roadmap's "Components to Build" list is the next build-shaped work.
 
 The project is at **`0.19.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
 deliberately, as it was for the belt rework and the landing page). Keep the `HomePage` badge (`v0.19`) in step;
@@ -778,7 +776,7 @@ rendered, and all three compiled, so nothing warned you: the page loaded, the bu
 numbers were simply wrong.
 
 **Fixed 2026-10-07.** Status is `OK` in the marker, `tsc` and `npm run lint` are green, and the Sample Code
-panel is a true mirror of the demo at **114 of 114** lines. See the "How it was verified" section at the end
+panel is a true mirror of the demo at **117 of 117** lines. See the "How it was verified" section at the end
 of this entry.
 
 ### The rule the whole lesson turns on
@@ -887,31 +885,41 @@ exercise was designed. Array *methods* (`push`, `sort`) are not caught by that r
 bugs were array-shaped. Object replacement is therefore taught in the lesson prose and the Sample Code panel
 rather than offered as something to repair. The full probe result is in `ROADMAP.md` and `HISTORY.md`.
 
-### Follow-up exercise — lazy initialisers (set 2026-10-20)
+### Follow-up exercise — lazy initialisers (set 2026-10-20, verified 2026-10-22)
 
 Lazy initialisers are taught above but the exercise never tested them, so this is a small follow-up inside
 the same demo — not a new topic.
 
-**The task.** Add a builder (for example `buildStartingTechniques()`) that records how many times it runs,
-and initialise the state with `useState(() => buildStartingTechniques())`. Add a control that forces a
-re-render, and show the builder's call count beside the render count.
+**The task.** Build the starting list through a function initialiser — `useState(() => buildStartingTechniques())`
+— so the builder runs for the initial state rather than on every render. The learner added the builder and
+the arrow form.
 
-**Expected values.** On first mount the builder count is 1 in production (2 in dev StrictMode, which calls
-the initialiser twice to check purity); pressing the re-render control raises the render count while the
-builder count stays put. Swapping in `useState(buildStartingTechniques())` must make the builder run on
-every render — the symptom the exercise is about.
+**The assessment.** The lazy form is in the demo as
+`const [techniques, setTechniques] = useState<Technique[]>(() => buildStartingTechniques());`. The reviewer
+removed two render counters the learner had added — they read `ref.current` during render, which
+`react-hooks/refs` rejects, and they counted renders rather than builder calls — and restored the two named
+techniques after the seed had been rewritten to four generic rows. The first attempt used the eager call and
+failed criterion 1; that was corrected.
 
-**The acceptance criteria — fixed now:**
+| # | Verdict |
+| - | ------- |
+| 1 | Pass — the initial state comes from a function argument |
+| 2 | Waived — no builder counter was built, at the learner's call; the evidence is the form plus the explanation, not an observed count |
+| 3 | Waived with it — no forced-re-render comparison |
+| 4 | Pass — `tsc` and `lint` green; sample a true mirror at **117 of 117** |
+| 5 | Pass — see below |
 
-| # | Criterion |
-| - | --- |
-| 1 | The initial state is produced by a function argument, not a call at render |
-| 2 | The builder's call count and the render count are both visible |
-| 3 | A forced re-render leaves the builder count unchanged, accounting for StrictMode's double call in dev |
-| 4 | `npx tsc -p tsconfig.app.json --noEmit` and `npm run lint` stay green; the sample is regenerated |
-| 5 | The explanation covers the direct call vs the function form, and why `useState(buildFn)` is also lazy |
+**The explained half — 3/3, with two sharpenings.** Q1, the direct call versus the lazy arrow, was correct:
+the eager call runs every render, the lazy one on the initial render. Q2, the bare function, was right:
+`useState(buildStartingTechniques)` is the same lazy form, while the call form `buildStartingTechniques(count)`
+runs every render; the arrow is the form that can supply an argument. Q3 got the count and the production
+answer right (2 in dev, 1 in production) but described the double call as a first "check" run and a second
+"real" one; the precise reason is that StrictMode invokes the initialiser twice to surface impurity, and
+React keeps one result. Recorded, not blocking.
 
-**Status:** open — the learner builds it; this entry is updated when it is assessed.
+**Verdict: closed.** The lazy-initialiser surface is now on the record with code and explanation. The
+demonstrated half is the learner's lazy form; the reviewer's cleanup is recorded above, including the two
+waived criteria.
 
 ---
 

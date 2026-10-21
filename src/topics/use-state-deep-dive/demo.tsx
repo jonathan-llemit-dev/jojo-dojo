@@ -19,6 +19,9 @@
 // computes the same number twice and the count rises by one. The updater form hands
 // React a function instead of a value, so React queues the functions and feeds each the
 // previous result — and two calls really do add two.
+//
+// The starting list is also built through a lazy initialiser — `useState(() => buildStartingTechniques())`
+// — so the builder runs for the initial state rather than on every render.
 
 import { useState } from "react";
 
@@ -37,6 +40,10 @@ const STARTING_TECHNIQUES: Technique[] = [
   { id: 1, name: "Roundhouse kick", done: false },
   { id: 2, name: "Front kick", done: false },
 ];
+
+function buildStartingTechniques(): Technique[] {
+  return STARTING_TECHNIQUES.map((technique) => ({ ...technique }));
+}
 
 /** One row of the technique list. `done` is the row's own state. */
 function TechniqueRow({ name }: { name: string }) {
@@ -62,7 +69,7 @@ function TechniqueRow({ name }: { name: string }) {
 /** Live demo: a training card whose techniques, drafts and rep count are all state. */
 export function UseStateDeepDiveDemo() {
   const [student] = useState<Student>({ name: "Jojo", belt: "white" });
-  const [techniques, setTechniques] = useState<Technique[]>(STARTING_TECHNIQUES);
+  const [techniques, setTechniques] = useState<Technique[]>(() => buildStartingTechniques());
   const [draftTechnique, setDraftTechnique] = useState("");
   const [reps, setReps] = useState(0);
 
@@ -106,7 +113,7 @@ export function UseStateDeepDiveDemo() {
 
   /** A fresh array from the seed, so reset works even when the order differs. */
   const handleReset = () => {
-    setTechniques([...STARTING_TECHNIQUES]);
+    setTechniques(buildStartingTechniques());
   };
 
   return (

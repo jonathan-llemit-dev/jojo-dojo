@@ -10,6 +10,28 @@ Newest first.
 
 ## Session log
 
+### Lazy initialisers close inside lesson 10, not as a topic (2026-10-22)
+
+**The learner's call was right: no new topic.** The surface is one idea inside `useState` deep dive, and a
+fifteenth lesson would have repeated lesson 10's ground for two lines of code. It closed inside the existing
+demo instead.
+
+**The code.** The initial state is now
+`useState<Technique[]>(() => buildStartingTechniques())`, with the builder returning a fresh copy of the two
+named techniques. The first attempts used the eager `buildStartingTechniques(4)` and added render counters
+that read `ref.current` in JSX — `react-hooks/refs` rejected both, and they counted renders rather than
+builder calls. The reviewer removed the counters and restored the seed; the lazy form is the learner's.
+
+**The evidence.** The counter-and-comparison criteria (2 and 3) were waived at the learner's call: the lazy
+form is the demonstrated half, and the explanation carries the behaviour. Q1 (direct call vs lazy arrow) and
+Q2 (bare function is lazy; the arrow is what can supply an argument) were correct. Q3 (StrictMode) got 2 in
+dev and 1 in production right, but described the double call as a "check" run then a "real" run; the precise
+reason is that StrictMode invokes the initialiser twice to surface impurity and keeps one result.
+
+**Checked:** `tsc` and `lint` green; sample regenerated at **117 of 117**; `check:prose` and `check:repo`
+green. The roadmap line is ticked, the Solid row updated, and the objective list now starts at the UI kit.
+**Not committed.**
+
 ### The lazy-initialiser lecture gets precise, and the follow-up is set (2026-10-20)
 
 **The question was whether it needed its own topic.** It does not: lazy initialisers are one surface inside

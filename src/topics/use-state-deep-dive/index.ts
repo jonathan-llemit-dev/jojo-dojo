@@ -74,6 +74,9 @@ const STARTING_TECHNIQUES: Technique[] = [
   { id: 1, name: "Roundhouse kick", done: false },
   { id: 2, name: "Front kick", done: false },
 ];
+function buildStartingTechniques(): Technique[] {
+  return STARTING_TECHNIQUES.map((technique) => ({ ...technique }));
+}
 function TechniqueRow({ name }: { name: string }) {
   const [isDone, setIsDone] = useState(false);
   return (
@@ -94,7 +97,7 @@ function TechniqueRow({ name }: { name: string }) {
 }
 export function UseStateDeepDiveDemo() {
   const [student] = useState<Student>({ name: "Jojo", belt: "white" });
-  const [techniques, setTechniques] = useState<Technique[]>(STARTING_TECHNIQUES);
+  const [techniques, setTechniques] = useState<Technique[]>(() => buildStartingTechniques());
   const [draftTechnique, setDraftTechnique] = useState("");
   const [reps, setReps] = useState(0);
   const handleLogTwoReps = () => {
@@ -116,7 +119,7 @@ export function UseStateDeepDiveDemo() {
     setTechniques(list);
   };
   const handleReset = () => {
-    setTechniques([...STARTING_TECHNIQUES]);
+    setTechniques(buildStartingTechniques());
   };
   return (
     <div className="flex w-full max-w-md flex-col gap-4 rounded-xl border border-dojo-border bg-dojo-surface/30 p-6">
