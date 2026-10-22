@@ -10,6 +10,17 @@ Newest first.
 
 ## Session log
 
+### The mark becomes an actual karate belt (2026-10-23)
+
+**Brand.** The buckle read as a western belt, the first knot as a stick figure, and the belt-loop attempt
+as a key. The mark is now the actual karate-belt silhouette: a wide band across the top, a bulky knot over
+it, and two wide, angled ends with stitching and two rank stripes. `DojoMark` stays `currentColor` at 32px
+in both navs, and the favicon follows. The ensō watermark is still gone and the three belt stripes under
+the hero stay.
+
+**Verified.** Desktop and mobile; `tsc`, `lint`, `check:prose` and `check:repo` green. Not committed — the
+learner makes every commit.
+
 ### Dojo UI polish: self-hosted type, a drawn mark, quieter chrome (2026-10-23)
 
 **Type and brand.** Bebas Neue (display) and Inter variable (body) are now self-hosted in `public/fonts`,

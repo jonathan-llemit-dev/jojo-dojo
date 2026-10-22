@@ -170,7 +170,7 @@ src/
 │   ├── sandbox/                # Scratch components for experiments — NOT lessons, NOT real pages
 │   │   └── TestGreeting.tsx     # served at /test/:student/:name/:subjects from App.tsx
 │   ├── ui/
-│   │   ├── DojoMark.tsx         # The belt brand mark (buckle, prong, holes) — SVG, currentColor
+│   │   ├── DojoMark.tsx         # The karate-belt brand mark (band, knot, hanging ends, rank stripes) — SVG, currentColor
 │   │   └── Icons.tsx            # Seven authored SVG icons; one stroke weight, no icon dependency
 │   └── topics/
 │       ├── TopicDetail.tsx      # Reads useParams, looks up registry, renders demo + lesson breadcrumb
