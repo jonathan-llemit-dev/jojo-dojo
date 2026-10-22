@@ -10,6 +10,26 @@ Newest first.
 
 ## Session log
 
+### Project cleanup: a stale worktree, build output and unused scaffold assets (2026-10-23)
+
+**`.kilo/` was not this repo's worktree.** Its `wiry-cup/.git` pointed at
+`C:/Users/jonat/OneDrive/Desktop/my-react-app/.git/worktrees/wiry-cup`, and `git worktree list` did not know
+it at all. It was a broken 0.4 MB leftover, so it was removed. The active Kilo worktree under
+`~/.local/share/kilo/worktree-pool/` was not touched.
+
+**Other generated or empty directories.** `dist/` (5 files), and the empty `dsh-asar-extract/` and `tools/`
+directories were removed. `dist` is rebuilt by `npm run build`; neither empty directory held anything.
+
+**Unused scaffold assets.** `src/assets/hero.png`, `react.svg` and `vite.svg` were tracked but referenced
+nowhere in the code or docs, so they were removed. The README structure no longer lists an assets folder, and
+the CLAUDE backlog item about them is gone.
+
+**Kept on purpose:** `.agents/` and `skills-lock.json` (tracked skills), `public/` (served static files), and
+`node_modules/` (the dev dependency cache — removable with `npm install` to rebuild, but not "junk").
+
+**Checked:** all four gates green; no lesson or parity changed; version stays `0.19.0`. The three asset
+deletions are unstaged — **not committed.**
+
 ### Memoization: reference changes, and what the render counter actually does (2026-10-22)
 
 **The lecture gained the distinction the topic needs.** A new paragraph separates a prop changing because

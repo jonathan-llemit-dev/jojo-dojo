@@ -67,7 +67,6 @@ jojo-dojo/
 │   ├── main.tsx               # React entry point (<BrowserRouter> + <App />)
 │   ├── App.tsx                # Route table only — no page content lives here
 │   ├── index.css              # Tailwind import + custom @theme tokens
-│   ├── assets/                # Images/SVGs (currently unreferenced scaffold files)
 │   ├── components/
 │   │   ├── layout/            # TutorialLayout (the shell), Sidebar, TopNav
 │   │   ├── sandbox/           # Scratch components for experiments — not real pages

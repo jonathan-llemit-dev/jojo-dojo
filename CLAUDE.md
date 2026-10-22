@@ -443,11 +443,10 @@ under "Later — not now" so they are known to have been considered rather than 
 ### Backlog (not yet prioritised)
 - "Featured Lessons" preview grid on the landing page, pulling from `topicRegistry`.
 - Extract a shared `<Brand />` component — `HomePage.tsx` duplicates the logo markup from `TopNav.tsx`.
-- Delete or actually use the unreferenced files in `src/assets/`.
 - Add Vitest + Testing Library when you want component tests (no test framework yet).
 
 ## ESLint
 
 Flat config (`eslint.config.js`) using `typescript-eslint`, `eslint-plugin-react-hooks`, and `eslint-plugin-react-refresh` (Vite-optimized rules). Ignore `dist/` and `.kilo/`.
 
-**Why `.kilo/` is ignored:** that folder holds editor-agent git worktrees — complete copies of this project, each with its own `tsconfig.json`. Because `npm run lint` is `eslint .`, ESLint walked into the worktree, `typescript-eslint` saw two candidate `tsconfigRootDir` values, and it refused to parse **every** file in both trees: 44 parse errors with nothing wrong with the code. Adding the folder to `globalIgnores` is the fix. If a future tool drops another full checkout inside the repo, expect the same failure and ignore it the same way.
+**Why `.kilo/` is ignored:** that folder held editor-agent git worktrees — complete copies of this project, each with its own `tsconfig.json`. Because `npm run lint` is `eslint .`, ESLint walked into the worktree, `typescript-eslint` saw two candidate `tsconfigRootDir` values, and it refused to parse **every** file in both trees: 44 parse errors with nothing wrong with the code. Adding the folder to `globalIgnores` is the fix. The stale copy was removed on 2026-10-23; the ignore stays, because a future tool that drops another full checkout inside the repo will cause the same failure.
