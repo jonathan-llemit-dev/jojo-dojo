@@ -19,9 +19,9 @@ export const formsTopic: Topic = {
     "programmatically will show. Drop the `onChange` and the box freezes — React keeps re-rendering " +
     "it back to the state value, so your keystrokes never land. A controlled input needs both " +
     "halves: state in through `value`, text out through `onChange`.\n\n" +
-    "The text you typed arrives on the event object as `event.target.value`. This is the same " +
-    "event object the event-handling lesson deferred — here it finally has a job, because the " +
-    "input's text is nowhere else.\n\n" +
+    "The text you typed arrives on the event object as `event.target.value`. Because a " +
+    "controlled input's value is owned by React state, this event is the path the new text " +
+    "takes back into that state.\n\n" +
     "The other half of a form is the submit. A `<form>` has a default behaviour: when a submit " +
     "button is clicked, the browser builds an HTTP request from the form's `action` and `method` " +
     "and navigates to it, which reloads the page and throws away your state. To keep the submit " +

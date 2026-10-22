@@ -49,6 +49,8 @@ function buildStartingTechniques(): Technique[] {
 function TechniqueRow({ name }: { name: string }) {
   const [isDone, setIsDone] = useState(false);
 
+  // Updater form: it reads the previous `done`, so the toggle is always
+  // right — whether the row last rendered as drilled or not.
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-dojo-border bg-dojo-surface/60 px-3 py-2">
       <span className="text-sm">{name}</span>
@@ -68,6 +70,8 @@ function TechniqueRow({ name }: { name: string }) {
 
 /** Live demo: a training card whose techniques, drafts and rep count are all state. */
 export function UseStateDeepDiveDemo() {
+  // Object state — set up exactly like any other useState. No setter here because
+  // this demo doesn't need to update the student; it shows an object in state.
   const [student] = useState<Student>({ name: "Jojo", belt: "white" });
   const [techniques, setTechniques] = useState<Technique[]>(() => buildStartingTechniques());
   const [draftTechnique, setDraftTechnique] = useState("");

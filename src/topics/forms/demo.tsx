@@ -11,7 +11,11 @@
 
 import { useState, type SubmitEvent } from "react";
 
-/** Live demo: a dojo sign-up form. Two bugs are planted — see the header. */
+/**
+ * Live demo: a dojo sign-up form. Two controlled inputs (name and email)
+ * and a submit handler that calls `event.preventDefault()` so the page
+ * does not reload.
+ */
 export function FormsDemo() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

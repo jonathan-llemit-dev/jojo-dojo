@@ -28,6 +28,8 @@ type ToastProps = {
 };
 
 function Toast({ id, message, index, onClose }: ToastProps) {
+  // Auto-dismiss after 4 seconds. The cleanup clears the timer when the toast goes away
+  // (dismissed, closed, or replaced) — otherwise a stale timer could fire `onClose` again.
   useEffect(() => {
     const timer = setTimeout(() => onClose(id), 4000);
     return () => clearTimeout(timer);
@@ -61,6 +63,15 @@ type DetailsDialogProps = {
   onPin: () => void;
 };
 
+/**
+ * A modal dialog for details. `fixed` controls positioning: `fixed` (portal mode) anchors
+ * to the viewport; `absolute` (in-place mode) anchors to the nearest positioned ancestor —
+ * which is why it gets clipped inside the panel.
+ *
+ * Accessibility notes: it moves focus to the Close button on open, closes on Escape, and
+ * returns focus to the Open button when it closes — so a screen reader user is never lost
+ * in the overlay.
+ */
 function DetailsDialog({ titleId, technique, fixed, onClose, onPin }: DetailsDialogProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -160,8 +171,9 @@ export function PortalsDemo() {
     />
   );
 
-  // A transformed ancestor is common on cards (animations, stacking contexts), and it becomes the
-  // containing block for `fixed` children. The portal is what escapes it.
+  // `transform: translateZ(0)` makes this card a containing block for fixed children. The
+  // in-place dialog is `absolute` and the panel clips it; the transform is what would trap
+  // a fixed child that stayed here — a non-portaled toast, for example.
   return (
     <div className="flex w-full max-w-md flex-col gap-3 [transform:translateZ(0)]">
       <div className="flex flex-wrap items-center gap-2 text-xs">

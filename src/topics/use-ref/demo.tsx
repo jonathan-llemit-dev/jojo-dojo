@@ -33,9 +33,9 @@ export function UseRefDemo() {
     inputRef.current?.focus();
   }, []);
 
-  // No dependency array — runs after every render, which is what makes this a *previous*
-  // value: read the ref before writing it, and each run holds the count from the render
-  // that just ended. Nothing here re-renders the card; the ref only accumulates.
+  // No dependency array — runs after every render. Each run captures `reps` from the
+  // render that just finished and stores it in the ref, so the click handler can read
+  // the accumulated count later. Nothing here re-renders the card; the ref only records.
   useEffect(() => {
     tally.current.lastReps = reps;
     tally.current.renders += 1;
@@ -50,6 +50,9 @@ export function UseRefDemo() {
   };
 
   const handleReadLog = () => {
+    // Read from the tally ref (data carried across renders), then write into the log
+    // input via DOM. Setting `.value` on the DOM node bypasses React — no re-render,
+    // just text appearing in the box.
     const { renders, lastReps } = tally.current;
     const log = logRef.current;
     if (log) log.value = `${renders} render(s) so far · reps stood at ${lastReps}`;

@@ -46,6 +46,8 @@ export function UseEffectDemo() {
   const remainder = seconds % 60;
   const clock = `${minutes}:${String(remainder).padStart(2, "0")}`;
 
+  // Updater form: it reads the previous `isRunning`, so the toggle is correct
+  // whether the button last rendered as Start or Pause.
   return (
     <div className="flex w-full max-w-md flex-col gap-4 rounded-xl border border-dojo-border bg-dojo-surface/30 p-6">
       <div className="flex items-center justify-between">

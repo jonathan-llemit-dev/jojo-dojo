@@ -10,6 +10,26 @@ Newest first.
 
 ## Session log
 
+### Blue-belt demo comments: three JSX-text traps, and the portals wrapper explained (2026-10-22)
+
+**Three comments were in JSX text positions.** `use-effect` and `use-state-deep-dive` put `//` lines between
+JSX tags; JSX renders those lines as visible text, not comments. Both were moved above the `return`.
+`use-ref` put `//` inside the `<input>` opening tag; `tsc` accepts it, but it is not a JSX comment, so it was
+removed.
+
+**Portals had two wrong explanations.** The toast cleanup comment claimed React warns about a state update on
+an unmounted component — it has not since React 18; rewritten to the real reason (a stale timer firing
+`onClose` again). The new demo comment and the lecture also said the transform wrapper traps the **dialog**;
+the in-place dialog is `absolute` inside the panel's `overflow: hidden`, so the panel clips it. The wrapper
+matters for a fixed child that stayed in it — a non-portaled toast — and both the comment and the lecture now
+say that, separating the two traps. The sample was resynced at **193**.
+
+**Forms.** The demo header no longer says two bugs are planted (the lesson is fixed), and the event-object
+sentence now explains the controlled-input path without claiming the input has no DOM value.
+
+**Checked:** all four gates green; `portals` is 193 of 193 and the other four mirrors unchanged; version
+stays `0.19.0`; **not committed.**
+
 ### White-belt lectures get scenario openings, and four factual fixes (2026-10-22)
 
 **The learner's pass over topics 1–6.** Each lecture now opens on a situation rather than a definition:
