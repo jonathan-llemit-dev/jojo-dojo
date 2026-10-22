@@ -10,19 +10,22 @@ export const componentsPropsTopic: Topic = {
   description:
     "Pass data into a component with props, and learn why props are read-only snapshots you must never copy into state.",
   longDescription:
-    "Props are how you pass data into a component. You write them in JSX like HTML attributes:\n\n" +
+    "You're building a drill tracker: rows that show a name and a rep count, all driven by one " +
+    "number at the top. How does that number get down into each row? With props. You write them " +
+    "in JSX like HTML attributes:\n\n" +
     '```\n<Drill label="Roundhouse kicks" reps={5} />\n```\n\n' +
     "Inside the component they arrive together as one object, which you normally unpack right in the " +
     "parameter list:\n\n" +
     "```\nfunction Drill({ label, reps }: DrillProps) { … }\n```\n\n" +
     "The part that catches people out: a child **cannot** change the props it receives. Try to, and " +
-    "your edit is silently thrown away on the next render. Props only ever travel one way — from the " +
-    "parent down to the child.\n\n" +
+    "the change never reaches the parent — the next render hands the component a fresh props object. " +
+    "Props only ever travel one way — from the parent down to the child.\n\n" +
     "So what do you do when a child needs to change something? The parent owns the value in " +
     "`useState`, and hands the child two things: the value, and a function that changes it. The child " +
     "calls that function, the parent's state updates, and the new value comes back down as props.\n\n" +
-    "That round trip is the whole idea, and it has a short name: **data down, events " +
-    "up**.\n\n" +
+    "That round trip is the whole idea — **data down, events up** — the value going down, the message " +
+    "coming back up. In this lesson you'll see the first half in action: `reps` flows down into the " +
+    "`Drill` rows, and they only display it, never change it.\n\n" +
     "Two mistakes are worth avoiding here.\n" +
     "- Do not copy a prop into `useState` to keep it. `useState(prop)` reads that prop once, on the " +
     "first render. After that the copy is frozen while the real value moves on, so the two drift " +

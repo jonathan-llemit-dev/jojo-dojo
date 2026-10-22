@@ -396,7 +396,8 @@ most of the skill:
 1. **`&&` does not coerce to a boolean.** It returns the *left operand itself* when that operand is falsy,
    and React renders numbers. So `{reps && <p>…</p>}` prints a bare `0` on the page. A comparison fixes it
    — `{reps > 0 && …}` — because `reps > 0` genuinely is `true` or `false`. React renders nothing for
-   `false`, `null`, `undefined` and `true`; everything else, `0` and `NaN` included, reaches the screen.
+   `false`, `null`, `undefined`, `true` and `''`; the traps are `0` (a bare `0`) and `NaN` (the text
+   'NaN', with a development warning).
 2. **Two `&&`s are not an either/or.** Independent guards can overlap (both show) or leave a gap (neither
    shows), because nothing ties them together. If two states exist and one must always be visible, that is
    a ternary.
@@ -428,9 +429,9 @@ code already showed the named-boolean pattern. Props bug 2 remains the only unai
 
 The demo contains its own template literal (`` value={`${reps} reps in the bank`} ``). A bare backtick
 would end the sample's template literal early, and `${` would be interpolated, so both are escaped in
-`index.ts` — which means the parity check has to unescape before comparing. Verified that way: **63 of
-63 lines identical**, once the empty `{}` left behind by the demo's stripped JSX comment is removed
-(the demo is 64 stripped lines, the sample 63; the sample's 63 all match).
+`index.ts` — which means the parity check has to unescape before comparing. Verified that way: **64 of
+64 lines identical**, once the empty `{}` left behind by the demo's stripped JSX comment is removed
+(the demo is 65 stripped lines, the sample 64; the sample's 64 all match).
 
 ---
 
@@ -1510,7 +1511,7 @@ Every correction made during review, in one place. These are the things most lik
 | A `useCallback` (or any `const`) that calls itself, e.g. a self-scheduling `requestAnimationFrame` loop | `react-hooks/immutability` rejects it: *"Cannot access variable before it is declared"*. It still *runs* — the closure resolves after initialisation, so the failure is static rather than a crash — but a captured name cannot see a later value, which is exactly what the rule is pointing at. Let an effect own the loop and cancel it in cleanup, or declare a hoistable `function` instead. |
 | Reading state inside a memoised callback instead of a ref | The callback closes over the values from the render that created it. With stable deps that is the **first** render, permanently — so a `start()` that read `elapsed` state would re-anchor at `0` on every resume and the clock would snap backwards. Read the ref at call time, where it cannot go stale. |
 | Wrapping a cheap component in `React.memo` | The wrapper still runs a shallow comparison on every render, stores the previous props, and requires every prop to keep a stable identity — one inline object, array or arrow cancels it. On a component that renders three spans, the comparison costs more than the render it skips. Memoise what a profiler shows is expensive, not what looks expensive. |
-| `{count && <p>…</p>}` when `count` is `0` | Renders a bare **`0`** on the page. `&&` returns the falsy *left operand itself* — it does not coerce to a boolean the way an `if` does. React ignores `false`, `null`, `undefined` and `true`, but happily renders the number `0`. Use `count > 0 && …`. |
+| `{count && <p>…</p>}` when `count` is `0` | Renders a bare **`0`** on the page. `&&` returns the falsy *left operand itself* — it does not coerce to a boolean the way an `if` does. React ignores `false`, `null`, `undefined`, `true` and `''`, but renders `0` and `NaN` (as the text 'NaN', with a development warning). Use `count > 0 && …`. |
 | Reassigning a prop inside the component | Does nothing useful. Props are a fresh snapshot each render; only the parent can change them. No re-render is triggered and your edit is overwritten next render. |
 | `let count = 0` for a value that changes | Re-created from scratch on every render, so it can never accumulate. A changing value that must update the UI belongs in `useState`. |
 | `onClick={handleClick()}` | Calls the function **immediately, during render** — and if it sets state, that is an infinite render loop. `onClick={handleClick}` passes a reference for React to call later. In this project the mistake never reaches the browser: `tsc` and ESLint's `set-state-in-render` rule both reject it. |

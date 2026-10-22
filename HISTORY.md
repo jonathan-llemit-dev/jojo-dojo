@@ -10,6 +10,33 @@ Newest first.
 
 ## Session log
 
+### White-belt lectures get scenario openings, and four factual fixes (2026-10-22)
+
+**The learner's pass over topics 1–6.** Each lecture now opens on a situation rather than a definition:
+the drill tracker for components & props, the Training/Rest-day badge for conditional rendering, the
+named-handler pair for events. The conditional demo now names its range check
+(`const inRange = reps >= 10 && reps <= 20;`), so the JSX reads as a statement rather than a compound
+condition, and its sample and docs moved to **64 of 64**.
+
+**Four claims were wrong and were corrected.**
+- `jsx` said a plain `//` line "works too" inside JSX. It does not: between tags it becomes visible text.
+  The lecture now says to use `{/* … */}` in the markup and `//` above the `return`.
+- `event-handling` said to reach for a named function "when a handler needs an argument". A named function
+  passed by reference gets no argument; the fix is an arrow wrapper at the call site, which the same
+  lecture shows. The criterion now names the real reasons: a long body, reuse, or passing the handler down
+  as a prop.
+- `lists-and-keys` said a reused row keeps "the text a user types in an input field". That is only true for
+  an **uncontrolled** input; a controlled input's text is state. Restored "uncontrolled".
+- `use-state` blamed batching for the double-setter bug. The cause is the captured `count`; batching only
+  changes when the two updates flush. Rewritten to the captured value.
+
+Also in the pass: `components-props` now says a prop mutation "never reaches the parent" rather than being
+"silently thrown away" (dev freezes props and can throw), and the `conditional-rendering` falsy list in
+`NOTES.md` gained `''` and the `NaN` warning.
+
+**Checked:** all four gates green; `conditional-rendering` is 64 of 64 and the other five mirrors unchanged;
+version stays `0.19.0`; **not committed.**
+
 ### Topic order regrouped by belt, and memoization moves to advanced (2026-10-22)
 
 **The learner's finding was a real inconsistency.** `memoization` was rated blue (intermediate), but it is

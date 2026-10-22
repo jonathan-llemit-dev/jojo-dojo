@@ -10,9 +10,10 @@ export const conditionalRenderingTopic: Topic = {
   description:
     "Pick between &&, a ternary and an early return — and avoid the falsy-value trap that prints a stray 0.",
   longDescription:
-    "Showing something only sometimes is not a React feature — it is plain JavaScript deciding what to " +
-    "return. JSX has no `if` of its own, so you use an expression. There are three to choose from, and " +
-    "picking the right one is most of the skill:\n\n" +
+    "You want a badge that says 'Training' when the rep count is above zero, and 'Rest day' otherwise. " +
+    "It looks like the markup is making decisions — but showing something only sometimes is not a React " +
+    "feature; it's plain JavaScript deciding what to return. JSX has no `if` of its own, so you use an " +
+    "expression. Three to choose from; picking the right one is most of the skill:\n\n" +
     '- `condition && <Thing />` — show Thing, or show nothing. Reach for this when there is no "else".\n' +
     "- `condition ? <A /> : <B />` — show A or B. Reach for this when both outcomes are real, because a " +
     "ternary cannot leave a gap.\n" +
@@ -24,8 +25,9 @@ export const conditionalRenderingTopic: Topic = {
     "```\n{reps && <p>You have logged {reps} reps.</p>}\n```\n\n" +
     "Compare instead, because `reps > 0` really is a boolean:\n\n" +
     "```\n{reps > 0 && <p>You have logged {reps} reps.</p>}\n```\n\n" +
-    "React draws nothing for `false`, `null`, `undefined` and `true`. Everything else reaches the " +
-    "screen — including `0` and `NaN`.\n\n" +
+    "React draws nothing for `false`, `null`, `undefined`, `true`, and `''`. Everything else reaches the " +
+    "screen — including `0`, non-empty strings, and `NaN`, which renders as the literal text 'NaN' (and " +
+    "warns in development).\n\n" +
     "The second trap is writing two separate `&&`s where you meant one either/or. Nothing ties the two " +
     "conditions together, so they can overlap and show both things, or leave a gap and show neither. If " +
     "one of two states must always be visible, that is a ternary.",
@@ -38,12 +40,10 @@ export const conditionalRenderingTopic: Topic = {
   // `${` are escaped here — a bare backtick would end this string early. Keep the
   // two in step, and re-run the diff in the reviewer notes rather than eyeballing it.
   codeExample: `import { useState } from "react";
-
 type SummaryRowProps = {
   label: string;
   value: string;
 };
-
 function SummaryRow({ label, value }: SummaryRowProps) {
   return (
     <div className="flex items-center justify-between gap-4 text-sm">
@@ -52,15 +52,13 @@ function SummaryRow({ label, value }: SummaryRowProps) {
     </div>
   );
 }
-
 export function ConditionalDemo() {
   const [reps, setReps] = useState(0);
   const isTraining = reps > 0;
-
+  const inRange = reps >= 10 && reps <= 20;
   return (
     <div className="w-full max-w-md rounded-xl border border-dojo-border bg-dojo-surface/30 p-6">
       <h2 className="text-lg font-semibold text-dojo-ember">Session summary</h2>
-
       <div className="mt-3 flex h-6 items-center gap-2">
         {isTraining ? (
           <span className="inline-flex items-center rounded-full border border-dojo-ember px-3 py-0.5 text-xs text-dojo-ember">
@@ -72,26 +70,22 @@ export function ConditionalDemo() {
           </span>
         )}
       </div>
-
       <div className="mt-5 flex flex-col gap-2">
         <SummaryRow label="Reps logged" value={String(reps)} />
         {isTraining && (
           <SummaryRow label="Nice work" value={\`\${reps} reps in the bank\`} />
         )}
       </div>
-
-      {reps >= 10 && reps <= 20 && (
+      {inRange && (
         <p className="mt-4 text-sm text-dojo-ember">
           🥋 Milestone: 10 reps reached.
         </p>
       )}
-
       {reps > 20 && (
         <p className="mt-4 text-sm text-dojo-ember">
           😵 You may get overfatigued.
         </p>
       )}
-
       <div className="mt-5 flex flex-wrap gap-3">
         <button
           onClick={() => setReps((r) => r + 1)}

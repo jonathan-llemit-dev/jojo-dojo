@@ -27,8 +27,9 @@ export const useStateTopic: Topic = {
     "- Call `useState` at the top level of the component. Not inside a loop, a condition or a nested " +
     "function — React tracks the hooks by the order they run in.\n" +
     "- When the new value depends on the old one, use the updater form: `setCount((c) => c + 1)`. " +
-    "Handing it a value like `count + 1` uses the `count` from this render, which is exactly what " +
-    "causes off-by-one bugs.\n" +
+    "Handing it a plain value like `count + 1` reads the `count` captured by this render, so two calls " +
+    "in one handler can compute the same number — the second overwrites the first, and one increment " +
+    "disappears.\n" +
     "- State can hold anything, but never edit what is already there. To change one field of an object, " +
     "build a new object: `setStudent((s) => ({ ...s, belt: \"blue\" }))`.",
   // A template literal keeps this snippet readable: what you see here is what

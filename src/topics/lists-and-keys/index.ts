@@ -12,11 +12,11 @@ export const listsKeysTopic: Topic = {
   longDescription:
     "A list in React is an array of elements, and `map()` is what turns your data into them:\n\n" +
     "```\n{exercises.map((exercise) => (\n  <ExerciseRow key={exercise.id} exerciseName={exercise.name} />\n))}\n```\n\n" +
-    "That `key` is not a CSS id or a DOM attribute, and the user never sees it. It answers a " +
+    "That `key` isn't an HTML attribute, and the user never sees it. It answers a " +
     "question React asks on every re-render: which element in the new list is the same thing as " +
     "which element in the old one?\n\n" +
     "The answer matters because React reuses rows between renders, and a reused row keeps its own " +
-    "state — a `useState` inside it, the text in an uncontrolled input. The key decides which state " +
+    "state — a `useState` inside it, or the text in an uncontrolled input. The key decides which state " +
     "belongs to which row.\n\n" +
     "A usable key needs two things:\n" +
     "- **Stable.** The same item keeps the same key across renders. `key={index}` breaks this as soon " +
@@ -28,7 +28,7 @@ export const listsKeysTopic: Topic = {
     "So reach for an id that comes from the data, like `exercise.id`. `key={index}` is only safe for " +
     "a list that never changes order and never gains or loses a row.\n\n" +
     "The demo keys each row by the exercise's own id, so its state follows the exercise rather than " +
-    "the slot. Press Done on a row, then press Rotate: the tick travels with the exercise.",
+    "the slot. Press Mark done on a row, then press Rotate: the Done state travels with the exercise.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.

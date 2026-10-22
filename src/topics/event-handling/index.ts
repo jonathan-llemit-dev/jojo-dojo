@@ -14,9 +14,10 @@ export const eventHandlingTopic: Topic = {
     "and both are correct:\n\n" +
     "```\n// inline arrow — can read the surrounding values directly\n<button onClick={() => setReps((r) => r + 1)}>Log a rep</button>\n\n" +
     "// named function — passed by reference\nfunction handleReset() {\n  setExercises(EXERCISES);\n}\n<button onClick={handleReset}>Reset</button>\n```\n\n" +
-    "The arrow is shorter, and it can read anything in scope around it. A named function is\n" +
-    "reusable, reads better once the body is longer than a line, and is the only form you can\n" +
-    "pass down to another component. Pick per case.\n\n" +
+    "The arrow is shorter, and it reads variables from where it's written. A named function is\n" +
+    "reusable and stays readable when the body grows past one line — reach for it when the handler\n" +
+    "does more than one thing, or when you pass it down as a prop. A handler that needs an argument\n" +
+    "gets a small arrow wrapper at the call site, as the example below shows.\n\n" +
     "One naming habit is worth copying, because it makes a component's API obvious at a\n" +
     "glance: a prop that carries a callback is called `onSomething` (`onLogRep`), and the\n" +
     "function it points at is named for what it does (`handleRemoveExercise`).\n\n" +
@@ -31,13 +32,14 @@ export const eventHandlingTopic: Topic = {
     "```\nType 'void' is not assignable to type 'MouseEventHandler<HTMLButtonElement> | undefined'.\n```\n\n" +
     "ESLint flags the same line through `react-hooks/set-state-in-render`, so the mistake\n" +
     "surfaces as you type rather than as a frozen browser tab.\n\n" +
-    "The case that catches people is a handler that needs an argument. The fix is not fewer\n" +
-    "parentheses — it is one more layer, an arrow that *is* the handler:\n\n" +
+    "The case that catches people is a handler that needs an argument. Writing `onClick={handleRemoveExercise(exercise.id)}`\n" +
+    "won't work — it calls immediately during render, and `onClick` wants a function reference.\n" +
     "```\n<button onClick={() => handleRemoveExercise(exercise.id)}>Remove</button>\n```\n\n" +
-    "Now `onClick` receives a function, and the id is filled in when React calls it. The rule\n" +
-    "for both cases is the same: what goes in `onClick` must be a function, not the result of\n" +
-    "calling one. To check an expression, ask whether it would do anything if the component\n" +
-    "never re-rendered.",
+    "Now `onClick` receives a function, and that arrow captures the `id`, so React calls it\n" +
+    "on click. The rule for both cases is the same: what goes in `onClick` must be a function,\n" +
+    "not the result of calling one.\n\n" +
+    "To check your wiring, ask whether the expression executes anything by itself at render time\n" +
+    "— if it does, you've handed React a result instead of a handler.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.

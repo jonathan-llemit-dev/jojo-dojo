@@ -19,15 +19,16 @@ export const jsxTopic: Topic = {
     "- Curly braces mean \"now run some JavaScript\". Nothing in them is special: `{2 + 2}` shows `4`, " +
     "`{new Date().toLocaleDateString()}` shows today's date, `{user.name}` shows a property.\n\n" +
     "```\n<p className=\"score\">{2 + 2} minutes in.</p>\n```\n\n" +
-    "Because braces expect an expression, you cannot put an `if` or a `for` inside them. You choose " +
+    "Because braces expect an expression, an `if` or a `for` won't compile inside them. You choose " +
     "between things with a ternary, and you build lists with `map()` — both of which get their own " +
     "lessons.\n\n" +
-    "Two more things to know on day one. A comment inside JSX is written `{/* like this */}`, because a " +
-    "plain `//` would just be JavaScript and would never appear on the page. And a component returns " +
+    "Two more things to know on day one. A comment inside JSX is written `{/* like this */}`. A plain " +
+    "`//` line is not JSX syntax — between tags it becomes visible text, so keep `//` for the JavaScript " +
+    "above the `return`. And a component returns " +
     "one element, so wrap any siblings in a `<div>` or a fragment `<>…</>`.\n\n" +
-    "JSX also tells your components apart from HTML tags by capitalisation. `<div>` is a real element; " +
-    "`<JsxDemo>` is one of yours. That single capital letter is the difference, and it is why a " +
-    "component name has to start with one.",
+    "JSX also keeps your components apart from HTML tags by capitalisation. `<div>` is a browser element; " +
+    "`<JsxDemo>` is one of yours — note the capital J. Every component name starts with a capital letter, " +
+    "or JSX treats it like a plain tag.",
   // A template literal keeps this snippet readable: what you see here is what
   // renders in the "Sample Code" panel, indentation and line breaks included.
   codeExample: `function JsxDemo() {

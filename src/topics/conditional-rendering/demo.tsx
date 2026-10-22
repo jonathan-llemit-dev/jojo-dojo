@@ -36,6 +36,7 @@ function SummaryRow({ label, value }: SummaryRowProps) {
 export function ConditionalDemo() {
   const [reps, setReps] = useState(0);
   const isTraining = reps > 0;
+  const inRange = reps >= 10 && reps <= 20;
 
   return (
     <div className="w-full max-w-md rounded-xl border border-dojo-border bg-dojo-surface/30 p-6">
@@ -62,7 +63,7 @@ export function ConditionalDemo() {
         )}
       </div>
 
-      {reps >= 10 && reps <= 20 && (
+      {inRange && (
         <p className="mt-4 text-sm text-dojo-ember">
           🥋 Milestone: 10 reps reached.
         </p>
