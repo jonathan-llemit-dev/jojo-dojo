@@ -10,6 +10,17 @@ Newest first.
 
 ## Session log
 
+### Heavy agent skill gitignored; lock kept as manifest (2026-10-23)
+
+**The rule is now `.agents/*`.** The whole local skill tree is ignored, so the 62-file `impeccable` package
+no longer shows up as untracked. `skills-lock.json` stays tracked — it records each skill's source and hash,
+including `impeccable` (`pbakaus/impeccable`).
+
+**One file is still tracked.** `.agents/skills/react-patterns/SKILL.md` was committed by the earlier install,
+and gitignore does not untrack files it already knows. Run `git rm -r --cached .agents` and commit to make
+the whole folder local-only; the files stay on disk, and both skills are reinstalled from the lock on a new
+device. No app code changed; gates green; **not committed.**
+
 ### Project cleanup: a stale worktree, build output and unused scaffold assets (2026-10-23)
 
 **`.kilo/` was not this repo's worktree.** Its `wiry-cup/.git` pointed at

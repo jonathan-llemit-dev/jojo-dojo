@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Project-local agent skills — reinstalled from skills-lock.json
+.agents/*
