@@ -103,7 +103,7 @@ function withInlineCode(text: string, keyPrefix: string): ReactNode[] {
     index % 2 === 1 ? (
       <code
         key={`${keyPrefix}-code-${index}`}
-        className={`${CODE_TEXT} rounded border border-dojo-border bg-dojo-surface/80 px-1.5 py-0.5 text-[0.9em]`}
+        className={`${CODE_TEXT} rounded border border-dojo-border bg-dojo-surface/80 px-1.5 py-0.5 text-[0.9em] [box-decoration-break:clone]`}
       >
         {part}
       </code>
@@ -197,12 +197,14 @@ function parseBlocks(text: string): Block[] {
  */
 export function RichText({ text }: { text: string }) {
   return (
-    <div className="text-dojo-muted">
+    <div className="max-w-[68ch] text-dojo-muted">
       {parseBlocks(text).map((block, index) => {
         if (block.kind === "code") {
           return (
             <pre
               key={`block-${index}`}
+              tabIndex={0}
+              aria-label="Code example"
               className="my-4 overflow-x-auto rounded-xl border border-dojo-border bg-dojo-surface/60 p-4 first:mt-0"
             >
               <code className={`${CODE_TEXT} text-sm leading-relaxed`}>
@@ -216,7 +218,7 @@ export function RichText({ text }: { text: string }) {
           return (
             <ul
               key={`block-${index}`}
-              className="my-4 flex list-disc flex-col gap-2 pl-5 leading-7"
+              className="my-4 flex list-disc flex-col gap-2 pl-5 leading-7 marker:text-dojo-ember/80"
             >
               {block.items.map((item, itemIndex) => (
                 <li key={`item-${itemIndex}`}>
@@ -228,7 +230,7 @@ export function RichText({ text }: { text: string }) {
         }
 
         return (
-          <p key={`block-${index}`} className="my-4 leading-7 first:mt-0">
+          <p key={`block-${index}`} className="my-4 text-pretty leading-7 first:mt-0">
             {withInlineCode(block.text, `block-${index}`)}
           </p>
         );

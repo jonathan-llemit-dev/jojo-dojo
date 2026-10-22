@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* Self-hosted so the page has one voice whether or not the network is there. */
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("/fonts/bebas-neue-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   /* Dojo palette */
   --color-dojo-bg: #0f0d0b;
@@ -8,12 +25,15 @@
   --color-dojo-ember: #f59e0b;
   --color-dojo-ember-bright: #fbbf24;
   --color-dojo-crimson: #dc2626;
+  /* A lighter crimson for small text: #dc2626 is 4.0:1 on the page bg. */
+  --color-dojo-crimson-bright: #f87171;
   /* The one cool accent: the blue belt (intermediate). Everything else here is warm. */
   --color-dojo-azure: #60a5fa;
   --color-dojo-text: #f5f1ea;
   --color-dojo-muted: #a89b8c;
 
-  --font-display: "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bebas Neue", "Inter", ui-sans-serif, sans-serif;
 }
 
 :root {
@@ -21,10 +41,66 @@
 }
 
 body {
+  min-height: 100dvh;
   background-color: var(--color-dojo-bg);
   color: var(--color-dojo-text);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Browser surfaces belong to the design too. */
+::selection {
+  background-color: var(--color-dojo-ember);
+  color: var(--color-dojo-bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-dojo-ember-bright);
+  outline-offset: 2px;
+}
+
+button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  caret-color: var(--color-dojo-ember);
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+li::marker {
+  color: var(--color-dojo-ember);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-dojo-border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-dojo-border);
+  border: 2px solid var(--color-dojo-bg);
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-dojo-muted);
 }
 
 /* Subtle grain / vignette for atmosphere */
@@ -45,4 +121,34 @@ body::before {
       transparent 60%
     );
   z-index: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* One authored entrance for a new lesson, not an effect on every section. */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  /* `backwards`, not `both`: once the animation ends the transform is gone, so the
+     wrapper stops being a containing block for any fixed child. */
+  animation: page-in 280ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
 }

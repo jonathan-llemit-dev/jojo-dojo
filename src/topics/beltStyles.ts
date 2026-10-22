@@ -49,7 +49,7 @@ const BELTS: Record<BeltRank, { level: string; name: string; blurb: string; badg
     level: "Advanced",
     name: "Black belt",
     blurb: "Several ideas at once, or designing an abstraction of your own.",
-    badge: "border-dojo-crimson/60 bg-dojo-crimson/10 text-dojo-crimson",
+    badge: "border-dojo-crimson/60 bg-dojo-crimson/10 text-dojo-crimson-bright",
     dot: "bg-dojo-crimson",
   },
 };

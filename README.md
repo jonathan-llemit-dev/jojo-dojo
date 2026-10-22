@@ -62,14 +62,15 @@ Open [http://localhost:5173](http://localhost:5173) to see the dojo.
 
 ```
 jojo-dojo/
-├── public/                    # Static assets served as-is
+├── public/                    # Static assets served as-is (dojo mark, fonts + OFL licence)
 ├── src/
 │   ├── main.tsx               # React entry point (<BrowserRouter> + <App />)
 │   ├── App.tsx                # Route table only — no page content lives here
-│   ├── index.css              # Tailwind import + custom @theme tokens
+│   ├── index.css              # Tailwind tokens, fonts, selection/focus/scrollbar theming
 │   ├── components/
 │   │   ├── layout/            # TutorialLayout (the shell), Sidebar, TopNav
 │   │   ├── sandbox/           # Scratch components for experiments — not real pages
+│   │   ├── ui/                # DojoMark + authored SVG icons
 │   │   └── topics/            # TopicDetail (the lesson page) + RichText (the write-up)
 │   ├── pages/                 # HomePage (landing), TopicIndex (lesson grid)
 │   └── topics/                # The lessons themselves

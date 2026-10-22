@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
+import { ArrowUpIcon } from "../ui/Icons";
 
 /** How far down the page has to be before the "back to top" button fades in. */
 const BACK_TO_TOP_AFTER = 400;
@@ -83,9 +84,11 @@ export function TutorialLayout() {
         <Sidebar />
         <main
           ref={mainRef}
-          className="flex-1 px-4 py-6 md:min-h-0 md:overflow-y-auto md:px-6 md:py-8"
+          className="flex-1 px-4 pt-6 pb-24 md:min-h-0 md:overflow-y-auto md:px-6 md:pt-8 md:pb-24"
         >
-          <Outlet />
+          <div key={pathname} className="page-enter">
+            <Outlet />
+          </div>
         </main>
       </div>
 
@@ -99,11 +102,11 @@ export function TutorialLayout() {
         aria-label="Back to top"
         aria-hidden={!showBackToTop}
         tabIndex={showBackToTop ? 0 : -1}
-        className={`fixed right-5 bottom-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-dojo-border bg-dojo-surface text-lg text-dojo-ember shadow-lg shadow-black/40 transition-opacity duration-200 hover:border-dojo-ember hover:text-dojo-ember-bright md:right-8 md:bottom-8 ${
+        className={`fixed right-5 bottom-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-dojo-border bg-dojo-surface text-dojo-ember shadow-lg shadow-black/40 transition-opacity duration-200 hover:border-dojo-ember hover:text-dojo-ember-bright md:right-8 md:bottom-8 ${
           showBackToTop ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        <span aria-hidden="true">↑</span>
+        <ArrowUpIcon className="h-4 w-4" />
       </button>
     </div>
   );

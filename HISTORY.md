@@ -10,6 +10,31 @@ Newest first.
 
 ## Session log
 
+### Dojo UI polish: self-hosted type, a drawn mark, quieter chrome (2026-10-23)
+
+**Type and brand.** Bebas Neue (display) and Inter variable (body) are now self-hosted in `public/fonts`,
+declared in `index.css`, and used through `--font-display` / `--font-sans`; their OFL licences ship as
+`public/fonts/OFL.txt`. The hero lost its gradient text, pill, eyebrow and duplicate version; it opens with
+the name, one orientation line, the byline and two actions. An authored belt mark — buckle, prong and two
+holes — replaces the 🥋 emoji in both navs and the favicon, with a three-colour belt stripe under the hero
+title. (A knot was tried first; at 28px it read as a stick figure, so the buckle replaced it.) The landing's
+four feature cards became a hairline list with authored SVG icons; GitHub is a ghost button, so "Enter the
+Dojo" is the only primary action.
+
+**Chrome and flow.** Selection, focus rings, carets, scrollbars and list markers are themed from the
+palette. One page-enter animation runs on a lesson change, with a reduced-motion off switch. The sidebar's
+active row is an ember tint instead of a 2px left border; its numbers use full muted; the burger, chevron and
+back-to-top are authored icons. The lecture is capped at 68ch, code blocks are keyboard-scrollable, the live
+demo is no longer inside a second card, and every lesson ends with a next-lesson link. The topic grid stretches
+every card to its row, clamps the description to three lines on desktop, and anchors a “Read lesson” line at
+the bottom, so rows stay uniform without empty card bottoms. The black-belt badge uses the new
+`dojo-crimson-bright` (7.0:1 instead of 4.0:1). The unused scaffold `public/favicon.svg` and `icons.svg` were
+removed.
+
+**Verified.** Desktop 1920 and 1440, mobile 390; landing, topic grid, lesson and 404; keyboard focus; the
+console showed only Vite connection logs. `tsc`, `lint`, `check:prose` and `check:repo` green; no lesson
+prose or sample changed; version stays `0.19.0`; **not committed.**
+
 ### Heavy agent skill gitignored; lock kept as manifest (2026-10-23)
 
 **The rule is now `.agents/*`.** The whole local skill tree is ignored, so the 62-file `impeccable` package

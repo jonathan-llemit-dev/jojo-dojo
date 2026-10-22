@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
 import { topicRegistry } from "../../topics/registry";
 import { beltDotClass, beltLevel } from "../../topics/beltStyles";
+import { ChevronDownIcon, MenuIcon } from "../ui/Icons";
 
 /**
  * Topic navigation — one list, two presentations.
@@ -72,18 +73,18 @@ export function Sidebar() {
         className="flex w-full items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm text-dojo-muted transition hover:bg-dojo-surface/60 md:hidden"
       >
         <span className="flex shrink-0 items-center gap-2">
-          <span aria-hidden="true" className="text-base leading-none">
-            ☰
-          </span>
+          <MenuIcon className="h-4 w-4" />
           <span className="text-xs uppercase tracking-wider text-dojo-ember">
             Lessons
           </span>
         </span>
         <span className="flex min-w-0 items-center gap-2">
           <span className="truncate">{currentLabel}</span>
-          <span aria-hidden="true" className="text-xs">
-            {isMenuOpen ? "▲" : "▼"}
-          </span>
+          <ChevronDownIcon
+            className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
+              isMenuOpen ? "rotate-180" : ""
+            }`}
+          />
         </span>
       </button>
 
@@ -105,7 +106,7 @@ export function Sidebar() {
           aria-current={activeSlug === null ? "page" : undefined}
           className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition md:px-2 md:py-1.5 ${
             activeSlug === null
-              ? "border-l-2 border-dojo-ember bg-dojo-surface/80 font-medium text-dojo-ember"
+              ? "bg-dojo-ember/10 font-medium text-dojo-ember"
               : "text-dojo-muted hover:bg-dojo-surface/60 hover:text-dojo-ember"
           }`}
         >
@@ -124,11 +125,11 @@ export function Sidebar() {
               aria-current={isActive ? "page" : undefined}
               className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition md:px-2 md:py-1.5 ${
                 isActive
-                  ? "border-l-2 border-dojo-ember bg-dojo-surface/80 font-medium text-dojo-ember"
+                  ? "bg-dojo-ember/10 font-medium text-dojo-ember"
                   : "text-dojo-muted hover:bg-dojo-surface/60 hover:text-dojo-ember"
               }`}
             >
-              <span className="w-5 shrink-0 font-mono text-[11px] tabular-nums text-dojo-muted/70">
+              <span className="w-5 shrink-0 font-mono text-[11px] tabular-nums text-dojo-muted">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <span
