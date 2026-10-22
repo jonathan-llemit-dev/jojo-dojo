@@ -59,7 +59,7 @@ export function HomePage() {
       {/* Top nav — branding only on landing */}
       <nav className="sticky top-0 z-20 flex items-center justify-between border-b border-dojo-border bg-dojo-bg/85 px-4 py-4 backdrop-blur sm:px-6">
         <Link to="/" className="flex items-center gap-2.5" aria-label="Jojo Dojo home">
-          <DojoMark className="h-8 w-8 text-dojo-ember" />
+          <DojoMark className="h-7 w-7 text-dojo-ember sm:h-8 sm:w-8" />
           <span className="font-display text-xl tracking-wide text-dojo-text">
             Jojo Dojo
           </span>
@@ -221,7 +221,7 @@ export function HomePage() {
           Jojo Dojo · <span className="text-dojo-ember">by Jonathan Llemit Jr.</span>
         </p>
         <p>
-          © {new Date().getFullYear()} · v0.19 · Forged with Vite · Tailwind · Vercel
+          © {new Date().getFullYear()} · v0.20 · Forged with Vite · Tailwind · Vercel
         </p>
       </footer>
     </div>

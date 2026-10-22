@@ -10,6 +10,23 @@ Newest first.
 
 ## Session log
 
+### Topic cards, recomposed; belt mark tightened (2026-10-23)
+
+**Index.** The cards stay; the grid now goes three columns from `lg` up, and each card is vertical: number
+and belt at the top, title and a three-line description in the middle, a hairline “Read lesson” row at the
+bottom. Equal-height cards no longer leave the old two-column blank because the third column arrives at
+1024px, and the footer anchors the bottom. Phones keep one column and the full description. Header copy is
+back to “cards”; the `CLAUDE.md` references follow.
+
+**Mark.** The ends are now unequal — the left is shortened and tucked, the right keeps the two rank
+stripes — and the dashed band stitching is gone, so the silhouette reads at 32px instead of looking like a
+ribbon. `DojoMark` stays `currentColor` at 28px on phones and 32px from `sm` up; the favicon follows.
+
+**Version.** Bumped to **`0.20.0`** — a deliberate polish release, not a new lesson.
+
+**Verified.** Desktop 1440 and mobile 390; `tsc`, `lint`, `check:prose` and `check:repo` green. Not
+committed — the learner makes every commit.
+
 ### The mark becomes an actual karate belt (2026-10-23)
 
 **Brand.** The buckle read as a western belt, the first knot as a stick figure, and the belt-loop attempt

@@ -15,7 +15,7 @@ export function TopNav() {
     <nav className="sticky top-0 z-20 shrink-0 border-b border-dojo-border bg-dojo-bg/85 px-4 py-3 backdrop-blur sm:px-6">
       <div className="flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5" aria-label="Jojo Dojo home">
-          <DojoMark className="h-8 w-8 text-dojo-ember" />
+          <DojoMark className="h-7 w-7 text-dojo-ember sm:h-8 sm:w-8" />
           <span className="font-display text-lg tracking-wide text-dojo-text">
             Jojo Dojo
           </span>

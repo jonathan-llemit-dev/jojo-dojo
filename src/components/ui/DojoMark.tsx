@@ -1,8 +1,9 @@
 /**
- * The dojo mark: an actual karate belt, not a buckle. A wide belt crosses the
- * mark, a bulky knot sits over it, and two wide ends hang below with angled tips
- * and two rank stripes. It inherits `currentColor`; the folds, stitching and rank
- * stripes are cut out with the page background.
+ * The dojo mark: an actual karate belt, not a buckle. A wide band crosses the
+ * mark, a bulky knot sits over it, and two short ends hang below — one tucked,
+ * one with the two rank stripes. The ends stop short on purpose: long tails read
+ * as a figure at nav size. It inherits `currentColor`; the folds and rank stripes
+ * are cut out with the page background.
  */
 export function DojoMark({ className }: { className?: string }) {
   return (
@@ -13,16 +14,13 @@ export function DojoMark({ className }: { className?: string }) {
       focusable="false"
       className={className}
     >
+      <path d="M1 10 4 8h32l3 2v5l-3 2H4l-3-2z" fill="currentColor" />
       <path
-        d="M1 10 4 8h32l3 2v5l-3 2H4l-3-2z"
+        d="M14 17C13 20 11.5 24 10.5 27l5.5 1C17 25 17.8 21 19 17Z"
         fill="currentColor"
       />
       <path
-        d="M14 17C12 24 9 31 7 36l5.5 1C14.5 31 16.5 24 19 17Z"
-        fill="currentColor"
-      />
-      <path
-        d="M26 17c2 7 5 14 7 19l-5.5 1C25.5 31 23.5 24 21 17Z"
+        d="M26 17c1.5 5 3.5 10 5 14l-5.5 1C24.5 27 23 22 21 17Z"
         fill="currentColor"
       />
       <ellipse cx="20" cy="14" rx="7" ry="5.5" fill="currentColor" />
@@ -33,13 +31,7 @@ export function DojoMark({ className }: { className?: string }) {
         strokeLinecap="round"
       />
       <path
-        d="M5 10.5h30M5 15.5h30"
-        stroke="var(--color-dojo-bg)"
-        strokeWidth="0.8"
-        strokeDasharray="2 2"
-      />
-      <path
-        d="M28.5 29.5l4.5-1M29.4 32.5l4.5-1"
+        d="M27.5 23l4-1M28.5 26l4-1"
         stroke="var(--color-dojo-bg)"
         strokeWidth="1.2"
       />

@@ -95,8 +95,8 @@ deploys automatically, so there is nothing to schedule there. See `ROADMAP.md`.
 
 1. **Reusable UI kit** — cards, buttons, modals and form components, as a composition exercise. The roadmap's "Components to Build" list is the next build-shaped work.
 
-The project is at **`0.19.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
-deliberately, as it was for the belt rework and the landing page). Keep the `HomePage` badge (`v0.19`) in step;
+The project is at **`0.20.0`** — a running number that gains `0.01` with every new topic (and can be adjusted
+deliberately, as it was for the belt rework and the landing page). Keep the `HomePage` badge (`v0.20`) in step;
 the three version artefacts are listed in `CLAUDE.md` under "Versioning".
 
 ---
