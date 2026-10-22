@@ -7,6 +7,12 @@
 // Two independent cards, each with its own `useReducer` and its own `createContext`: the
 // dojo session, and a meal plan. Six panels in total, and not one of them receives a prop.
 //
+// What you're looking at: six small components that all share state without passing props
+// through the middle. The top card (Session) tracks rounds and a technique log; the bottom
+// card (Diet) tracks meals, calories and protein. Each card owns its own `useReducer` +
+// `createContext` pair — two independent shared-state systems side by side, so you can see
+// the pattern once and how it scales to a second one.
+//
 // Two rules hold the whole thing up:
 //
 //   1. a reducer **returns a new state object** — `{ ...state, rounds: state.rounds + 1 }`.
@@ -30,6 +36,9 @@ type SessionState = {
   log: LogEntry[];
   nextId: number;
 };
+// The fields this card tracks: round count, the current draft text, the technique log, and
+// the next id to assign. These are the only pieces of data the reducer knows about — every
+// panel gets them from here.
 
 type SessionAction =
   | { type: "logRound" }
@@ -38,6 +47,9 @@ type SessionAction =
   | { type: "reset" };
 
 const STARTING_SESSION: SessionState = Object.freeze({
+  // `Object.freeze` protects this object's top level — the reducer returns it on reset, so a
+  // property cannot be reassigned by accident. It is shallow: the log array inside is still
+  // mutable, so the reducer must replace it rather than push into it.
   rounds: 0,
   draft: "",
   log: [],
@@ -52,7 +64,9 @@ type DietState = {
   caloriesDraft: number;
   proteinDraft: number;
   nextId: number;
-}
+};
+
+// The meal-plan card's fields: the list of meals, draft inputs for the form, and the next id.
 
 type DietAction =
   | { type: "addFood" }
@@ -71,8 +85,7 @@ const STARTING_DIET: DietState = Object.freeze({
 });
 
 // Pure on purpose: every branch builds a new object, and the two arrays are replaced with
-// spreads rather than pushed into. `STARTING_SESSION` is frozen and returned as-is on reset,
-// so the reset target can never be mutated by accident.
+// spreads rather than pushed into. `STARTING_SESSION` is frozen and returned as-is on reset.
 function sessionReducer(state: SessionState, action: SessionAction): SessionState {
   switch (action.type) {
     case "logRound":
@@ -147,6 +160,9 @@ function dietReducer(state: DietState, action: DietAction): DietState {
 type SessionApi = { state: SessionState; dispatch: Dispatch<SessionAction> };
 
 const SessionContext = createContext<SessionApi | null>(null);
+// `createContext` builds the channel consumers read from. The `null` default is what lets the
+// wrapper hook below detect a missing provider — if nobody renders <SessionContext.Provider>,
+// a consumer gets `null` and the hook throws with a clear message instead of a cryptic crash.
 
 // One small hook so no panel has to handle the `null` case itself: the check happens once,
 // here, instead of in all three of them.
@@ -262,6 +278,8 @@ function useDiet(): DietApi {
 }
 
 function FoodStatsPanel() {
+  // This panel only reads — it destructures `stateDiet` and leaves `dispatchDiet` behind in
+  // the hook, since no button here needs to change anything.
   const { stateDiet } = useDiet();
   return (
     <section
@@ -288,6 +306,8 @@ function FoodStatsPanel() {
 
 function FoodFormPanel() {
   const { stateDiet, dispatchDiet } = useDiet();
+  // `+` coerces the input's string value to a number — `event.target.value` is always a
+  // string, and the state expects a number. Same pattern below for protein.
   return (
     <section
       aria-labelledby="diet-form-heading"
@@ -415,7 +435,7 @@ export function UseContextReducerDemo() {
           </p>
         </div>
       </SessionContext.Provider>
-      <br/><hr/><br/>
+      <div className="my-6 border-t border-dojo-border" />
       <DietContext.Provider value={{ stateDiet, dispatchDiet }}>
         <div className="flex w-full max-w-lg flex-col gap-3">
           <div className="grid gap-3 sm:grid-cols-2">

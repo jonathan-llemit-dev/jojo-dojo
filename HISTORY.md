@@ -10,6 +10,29 @@ Newest first.
 
 ## Session log
 
+### Context & reducer: comments, a frozen-state nuance, and a cleaner divider (2026-10-22)
+
+**The demo now explains its own shape.** A header paragraph names the six panels and the two independent
+`useReducer` + `createContext` systems; the types, the `null` default and the read-only stats panel each got a
+short note. The `<br/><hr/><br/>` divider became a styled `<div>`, and the missing semicolon after
+`DietState` was fixed in both the demo and its sample.
+
+**Two comments were wrong.**
+- `Object.freeze` was described as making the starting state "never mutable". It is shallow: the `log` and
+  `meals` arrays inside the frozen objects are still mutable, which is why the reducer replaces them. The
+  comment now says that, and the existing reducer note no longer overclaims either.
+- A `//` comment sat inside the Calories `<input>` tag. `tsc` tolerates it, but it is not a JSX comment; it
+  moved above the `return`.
+
+Two decorative JSX comments were also removed: a `{/* … */}` line leaves an empty `{}` behind in the sample,
+which would have pushed the 376-line mirror off its documented count for no teaching gain.
+
+**The lecture** now says memoizing the context value is the step *before* splitting state and dispatch into
+two contexts — the paragraph had lost its "Before splitting" and read as if memoizing came second.
+
+**Checked:** all four gates green; `use-context-reducer` is 376 of 376; version stays `0.19.0`; **not
+committed.**
+
 ### Blue-belt demo comments: three JSX-text traps, and the portals wrapper explained (2026-10-22)
 
 **Three comments were in JSX text positions.** `use-effect` and `use-state-deep-dive` put `//` lines between

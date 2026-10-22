@@ -31,12 +31,13 @@ export const useContextReducerTopic: Topic = {
     "not either until the reducer handles it. Every way this state can change is one list of cases, and " +
     "the compiler keeps that list complete.\n\n" +
     "The value object is rebuilt on every render, so every consumer re-renders with it. On a card this " +
-    "size that costs nothing. In a larger tree you would split state and dispatch into two contexts, so " +
-    "that components which only need dispatch do not re-render when state changes — dispatch is stable, " +
-    "but the state object is not.\n\n" +
-    "Before splitting, the usual first step is to memoize the value with " +
-    "`useMemo(() => ({ state, dispatch }), [state])` so consumers only re-render when state actually " +
-    "changes.",
+    "size that costs nothing.\n\n" +
+    "In a larger app you would split state and dispatch into two contexts — components that only need " +
+    "dispatch then do not re-render when state changes, because dispatch is stable but the state object " +
+    "is not.\n\n" +
+    "Before splitting, the usual first step is to memoize the value with `useMemo(() => ({ state, dispatch }), [state])` " +
+    "so consumers only re-render when state actually changes. The demo keeps the provider simple and " +
+    "leaves that for a real tree.",
   // Flush against the left margin on purpose: a template literal preserves
   // indentation, so indenting this to match the surrounding code would render as
   // ragged leading whitespace in the "Sample Code" panel.
@@ -70,7 +71,7 @@ type DietState = {
   caloriesDraft: number;
   proteinDraft: number;
   nextId: number;
-}
+};
 type DietAction =
   | { type: "addFood" }
   | { type: "removeFood"; selectedId: number }
@@ -400,7 +401,7 @@ export function UseContextReducerDemo() {
           </p>
         </div>
       </SessionContext.Provider>
-      <br/><hr/><br/>
+      <div className="my-6 border-t border-dojo-border" />
       <DietContext.Provider value={{ stateDiet, dispatchDiet }}>
         <div className="flex w-full max-w-lg flex-col gap-3">
           <div className="grid gap-3 sm:grid-cols-2">
