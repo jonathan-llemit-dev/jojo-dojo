@@ -10,6 +10,25 @@ Newest first.
 
 ## Session log
 
+### Memoization: reference changes, and what the render counter actually does (2026-10-22)
+
+**The lecture gained the distinction the topic needs.** A new paragraph separates a prop changing because
+the data changed from a prop changing because its *reference* changed, then applies it to functions: two
+arrows that do the same thing are still two different props, which is why identity matters separately from
+behaviour. The cache-eviction warning also grew: if the page renders correctly without the cache, the cache
+was speed, not correctness.
+
+**One demo comment was wrong about its own mechanism.** The new JSDoc said the `renders` ref "never touches
+the DOM". It does — the effect writes `renders.current` into the `tally` span with `textContent`. What is
+true is that the counter never triggers a React render; the DOM write is manual. Both the JSDoc and the inline
+comment now say that. The `PlainColumn` note is accurate: parent churn creates new row elements, and
+`React.memo` is what stops the repeats.
+
+A grammar slip in the eviction paragraph ("the page show depend") was corrected to "what the page shows".
+
+**Checked:** all four gates green; `memoization` is 143 of 143 and 15 blocks (longest 63); version stays
+`0.19.0`; **not committed.**
+
 ### Custom-hooks comments corrected (2026-10-22)
 
 **The only uncommitted work was `custom-hooks`** — the `useContext` / `useReducer` pass had already been

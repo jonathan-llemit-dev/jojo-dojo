@@ -78,10 +78,15 @@ type RowProps = { technique: Technique; onPick: (id: number) => void };
  * The counter is the point of the demo: a row that re-renders when nothing about it
  * changed is work you paid for nothing. Note that the row reads its ref **inside the
  * effect**, never during render.
+ *
+ * Two refs, two jobs — they show the two shapes `useRef` takes: `renders` is a mutable
+ * counter that never triggers a React render (the effect writes it into the DOM by hand);
+ * `tally` is a handle on the real span, so the row can update its own count without
+ * re-rendering.
  */
 function TechniqueRow({ technique, onPick }: RowProps) {
-  const renders = useRef(0);
-  const tally = useRef<HTMLSpanElement>(null);
+  const renders = useRef(0);   // mutable counter — not state, so it never schedules a render
+  const tally = useRef<HTMLSpanElement>(null); // handle for the DOM span below
 
   useEffect(() => {
     renders.current += 1;
@@ -109,7 +114,14 @@ const MemoRow = memo(TechniqueRow);
 
 type ColumnProps = { query: string; onPick: (id: number) => void };
 
-/** No memoisation: the list is rebuilt and every row re-renders, every time. */
+/**
+ * No memoisation: the list is rebuilt and every row re-renders, every time.
+ *
+ * The rows re-render because `PlainColumn` itself re-renders (its parent re-renders on
+ * every keystroke), and each render creates *new* `<TechniqueRow>` elements — React sees
+ * new elements and re-runs them. Nothing is wrong with `TechniqueRow`; it is just a victim
+ * of the parent's churn. That is what `React.memo` above fixes.
+ */
 function PlainColumn({ query, onPick }: ColumnProps) {
   const headingId = useId();
   const rows = searchTechniques(query);
