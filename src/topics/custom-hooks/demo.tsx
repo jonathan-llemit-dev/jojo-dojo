@@ -49,13 +49,14 @@ export type UseTickerResult = {
 type LapEntry = { id: number; time: number };
 
 interface UseContinuousTimer {
-  mainTimer: number;      // milliseconds elapsed
-  laps: LapEntry[];
-  isRunning: boolean;
-  start: () => void;
-  stop: () => void;
-  reset: () => void;
-  lap: () => void;
+  // What the caller gets back from `useContinuousTimer`.
+  mainTimer: number;      // total milliseconds elapsed across all runs
+  laps: LapEntry[];       // timestamps recorded by each "Lap" press
+  isRunning: boolean;     // whether the timer is currently counting
+  start: () => void;      // begin (or resume) counting
+  stop: () => void;       // pause and bank the elapsed time so far
+  reset: () => void;      // clear everything back to zero
+  lap: () => void;        // record the current time as a lap entry
 }
 
 /**
@@ -191,6 +192,12 @@ function useContinuousTimer(): UseContinuousTimer {
   };
 }
 
+/**
+ * Turns raw milliseconds into `M:SS.t` — minutes, zero-padded seconds,
+ * and one digit of tenths so a stopwatch readout looks fine-grained enough
+ * to be credible. The tenths come from `Math.floor((ms % 1000) / 100)`,
+ * which is the hundreds digit of the millisecond portion.
+ */
 function formatTime(ms: number): string {
   const totalSeconds = ms / 1000;
   const minutes = Math.floor(totalSeconds / 60);
@@ -200,6 +207,9 @@ function formatTime(ms: number): string {
 }
 
 function StopwatchPanel() {
+  // Takes all seven things `useContinuousTimer` returns — it needs laps and a per-lap
+  // `lap()` call, which the session row below does not. Two callers shaped differently are
+  // what make the hook worth having.
   const headingId = useId();
   const { mainTimer, laps, isRunning, start, stop, reset, lap } =
     useContinuousTimer();

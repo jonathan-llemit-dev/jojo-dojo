@@ -10,6 +10,21 @@ Newest first.
 
 ## Session log
 
+### Custom-hooks comments corrected (2026-10-22)
+
+**The only uncommitted work was `custom-hooks`** — the `useContext` / `useReducer` pass had already been
+committed, so that is what was reviewed.
+
+The new `StopwatchPanel` note claimed it takes "seven of the eight" things the hook returns and that "only
+one caller is enough to make the hook worth having". The hook returns **seven** values (it destructures all
+of them), and the demo has **two** callers — the stopwatch card and the session row — which is exactly the
+lesson's argument for extracting a hook. The note now says both.
+
+The lecture change is accurate: the demo keeps `useCallback` out on purpose, and the fresh callback identity
+only becomes work when it reaches a memoised child or a dependency array — the later memoization lesson.
+
+**Checked:** all four gates green; `custom-hooks` is 334 of 334; version stays `0.19.0`; **not committed.**
+
 ### Context & reducer: comments, a frozen-state nuance, and a cleaner divider (2026-10-22)
 
 **The demo now explains its own shape.** A header paragraph names the six panels and the two independent

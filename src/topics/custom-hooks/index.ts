@@ -22,9 +22,10 @@ export const customHooksTopic: Topic = {
     "Arguments in, return value out — that is the whole interface: `useTicker(intervalMs)` takes the tick " +
     "length and returns `{ ticks, isRunning, label, toggle, reset }`. The same keys come back on every render, " +
     "whatever the state, because a field that appears only sometimes is a trap for whoever destructures it.\n\n" +
-    "The object and both of its functions are new on every render. That costs nothing while nothing is " +
-    "memoised — but hand one to a `React.memo` child, or list it in an effect's dependencies, and the new " +
-    "identity becomes real work. That is where `useCallback` starts to earn its keep.\n\n" +
+    "The object and both of its functions are new on every render. That costs nothing here, because nothing " +
+    "below is memoised — the demo keeps `useCallback` out on purpose so the extraction is the only new " +
+    "idea. Hand a callback to a `React.memo` child or list it in an effect's dependencies and the fresh " +
+    "identity becomes real work; that is where `useCallback` earns its keep, in a later lesson.\n\n" +
     "You may reach for a shared component instead, and the two panels are shaped too differently for one. The " +
     "round clock is a card with a big readout and two buttons; the rest row is a line with one button. A " +
     "component serving both would need a prop for every difference. A hook shares the behaviour and leaves " +
